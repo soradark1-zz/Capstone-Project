@@ -1,48 +1,37 @@
 img {
   width: 100%;
 }
-/*
-.landing {
-  position: relative;
-  background: url("../img/showcase.jpg") no-repeat;
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  margin-top: -24px;
-  margin-bottom: -50px;
-}
-
-.landing-inner {
-  padding-top: 80px;
-}
-
-.dark-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-*/
 
 .App {
-  background-color: rgba(0, 0, 0, 0.7);
+  //background-color: #000000b3;
+  background-image: repeating-radial-gradient(gray, black);
   min-height: 100vh; /* will cover the 100% of viewport */
   overflow: hidden;
   display: block;
   position: relative;
   padding-bottom: 100px;
+  color: white;
 }
 
-.card-form {
-  opacity: 0.9;
+.main{
+  margin-top: 1.5rem;
+}
+.btn{
+  color: white;
+
+  background-color: #36c4ec;
+  border-color: #36c4ec;
+
+  transition: background-color 0.5s ease;
+  transition: border-color 0.1s ease;
+
+}
+.btn:hover {
+  background-color: #3380ce;
+  border-color: #3380ce;
 }
 
-.latest-profiles-img {
-  width: 40px;
-  height: 40px;
-}
+
 
 .form-control::placeholder {
   color: #bbb !important;
