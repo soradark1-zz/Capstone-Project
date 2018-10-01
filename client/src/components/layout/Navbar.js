@@ -5,7 +5,55 @@ import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import { clearCurrentProfile } from "../../actions/profileActions";
 
-import "../../styles/navbar.css";
+import compose from 'recompose/compose';
+import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+
+
+
+const styles = theme => ({
+
+  appBar: {
+    position: 'absolute',
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  navbarBrand: {
+    paddingBottom: '0.7rem',
+    fontSize: '2rem',
+    textDecoration:'none',
+    marginRight: '1rem',
+    fontFamily: 'Pacifico',
+  },
+  navbarBtn: {
+    fontSize: 'inherit',
+    textTransform: 'inherit',
+
+  },
+  grow: {
+    flexGrow: 1,
+  },
+  sectionDesktop: {
+    /*display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'flex',
+    },*/
+  },
+  sectionMobile: {
+    display: 'flex',
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
+  },
+
+});
+
+
+
+
 
 class Navbar extends Component {
   onLogoutClick(e) {
@@ -14,75 +62,99 @@ class Navbar extends Component {
     this.props.logoutUser();
   }
 
+
+
+
+
   render() {
     const { isAuthenticated, user } = this.props.auth;
+    const { classes, theme } = this.props;
 
-    const authLinks = (
-      <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
-
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/profile">
-            {user.name}
-          </Link>
-        </li>
-        <li className="nav-item">
-          <a
-            href=""
-            onClick={this.onLogoutClick.bind(this)}
-            className="nav-link"
-          >
-
-            Logout
-          </a>
-        </li>
-      </ul>
+    const authLinksLeft = (
+      <div>
+        <Button
+          component={Link}to="/dashboard"
+          className={classNames(classes.navbarBtn)}>
+            Dashboard
+        </Button>
+      </div>
+    );
+    const guestLinksLeft = (
+      <div>
+        <Button
+          component={Link}to="/about"
+          className={classNames(classes.navbarBtn)}>
+            About
+        </Button>
+      </div>
     );
 
-    const guestLinks = (
-      <ul className="navbar-nav ml-auto">
-        <li className="nav-item">
-          <Link className="nav-link" to="/register">
-            Sign Up
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link className="nav-link" to="/login">
-            Login
-          </Link>
-        </li>
-      </ul>
+
+
+
+    const authLinksRight = (
+      <div>
+
+      <Button
+        component={Link}to="/profile"
+        className={classNames(classes.navbarBtn)}>
+          {user.name}
+      </Button>
+      <Button
+        component='a'
+        onClick={this.onLogoutClick.bind(this)}
+        className={classNames(classes.navbarBtn)}>
+          Logout
+      </Button>
+    </div>
+    );
+
+    const guestLinksRight = (
+      <div>
+        <div className={classes.sectionDesktop}>
+          <Button component={Link}to="/register" className={classNames(classes.navbarBtn)}>
+              Sign Up
+          </Button>
+          <Button component={Link}to="/login" className={classNames(classes.navbarBtn)}>
+              Login
+          </Button>
+
+        </div>
+      </div>
     );
 
     return (
-      <nav className="navbar navbar-expand-sm navbar-dark">
-        <div className="container">
-          <Link className="navbar-brand" to="/">
-            Agora
-          </Link>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#mobile-nav"
-          >
-            <span className="navbar-toggler-icon" />
-          </button>
+      <div>
 
-          <div className="collapse navbar-collapse" id="mobile-nav">
-            <ul className="navbar-nav mr-auto">
-              <li className="nav-item">
-                <Link className="nav-link" to="/about">
-                  {" "}
-                  About
-                </Link>
-              </li>
-            </ul>
-            {isAuthenticated ? authLinks : guestLinks}
-          </div>
-        </div>
-      </nav>
+
+        <AppBar
+          className={classNames(classes.appBar)}
+        >
+          <Toolbar>
+            <Typography component={Link}to="/" variant="title" color="inherit" noWrap className={classNames(classes.navbarBrand)}>
+              Agora
+            </Typography>
+            {isAuthenticated ? authLinksLeft : guestLinksLeft}
+
+
+
+            <div className={classes.grow} />
+
+            {isAuthenticated ? authLinksRight : guestLinksRight}
+
+
+          </Toolbar>
+
+
+
+        </AppBar>
+
+
+
+
+
+
+      </div>
     );
   }
 }
@@ -96,7 +168,7 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(
-  mapStateToProps,
-  { logoutUser, clearCurrentProfile }
+export default compose(
+  withStyles(styles, { withTheme: true }),
+  connect( mapStateToProps, { logoutUser, clearCurrentProfile })
 )(Navbar);

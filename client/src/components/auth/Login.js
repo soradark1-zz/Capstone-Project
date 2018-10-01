@@ -2,7 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUser } from '../../actions/authActions';
-import TextFieldGroup from '../common/TextFieldGroup';
+
+import compose from 'recompose/compose';
+import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import styles from '../../styles/formstyle'
+
+
+
 
 class Login extends Component {
   constructor() {
@@ -50,39 +59,55 @@ class Login extends Component {
 
   render() {
     const { errors } = this.state;
+    const { classes, theme } = this.props;
 
     return (
-      <div className="login">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Log In</h1>
-              <p className="lead text-center">
+      <div id="login" className={classes.form}>
+
+              <div className={classes.formTitle}>Log In</div>
+              <p className={classes.lead}>
                 Sign in to your Agora account
               </p>
-              <form onSubmit={this.onSubmit}>
-                <TextFieldGroup
-                  placeholder="Email Address"
+              <form onSubmit={this.onSubmit} noValidate className={classes.formFields} >
+
+                <TextField
+                  error ={errors.email ? true : false}
+                  label="Email Address"
                   name="email"
-                  type="email"
                   value={this.state.email}
                   onChange={this.onChange}
-                  error={errors.email}
+                  className={classes.textField}
+                  helperText={errors.email}
+                  type="email"
+                  margin="normal"
+                  variant="outlined"
                 />
 
-                <TextFieldGroup
-                  placeholder="Password"
+
+
+                <TextField
+                  error ={errors.email ? true : false}
+                  label="Password"
                   name="password"
-                  type="password"
                   value={this.state.password}
                   onChange={this.onChange}
-                  error={errors.password}
+                  className={classes.textField}
+                  helperText={errors.password}
+                  type="password"
+                  margin="normal"
+                  variant="outlined"
                 />
-              <input type="submit" className="btn btn-block mt-4" />
+
+                <Button
+                  type="submit"
+                  className={classNames(classes.submit)}
+                  variant="contained"
+                  size="large">
+                    Login
+                </Button>
+
               </form>
-            </div>
-          </div>
-        </div>
+
       </div>
     );
   }
@@ -99,4 +124,8 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { loginUser })(Login);
+
+export default compose(
+    withStyles(styles, { withTheme: true }),
+    connect(mapStateToProps, { loginUser })
+  )(Login);

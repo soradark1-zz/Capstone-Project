@@ -9,30 +9,15 @@ img {
   overflow: hidden;
   display: block;
   position: relative;
-  padding-bottom: 100px;
+  /* padding-bottom: 100px; */
   color: white;
 }
 
-.main{
-  margin-top: 1.5rem;
-}
-.btn{
-  color: white;
-
-  background-color: #36c4ec;
-  border-color: #36c4ec;
-
-  transition: background-color 0.5s ease;
-  transition: border-color 0.1s ease;
-
-}
-.btn:hover {
-  background-color: #3380ce;
-  border-color: #3380ce;
-}
 
 
-
-.form-control::placeholder {
-  color: #bbb !important;
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow:0 0 0 50px #303030 inset; /* Change the color to your own background color */
+    -webkit-text-fill-color: #fff;
 }
