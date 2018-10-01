@@ -1,24 +1,29 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { registerUser } from "../../actions/authActions";
 
 import compose from "recompose/compose";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import { DateTimePicker } from 'material-ui-pickers';
+import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+
 import styles from "../../styles/formstyle";
 
-class Register extends Component {
+class CreateAssignment extends Component {
   constructor() {
     super();
     this.state = {
+      class: "",
       name: "",
-      email: "",
-      password: "",
-      password2: "",
+      description: "",
+      date_assigned: "",
+      date_due: "",
+      max_grade: 100,
       errors: {}
     };
 
@@ -26,33 +31,27 @@ class Register extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentDidMount() {
-    if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
-    }
-  }
 
   componentWillReceiveProps(nextProps) {
+
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
   }
 
-  onChange(e) {
-    this.setState({ [e.target.name]: e.target.value });
-  }
-
   onSubmit(e) {
     e.preventDefault();
 
-    const newUser = {
-      name: this.state.name,
+    const userData = {
       email: this.state.email,
-      password: this.state.password,
-      password2: this.state.password2
+      password: this.state.password
     };
 
-    this.props.registerUser(newUser, this.props.history);
+    //this.props.loginUser(userData);
+  }
+
+  onChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   render() {
@@ -60,17 +59,30 @@ class Register extends Component {
     const { classes, theme } = this.props;
 
     return (
-      <div id="register" className={classes.form}>
-        <div className={classes.formTitle}>Sign Up</div>
-        <p className={classes.lead}>Create your Agora account</p>
+      <div id="login" className={classes.form}>
+        <div className={classes.formTitle}>New Assignment</div>
         <form
-          noValidate
           onSubmit={this.onSubmit}
+          noValidate
           className={classes.formFields}
         >
           <TextField
+            error={errors.class ? true : false}
+            label="Class"
+            name="class"
+            value={this.state.class}
+            onChange={this.onChange}
+            className={classes.textField}
+            helperText={errors.class}
+            type="class"
+            margin="normal"
+            variant="outlined"
+            autoFocus
+          />
+
+          <TextField
             error={errors.name ? true : false}
-            label="Full Name"
+            label="Assignment Name"
             name="name"
             value={this.state.name}
             onChange={this.onChange}
@@ -79,44 +91,37 @@ class Register extends Component {
             type="name"
             margin="normal"
             variant="outlined"
-            autoFocus
           />
+
           <TextField
-            error={errors.email ? true : false}
-            label="Email Address"
-            name="email"
-            value={this.state.email}
+            error={errors.description ? true : false}
+            label="Assignment Description"
+            name="description"
+            value={this.state.description}
             onChange={this.onChange}
             className={classes.textField}
-            helperText={errors.email}
-            type="email"
+            helperText={errors.description}
+            type="description"
             margin="normal"
             variant="outlined"
+            multiline
+            rows="4"
+            rowsMax="4"
           />
-          <TextField
-            error={errors.email ? true : false}
-            label="Password"
-            name="password"
-            value={this.state.password}
-            onChange={this.onChange}
-            className={classes.textField}
-            helperText={errors.password}
-            type="password"
-            margin="normal"
-            variant="outlined"
-          />
-          <TextField
-            error={errors.email ? true : false}
-            label="Password"
-            name="password"
-            value={this.state.password}
-            onChange={this.onChange}
-            className={classes.textField}
-            helperText={errors.password}
-            type="password"
-            margin="normal"
-            variant="outlined"
-          />
+          <div>
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            <DateTimePicker
+              label="Date to be assigned"
+            />
+            <DateTimePicker
+              label="Date due"
+            />
+          </MuiPickersUtilsProvider>
+          </div>
+
+
+
+
 
           <Button
             type="submit"
@@ -124,7 +129,7 @@ class Register extends Component {
             variant="contained"
             size="large"
           >
-            Sign Up
+            Create
           </Button>
         </form>
       </div>
@@ -132,8 +137,7 @@ class Register extends Component {
   }
 }
 
-Register.propTypes = {
-  registerUser: PropTypes.func.isRequired,
+CreateAssignment.propTypes = {
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -145,8 +149,5 @@ const mapStateToProps = state => ({
 
 export default compose(
   withStyles(styles, { withTheme: true }),
-  connect(
-    mapStateToProps,
-    { registerUser }
-  )
-)(withRouter(Register));
+  connect(mapStateToProps)
+)(CreateAssignment);

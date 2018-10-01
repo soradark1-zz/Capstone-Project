@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
@@ -60,7 +60,8 @@ class Navbar extends Component {
     e.preventDefault();
     this.props.clearCurrentProfile();
     this.props.logoutUser();
-  }
+    this.props.history.push('/')
+;  }
 
 
 
@@ -171,4 +172,4 @@ const mapStateToProps = state => ({
 export default compose(
   withStyles(styles, { withTheme: true }),
   connect( mapStateToProps, { logoutUser, clearCurrentProfile })
-)(Navbar);
+)(withRouter(Navbar));

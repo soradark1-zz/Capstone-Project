@@ -22,15 +22,23 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Icon from '@material-ui/core/Icon';
+
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import StarBorder from '@material-ui/icons/StarBorder';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import StarIcon from '@material-ui/icons/Star';
-import SendIcon from '@material-ui/icons/Send';
-import MailIcon from '@material-ui/icons/Mail';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ReportIcon from '@material-ui/icons/Report';
+import Collapse from '@material-ui/core/Collapse';
 
 
+
+
+const options = [
+  'Show some love to Material-UI',
+  'Show all notification content',
+  'Hide sensitive notification content',
+  'Hide all notification content',
+];
 
 
 const drawerWidth = 240;
@@ -71,34 +79,53 @@ const styles = theme => ({
     justifyContent: 'flex-end',
     padding: '0 8px',
     ...theme.mixins.toolbar,
-  }
+  },
+  fas: {
+    width: '21px',
+  },
+
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightRegular,
+  },
 });
 
 class MiniDrawer extends React.Component {
   state = {
-    open: false,
+    drawer_open: true,
+    class_open: false,
   };
 
+  //Drawer handles
+
   handleDrawerOpen = () => {
-    this.setState({ open: true });
+    this.setState({ drawer_open: true });
   };
 
   handleDrawerClose = () => {
-    this.setState({ open: false });
+    this.setState({ drawer_open: false });
   };
 
   handleDrawerToggle = () => {
-    this.setState({ open: !this.state.open });
+    this.setState({ drawer_open: !this.state.drawer_open });
   };
+
+  // Class handles
+  handleClick = () => {
+    this.setState(state => ({ class_open: !state.class_open }));
+  };
+
 
   render() {
     const { classes, theme } = this.props;
+    const { anchorEl } = this.state;
 
     return (
+      <div>
         <Drawer
           variant="permanent"
           classes={{
-            paper: classNames(classes.drawerPaper, !this.state.open && classes.drawerPaperClose),
+            paper: classNames(classes.drawerPaper, !this.state.drawer_open && classes.drawerPaperClose),
           }}
           open={this.state.open}
         >
@@ -109,37 +136,83 @@ class MiniDrawer extends React.Component {
           </div>
           <ListItem button onClick={this.handleDrawerToggle}>
             <ListItemIcon>
-              {this.state.open ?  <ChevronLeftIcon /> : <ChevronRightIcon />}
+              {this.state.drawer_open ?  <ChevronLeftIcon /> : <ChevronRightIcon />}
             </ListItemIcon>
             <ListItemText primary="Collapse" />
           </ListItem>
+
+          <Divider/>
+
+            <ListItem button onClick={this.handleClick}>
+              <ListItemIcon>
+                <Icon className='fas fa-book' />
+              </ListItemIcon>
+              <ListItemText inset primary="Classes" />
+              {this.state.class_open ? <ExpandLess /> : <ExpandMore />}
+            </ListItem>
+            <Collapse in={this.state.class_open} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItem button className={classes.nested}>
+
+                  <ListItemText inset primary="CSCE 482" />
+                </ListItem>
+                <ListItem button className={classes.nested}>
+
+                  <ListItemText inset primary="CSCE 465" />
+                </ListItem>
+                <ListItem button className={classes.nested}>
+
+                  <ListItemText inset primary="CSCE 420" />
+                </ListItem>
+              </List>
+            </Collapse>
+
           <ListItem button>
             <ListItemIcon>
-              <InboxIcon />
+              <Icon className='fas fa-calendar-alt' />
             </ListItemIcon>
-            <ListItemText primary="Inbox" />
+            <ListItemText primary="Calendar" />
           </ListItem>
           <ListItem button>
             <ListItemIcon>
-              <StarIcon />
+              <Icon className='fas fa-pencil-alt' />
             </ListItemIcon>
-            <ListItemText primary="Starred" />
+            <ListItemText primary="Assignments" />
           </ListItem>
           <ListItem button>
             <ListItemIcon>
-              <SendIcon />
+              <Icon className='fas fa-paper-plane' />
             </ListItemIcon>
-            <ListItemText primary="Send mail" />
+            <ListItemText primary="Submissions" />
           </ListItem>
+
+          <Divider/>
+
+          <ListItem button component={Link} to='/create-assignment'>
+            <ListItemIcon>
+              <Icon className='fas fa-edit' />
+            </ListItemIcon>
+            <ListItemText primary="Create Assignment" />
+          </ListItem>
+
+          <Divider/>
+
           <ListItem button>
             <ListItemIcon>
-              <DraftsIcon />
+              <Icon className={classes.icon, 'fas fa-cog'} />
             </ListItemIcon>
-            <ListItemText primary="Drafts" />
+            <ListItemText primary="Settings" />
           </ListItem>
+
+
+
 
 
         </Drawer>
+
+
+
+      </div>
 
     );
   }
