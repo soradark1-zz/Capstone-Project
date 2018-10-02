@@ -14,12 +14,12 @@
 - Open `keys_dev.js` and add the following code:
 ```sh
 module.exports = {
-  mongoURI: 'mongodb://<dbuser>:<dbpassword>@ds123456.mlab.com:12345/my-mlab-database'
+  mongoURI: 'mongodb://<dbuser>:<dbpassword>@ds123456.mlab.com:12345/my-mlab-database',
   secretOrKey: 'secert'
 };
 ```
 - `mongoURI` value should be replaced with your [mLab] database URI. `secretOrKey` value can be whatever string you want.
-- Start the development server by running `npm run dev` and stop the server using `Ctrl-C`
+- Start the development server by running `npm run dev` and stop the server using `Ctrl-C`, or to only start the backend use `npm run server`
 
 
 [Node.js]: http://nodejs.org/
