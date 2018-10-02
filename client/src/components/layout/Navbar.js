@@ -13,6 +13,12 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
+import IconButton from '@material-ui/core/IconButton';
+import MoreIcon from '@material-ui/icons/MoreVert';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+
+
 
 
 const styles = theme => ({
@@ -37,10 +43,10 @@ const styles = theme => ({
     flexGrow: 1,
   },
   sectionDesktop: {
-    /*display: 'none',
+    display: 'none',
     [theme.breakpoints.up('sm')]: {
       display: 'flex',
-    },*/
+    },
   },
   sectionMobile: {
     display: 'flex',
@@ -56,20 +62,43 @@ const styles = theme => ({
 
 
 class Navbar extends Component {
+  state = {
+    anchorEl: null,
+    mobileMoreAnchorEl: null,
+  };
+
+
+
   onLogoutClick(e) {
     e.preventDefault();
     this.props.clearCurrentProfile();
     this.props.logoutUser();
-    this.props.history.push('/')
-;  }
+    this.props.history.push('/');
+  };
 
+  handleMenuClose = () => {
+    this.setState({ anchorEl: null });
+    this.handleMobileMenuClose();
+  };
 
+  handleMobileMenuOpen = event => {
+    this.setState({ mobileMoreAnchorEl: event.currentTarget });
+  };
+
+  handleMobileMenuClose = () => {
+    this.setState({ mobileMoreAnchorEl: null });
+  };
 
 
 
   render() {
     const { isAuthenticated, user } = this.props.auth;
     const { classes, theme } = this.props;
+    const { anchorEl, mobileMoreAnchorEl } = this.state;
+    const isMenuOpen = Boolean(anchorEl);
+    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+
 
     const authLinksLeft = (
       <div>
@@ -90,28 +119,23 @@ class Navbar extends Component {
       </div>
     );
 
-
-
-
     const authLinksRight = (
-      <div>
-
-      <Button
-        component={Link}to="/profile"
-        className={classNames(classes.navbarBtn)}>
-          {user.name}
-      </Button>
-      <Button
-        component='a'
-        onClick={this.onLogoutClick.bind(this)}
-        className={classNames(classes.navbarBtn)}>
-          Logout
-      </Button>
+      <div className={classes.sectionDesktop}>
+        <Button
+          component={Link}to="/profile"
+          className={classNames(classes.navbarBtn)}>
+            {user.name}
+        </Button>
+        <Button
+          component='a'
+          onClick={this.onLogoutClick.bind(this)}
+          className={classNames(classes.navbarBtn)}>
+            Logout
+        </Button>
     </div>
     );
 
     const guestLinksRight = (
-      <div>
         <div className={classes.sectionDesktop}>
           <Button component={Link}to="/register" className={classNames(classes.navbarBtn)}>
               Sign Up
@@ -121,7 +145,43 @@ class Navbar extends Component {
           </Button>
 
         </div>
-      </div>
+    );
+
+
+    const authMobileMenu = (
+      <Menu
+        anchorEl={mobileMoreAnchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={isMobileMenuOpen}
+        onClose={this.handleMobileMenuClose}
+      >
+        <MenuItem button component={Link} to="/profile">
+          <p>{user.name}</p>
+        </MenuItem>
+        <MenuItem
+          component='a'
+          onClick={this.onLogoutClick.bind(this)}>
+          <p>Logout</p>
+        </MenuItem>
+      </Menu>
+    );
+
+    const guestMobileMenu = (
+      <Menu
+        anchorEl={mobileMoreAnchorEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={isMobileMenuOpen}
+        onClose={this.handleMobileMenuClose}
+      >
+        <MenuItem button component={Link} to="/login">
+          <p>Login</p>
+        </MenuItem>
+        <MenuItem button component={Link} to="/register">
+          <p>Sign Up</p>
+        </MenuItem>
+      </Menu>
     );
 
     return (
@@ -142,7 +202,12 @@ class Navbar extends Component {
             <div className={classes.grow} />
 
             {isAuthenticated ? authLinksRight : guestLinksRight}
-
+            <div className={classes.sectionMobile}>
+              <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
+                <MoreIcon />
+              </IconButton>
+            </div>
+            {isAuthenticated ? authMobileMenu : guestMobileMenu}
 
           </Toolbar>
 

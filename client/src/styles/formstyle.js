@@ -26,7 +26,10 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-  }
+  },
+  datePicker:{
+    margin: '0.8rem',
+  },
 
 
 });

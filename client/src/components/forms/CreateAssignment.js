@@ -21,9 +21,9 @@ class CreateAssignment extends Component {
       class: "",
       name: "",
       description: "",
-      date_assigned: "",
-      date_due: "",
-      max_grade: 100,
+      dateAssigned: new Date(),
+      dateDue: new Date(),
+      maxGrade: 100,
       errors: {}
     };
 
@@ -54,13 +54,20 @@ class CreateAssignment extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
+  handleDateAssignedChange = (date) => {
+    this.setState({ dateAssigned: date });
+  }
+  handleDateDueChange = (date) => {
+    this.setState({ dateDue: date });
+  }
+
   render() {
     const { errors } = this.state;
     const { classes, theme } = this.props;
 
     return (
       <div id="login" className={classes.form}>
-        <div className={classes.formTitle}>New Assignment</div>
+        <div className={classes.formTitle}>Create Assignment</div>
         <form
           onSubmit={this.onSubmit}
           noValidate
@@ -109,14 +116,24 @@ class CreateAssignment extends Component {
             rowsMax="4"
           />
           <div>
-          <MuiPickersUtilsProvider utils={MomentUtils}>
-            <DateTimePicker
-              label="Date to be assigned"
-            />
-            <DateTimePicker
-              label="Date due"
-            />
-          </MuiPickersUtilsProvider>
+            <MuiPickersUtilsProvider utils={MomentUtils}>
+              <DateTimePicker
+                className={classes.datePicker}
+                label="Date to be assigned"
+                name='dateAssigned'
+                value={this.state.dateAssigned}
+                onChange={this.handleDateAssignedChange}
+                disablePast
+              />
+              <DateTimePicker
+                className={classes.datePicker}
+                label="Date due"
+                name='dateDue'
+                value={this.state.dateDue}
+                onChange={this.handleDateDueChange}
+                disablePast
+              />
+            </MuiPickersUtilsProvider>
           </div>
 
 

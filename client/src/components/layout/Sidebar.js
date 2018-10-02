@@ -188,9 +188,15 @@ class MiniDrawer extends React.Component {
 
           <Divider/>
 
-          <ListItem button component={Link} to='/create-assignment'>
+          <ListItem button >
             <ListItemIcon>
               <Icon className='fas fa-edit' />
+            </ListItemIcon>
+            <ListItemText primary="Grade Assignments" />
+          </ListItem>
+          <ListItem button component={Link} to='/create-assignment'>
+            <ListItemIcon>
+              <Icon className='fas fa-file-medical' />
             </ListItemIcon>
             <ListItemText primary="Create Assignment" />
           </ListItem>

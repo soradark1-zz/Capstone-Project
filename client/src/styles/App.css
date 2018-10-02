@@ -23,6 +23,9 @@ select:-webkit-autofill {
 }
 
 /*Keeps Sidebar Icons all the same size*/
+.svg-inline--fa.fa-w-12 {
+    width: 21px;
+}
 .svg-inline--fa.fa-w-16 {
     width: 21px;
 }
