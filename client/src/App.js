@@ -15,7 +15,7 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/dashboard/Dashboard";
 import CreateAssignment from "./components/forms/CreateAssignment";
-
+import GradeAssignment from "./components/dashboard/GradeAssignment";
 
 import compose from "recompose/compose";
 import "./styles/App.css";
@@ -33,7 +33,6 @@ const styles = theme => ({
     //paddingTop: "5rem"
   },
   container: {
-
     paddingTop: "5rem"
   }
 });
@@ -57,8 +56,17 @@ class App extends Component {
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/about" component={About} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute exact path="/create-assignment" component={CreateAssignment} />
-                <Route  component={PageNotFound} />
+                <PrivateRoute
+                  exact
+                  path="/create-assignment"
+                  component={CreateAssignment}
+                />
+                <PrivateRoute
+                  exact
+                  path="/grade-assignment"
+                  component={GradeAssignment}
+                />
+                <Route component={PageNotFound} />
               </Switch>
             </div>
           </div>

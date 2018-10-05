@@ -8,9 +8,9 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
-import { DateTimePicker } from 'material-ui-pickers';
-import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
+import { DateTimePicker } from "material-ui-pickers";
+import MomentUtils from "material-ui-pickers/utils/moment-utils";
 
 import styles from "../../styles/formstyle";
 
@@ -31,9 +31,7 @@ class CreateAssignment extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-
   componentWillReceiveProps(nextProps) {
-
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
@@ -54,12 +52,12 @@ class CreateAssignment extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  handleDateAssignedChange = (date) => {
+  handleDateAssignedChange = date => {
     this.setState({ dateAssigned: date });
-  }
-  handleDateDueChange = (date) => {
+  };
+  handleDateDueChange = date => {
     this.setState({ dateDue: date });
-  }
+  };
 
   render() {
     const { errors } = this.state;
@@ -120,7 +118,7 @@ class CreateAssignment extends Component {
               <DateTimePicker
                 className={classes.datePicker}
                 label="Date to be assigned"
-                name='dateAssigned'
+                name="dateAssigned"
                 value={this.state.dateAssigned}
                 onChange={this.handleDateAssignedChange}
                 disablePast
@@ -128,17 +126,13 @@ class CreateAssignment extends Component {
               <DateTimePicker
                 className={classes.datePicker}
                 label="Date due"
-                name='dateDue'
+                name="dateDue"
                 value={this.state.dateDue}
                 onChange={this.handleDateDueChange}
                 disablePast
               />
             </MuiPickersUtilsProvider>
           </div>
-
-
-
-
 
           <Button
             type="submit"

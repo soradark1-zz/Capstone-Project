@@ -5,76 +5,64 @@ import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import { clearCurrentProfile } from "../../actions/profileActions";
 
-import compose from 'recompose/compose';
-import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
+import compose from "recompose/compose";
+import classNames from "classnames";
+import { withStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 
-import IconButton from '@material-ui/core/IconButton';
-import MoreIcon from '@material-ui/icons/MoreVert';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-
-
-
+import IconButton from "@material-ui/core/IconButton";
+import MoreIcon from "@material-ui/icons/MoreVert";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
 
 const styles = theme => ({
-
   appBar: {
-    position: 'absolute',
-    zIndex: theme.zIndex.drawer + 1,
+    position: "fixed",
+    zIndex: theme.zIndex.drawer + 1
   },
   navbarBrand: {
-    paddingBottom: '0.7rem',
-    fontSize: '2rem',
-    textDecoration:'none',
-    marginRight: '1rem',
-    fontFamily: 'Pacifico',
+    paddingBottom: "0.7rem",
+    fontSize: "2rem",
+    textDecoration: "none",
+    marginRight: "1rem",
+    fontFamily: "Pacifico"
   },
   navbarBtn: {
-    fontSize: 'inherit',
-    textTransform: 'inherit',
-
+    fontSize: "inherit",
+    textTransform: "inherit"
   },
   grow: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   sectionDesktop: {
-    display: 'none',
-    [theme.breakpoints.up('sm')]: {
-      display: 'flex',
-    },
+    display: "none",
+    [theme.breakpoints.up("sm")]: {
+      display: "flex"
+    }
   },
   sectionMobile: {
-    display: 'flex',
-    [theme.breakpoints.up('sm')]: {
-      display: 'none',
-    },
-  },
-
+    display: "flex",
+    [theme.breakpoints.up("sm")]: {
+      display: "none"
+    }
+  }
 });
-
-
-
-
 
 class Navbar extends Component {
   state = {
     anchorEl: null,
-    mobileMoreAnchorEl: null,
+    mobileMoreAnchorEl: null
   };
-
-
 
   onLogoutClick(e) {
     e.preventDefault();
     this.props.clearCurrentProfile();
     this.props.logoutUser();
-    this.props.history.push('/');
-  };
+    this.props.history.push("/");
+  }
 
   handleMenuClose = () => {
     this.setState({ anchorEl: null });
@@ -89,8 +77,6 @@ class Navbar extends Component {
     this.setState({ mobileMoreAnchorEl: null });
   };
 
-
-
   render() {
     const { isAuthenticated, user } = this.props.auth;
     const { classes, theme } = this.props;
@@ -98,23 +84,25 @@ class Navbar extends Component {
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
-
-
     const authLinksLeft = (
       <div>
         <Button
-          component={Link}to="/dashboard"
-          className={classNames(classes.navbarBtn)}>
-            Dashboard
+          component={Link}
+          to="/dashboard"
+          className={classNames(classes.navbarBtn)}
+        >
+          Dashboard
         </Button>
       </div>
     );
     const guestLinksLeft = (
       <div>
         <Button
-          component={Link}to="/about"
-          className={classNames(classes.navbarBtn)}>
-            About
+          component={Link}
+          to="/about"
+          className={classNames(classes.navbarBtn)}
+        >
+          About
         </Button>
       </div>
     );
@@ -122,46 +110,53 @@ class Navbar extends Component {
     const authLinksRight = (
       <div className={classes.sectionDesktop}>
         <Button
-          component={Link}to="/profile"
-          className={classNames(classes.navbarBtn)}>
-            {user.name}
+          component={Link}
+          to="/profile"
+          className={classNames(classes.navbarBtn)}
+        >
+          {user.name}
         </Button>
         <Button
-          component='a'
+          component="a"
           onClick={this.onLogoutClick.bind(this)}
-          className={classNames(classes.navbarBtn)}>
-            Logout
+          className={classNames(classes.navbarBtn)}
+        >
+          Logout
         </Button>
-    </div>
+      </div>
     );
 
     const guestLinksRight = (
-        <div className={classes.sectionDesktop}>
-          <Button component={Link}to="/register" className={classNames(classes.navbarBtn)}>
-              Sign Up
-          </Button>
-          <Button component={Link}to="/login" className={classNames(classes.navbarBtn)}>
-              Login
-          </Button>
-
-        </div>
+      <div className={classes.sectionDesktop}>
+        <Button
+          component={Link}
+          to="/register"
+          className={classNames(classes.navbarBtn)}
+        >
+          Sign Up
+        </Button>
+        <Button
+          component={Link}
+          to="/login"
+          className={classNames(classes.navbarBtn)}
+        >
+          Login
+        </Button>
+      </div>
     );
-
 
     const authMobileMenu = (
       <Menu
         anchorEl={mobileMoreAnchorEl}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
         open={isMobileMenuOpen}
         onClose={this.handleMobileMenuClose}
       >
         <MenuItem button component={Link} to="/profile">
           <p>{user.name}</p>
         </MenuItem>
-        <MenuItem
-          component='a'
-          onClick={this.onLogoutClick.bind(this)}>
+        <MenuItem component="a" onClick={this.onLogoutClick.bind(this)}>
           <p>Logout</p>
         </MenuItem>
       </Menu>
@@ -170,8 +165,8 @@ class Navbar extends Component {
     const guestMobileMenu = (
       <Menu
         anchorEl={mobileMoreAnchorEl}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
         open={isMobileMenuOpen}
         onClose={this.handleMobileMenuClose}
       >
@@ -186,40 +181,35 @@ class Navbar extends Component {
 
     return (
       <div>
-
-
-        <AppBar
-          className={classNames(classes.appBar)}
-        >
+        <AppBar className={classNames(classes.appBar)}>
           <Toolbar>
-            <Typography component={Link}to="/" variant="title" color="inherit" noWrap className={classNames(classes.navbarBrand)}>
+            <Typography
+              component={Link}
+              to="/"
+              variant="title"
+              color="inherit"
+              noWrap
+              className={classNames(classes.navbarBrand)}
+            >
               Agora
             </Typography>
             {isAuthenticated ? authLinksLeft : guestLinksLeft}
-
-
 
             <div className={classes.grow} />
 
             {isAuthenticated ? authLinksRight : guestLinksRight}
             <div className={classes.sectionMobile}>
-              <IconButton aria-haspopup="true" onClick={this.handleMobileMenuOpen} color="inherit">
+              <IconButton
+                aria-haspopup="true"
+                onClick={this.handleMobileMenuOpen}
+                color="inherit"
+              >
                 <MoreIcon />
               </IconButton>
             </div>
             {isAuthenticated ? authMobileMenu : guestMobileMenu}
-
           </Toolbar>
-
-
-
         </AppBar>
-
-
-
-
-
-
       </div>
     );
   }
@@ -236,5 +226,8 @@ const mapStateToProps = state => ({
 
 export default compose(
   withStyles(styles, { withTheme: true }),
-  connect( mapStateToProps, { logoutUser, clearCurrentProfile })
+  connect(
+    mapStateToProps,
+    { logoutUser, clearCurrentProfile }
+  )
 )(withRouter(Navbar));
