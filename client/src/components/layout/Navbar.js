@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Link, Redirect, withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import { clearCurrentProfile } from "../../actions/profileActions";
+import { toggleSidebar } from "../../actions/layoutActions";
 
 import compose from "recompose/compose";
 import classNames from "classnames";
@@ -17,6 +18,7 @@ import IconButton from "@material-ui/core/IconButton";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const styles = theme => ({
   appBar: {
@@ -28,6 +30,7 @@ const styles = theme => ({
     fontSize: "2rem",
     textDecoration: "none",
     marginRight: "1rem",
+    marginLeft: "1rem",
     fontFamily: "Pacifico"
   },
   navbarBtn: {
@@ -179,10 +182,22 @@ class Navbar extends Component {
       </Menu>
     );
 
+    const menuButton = (
+      <IconButton
+        color="inherit"
+        aria-label="Open drawer"
+        onClick={this.props.toggleSidebar}
+        className={classes.navIconHide}
+      >
+        <MenuIcon />
+      </IconButton>
+    );
+
     return (
       <div>
         <AppBar className={classNames(classes.appBar)}>
           <Toolbar>
+            {isAuthenticated ? menuButton : ""}
             <Typography
               component={Link}
               to="/"
@@ -228,6 +243,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { logoutUser, clearCurrentProfile }
+    { logoutUser, clearCurrentProfile, toggleSidebar }
   )
 )(withRouter(Navbar));
