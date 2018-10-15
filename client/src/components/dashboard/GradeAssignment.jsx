@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 
 import { Document, Page } from "react-pdf";
+
+import { Stage, Layer, Rect, Text, Line } from "react-konva";
+import Konva from "konva";
+import TransformerComponent from "../common/TransformerComponent";
+
 var sample = require("./sample.pdf");
 
 const highlightPattern = (text, pattern) => {
@@ -57,6 +62,14 @@ export default class GradeAssignment extends Component {
   render() {
     const { numPages, pageNumber, searchText } = this.state;
 
+    const CANVAS_VIRTUAL_WIDTH = 612;
+    const CANVAS_VIRTUAL_HEIGHT = 796;
+
+    const scale = Math.min(
+      window.innerWidth / CANVAS_VIRTUAL_WIDTH,
+      window.innerHeight / CANVAS_VIRTUAL_HEIGHT
+    );
+
     const react_pdf = (
       <div>
         <Document file={sample} onLoadSuccess={this.onDocumentLoadSuccess}>
@@ -65,6 +78,7 @@ export default class GradeAssignment extends Component {
             renderAnnotations={true}
             renderInteractiveForms={true}
             renderMode="svg"
+            className="pdfpage"
             customTextRenderer={this.makeTextRenderer(searchText)}
           />
         </Document>
@@ -85,21 +99,14 @@ export default class GradeAssignment extends Component {
         >
           Next
         </button>
-        <div>
-          <mark htmlFor="search">Search:</mark>
-          <input
-            type="search"
-            id="search"
-            value={searchText}
-            onChange={this.onChange}
-          />
-        </div>
       </div>
     );
 
     return (
       <div>
         <div>{react_pdf}</div>
+
+        <TransformerComponent />
       </div>
     );
   }

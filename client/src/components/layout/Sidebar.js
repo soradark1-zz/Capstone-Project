@@ -93,7 +93,6 @@ class Sidebar extends React.Component {
   render() {
     const { open } = this.props.layout;
     const { classes, theme } = this.props;
-    console.log(open);
 
     const drawerContent = (
       <div>

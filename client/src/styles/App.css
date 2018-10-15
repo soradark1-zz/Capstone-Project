@@ -32,3 +32,15 @@ select:-webkit-autofill {
 .svg-inline--fa.fa-w-18 {
     width: 21px;
 }
+
+.pdfpage {
+  display: inline-flex;
+}
+
+.annoation-layer{
+  position: absolute;
+  top: 0;
+  padding-top: 5rem;
+}
+
+
