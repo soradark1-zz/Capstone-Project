@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Stage, Layer, Rect, Transformer } from "react-konva";
+import data from "./data.json";
 
 //https://codesandbox.io/s/8k2m333m92?from-embed
 
@@ -82,32 +83,9 @@ class TransformerComponent extends React.Component {
 
 export default class App extends Component {
   state = {
-    rectangles: [
-      {
-        x: 10,
-        y: 400,
-        width: 100,
-        height: 100,
-        fill: "rgba(255, 0, 0, 0.5)",
-        name: "rect1"
-      },
-      {
-        x: 100,
-        y: 300,
-        width: 100,
-        height: 100,
-        fill: "rgba(0, 255, 0, 0.5)",
-        name: "rect2"
-      },
-      {
-        x: 150,
-        y: 150,
-        width: 100,
-        height: 100,
-        fill: "rgba(0, 0, 255, 0.5)",
-        name: "rect3"
-      }
-    ],
+    rectangles: data.rectangles,
+    comments: data.comments,
+    commentColor: "white",
     selectedShapeName: ""
   };
   handleStageMouseDown = e => {
@@ -154,7 +132,7 @@ export default class App extends Component {
       y: 10,
       width: 100,
       height: 100,
-      fill: "rgba(255,255,0, 0.5)",
+      fill: "rgba(255,255,0, 0.35)",
       name: `rect${this.state.rectangles.length + 1}`
     };
 
@@ -164,6 +142,15 @@ export default class App extends Component {
     this.setState({
       rectangles: rects
     });
+  };
+
+  handleStageMouseOver = e => {
+    if (e.target === e.target.getStage()) {
+      this.setState({
+        selectedShapeName: ""
+      });
+      return;
+    }
   };
 
   removeRect = () => {
@@ -190,8 +177,17 @@ export default class App extends Component {
           className="annoation-layer"
           width={612}
           height={796}
-          scale={0.5}
           onMouseDown={this.handleStageMouseDown}
+          onClick={() => {
+            this.setState({
+              commentColor: "red"
+            });
+          }}
+          onMouseOut={() => {
+            this.setState({
+              commentColor: "white"
+            });
+          }}
         >
           <Layer>
             {this.state.rectangles.map((rect, i) => (
@@ -214,6 +210,16 @@ export default class App extends Component {
         <button type="button" onClick={this.removeRect}>
           Remove
         </button>
+        <div>
+          {this.state.comments.map((comm, i) => (
+            <div
+              id={`comment${i + 1}`}
+              style={{ color: this.state.commentColor }}
+            >
+              {comm}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
