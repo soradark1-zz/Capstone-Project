@@ -138,18 +138,30 @@ export default class App extends Component {
 
     let rects = this.state.rectangles;
     rects.push(newRect);
+    let comms = this.state.comments;
+    comms.push("This is a brand new comment!");
 
     this.setState({
-      rectangles: rects
+      rectangles: rects,
+      comments: comms
     });
   };
 
-  handleStageMouseOver = e => {
-    if (e.target === e.target.getStage()) {
-      this.setState({
-        selectedShapeName: ""
-      });
-      return;
+  handleStageClick = e => {
+    let name = e.target.name();
+    console.log(name);
+    if (name === undefined) return;
+    let index = name[name.length - 1];
+
+    for (var i = 1; i < this.state.comments.length + 1; i++) {
+      let selComment = document.getElementById(`comment${i}`);
+      if (i === Number(index)) {
+        console.log(i);
+        selComment.classList.add("selected-comment");
+      } else {
+        console.log(i, " != ", index);
+        selComment.classList.remove("selected-comment");
+      }
     }
   };
 
@@ -160,29 +172,41 @@ export default class App extends Component {
     const name = this.state.selectedShapeName;
     const rect = this.state.rectangles.find(r => r.name === name);
 
-    var filtered = this.state.rectangles.filter(function(value, index, arr) {
+    const indexRect = this.state.rectangles.indexOf(rect);
+
+    var filteredRect = this.state.rectangles.filter(function(value) {
       return value !== rect;
     });
 
+    var filteredComm = this.state.comments.filter(function(value, index) {
+      return indexRect !== index;
+    });
+
     this.setState({
-      rectangles: filtered
+      rectangles: filteredRect,
+      comments: filteredComm
     });
   };
 
+  sizeOfStage = () => {
+    if (window.innerWidth > 612) {
+      return 1;
+    }
+    return 0.5;
+  };
+
   render() {
-    console.log(this.state);
+    //console.log(this.state);
     return (
       <div>
         <Stage
           className="annoation-layer"
           width={612}
           height={796}
+          scaleX={this.sizeOfStage()}
+          scaleY={this.sizeOfStage()}
           onMouseDown={this.handleStageMouseDown}
-          onClick={() => {
-            this.setState({
-              commentColor: "red"
-            });
-          }}
+          onClick={this.handleStageClick}
           onMouseOut={() => {
             this.setState({
               commentColor: "white"
@@ -212,10 +236,7 @@ export default class App extends Component {
         </button>
         <div>
           {this.state.comments.map((comm, i) => (
-            <div
-              id={`comment${i + 1}`}
-              style={{ color: this.state.commentColor }}
-            >
+            <div id={`comment${i + 1}`} className="">
               {comm}
             </div>
           ))}

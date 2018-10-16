@@ -44,7 +44,7 @@ class Landing extends Component {
       <div className="landing">
         <div className={classNames(classes.brand)}>Agora</div>
         <p className={classNames(classes.lead)}>
-          Enroll in classes, submit documents, and receive feed made easy
+          Enroll in classes, submit documents, and receive feedback made easy
         </p>
         <Divider />
 
