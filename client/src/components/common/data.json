@@ -1,36 +1,39 @@
 {
-    "rectangles": [
-        {
-            "x": 10,
-            "y": 200,
-            "width": 100,
-            "height": 100,
-            "fill": "rgba(255, 0, 0, 0.35)",
-            "name": "rect1",
-            "stroke": ""
-        },
-        {
-            "x": 10,
-            "y": 350,
-            "width": 100,
-            "height": 100,
-            "fill": "rgba(0, 0, 255, 0.35)",
-            "name": "rect2",
-            "stroke": ""
-        },
-        {
-            "x": 10,
-            "y": 500,
-            "width": 100,
-            "height": 100,
-            "fill": "rgba(0, 255, 0, 0.35)",
-            "name": "rect3",
-            "stroke": ""
-        }
-    ],
-    "comments": [
-        "This is a comment",
-        "Is this a comment? yes!",
-        "Are you even reading this?!"
-    ]
+  "rectangles": [
+    {
+      "x": 10,
+      "y": 200,
+      "width": 100,
+      "height": 100,
+      "fill": "rgba(255, 0, 0, 0.35)",
+      "name": "rect1",
+      "stroke": "rgba(255, 0, 0, 1)",
+      "strokeEnabled": false
+    },
+    {
+      "x": 10,
+      "y": 350,
+      "width": 100,
+      "height": 100,
+      "fill": "rgba(0, 0, 255, 0.35)",
+      "name": "rect2",
+      "stroke": "rgba(0, 0, 255, 1)",
+      "strokeEnabled": false
+    },
+    {
+      "x": 10,
+      "y": 500,
+      "width": 100,
+      "height": 100,
+      "fill": "rgba(0, 255, 0, 0.35)",
+      "name": "rect3",
+      "stroke": "rgba(21, 119, 41, 1)",
+      "strokeEnabled": false
+    }
+  ],
+  "comments": [
+    "This is a comment",
+    "Is this a comment? yes!",
+    "Are you even reading this?!"
+  ]
 }

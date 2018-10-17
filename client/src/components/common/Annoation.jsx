@@ -1,8 +1,31 @@
 import React, { Component } from "react";
 import { Stage, Layer, Rect, Transformer } from "react-konva";
+import classNames from "classnames";
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+
 import data from "./data.json";
 
 //https://codesandbox.io/s/8k2m333m92?from-embed
+
+const styles = theme => ({
+  brand: {
+    fontFamily: "Pacifico",
+    fontSize: "9rem"
+  },
+  button: {
+    textTransform: "inherit",
+    margin: "0.6rem",
+    fontSize: "1.2rem",
+    backgroundColor: theme.palette.secondary.main
+  },
+  login: {
+    backgroundColor: theme.palette.secondary.main
+  },
+  lead: {
+    fontSize: "1.3rem"
+  }
+});
 
 class Rectangle extends React.Component {
   handleChange = e => {
@@ -37,7 +60,8 @@ class Rectangle extends React.Component {
         onTransformEnd={this.handleChange}
         draggable
         stroke={this.props.stroke}
-        strokeWidth={2}
+        strokeWidth={3}
+        strokeEnabled={this.props.strokeEnabled}
         strokeScaleEnabled={false}
       />
     );
@@ -140,7 +164,9 @@ export default class Annoation extends Component {
       width: 100,
       height: 100,
       fill: "rgba(255,255,0, 0.35)",
-      name: `rect${this.state.rectangles.length + 1}`
+      name: `rect${this.state.rectangles.length + 1}`,
+      stroke: "rgba(239, 170, 21, 1)",
+      strokeEnabled: false
     };
 
     let rects = this.state.rectangles;
@@ -166,11 +192,11 @@ export default class Annoation extends Component {
       if (i === Number(index)) {
         selComment.classList.add("selected-comment");
 
-        let strokeColor = rects[i - 1].fill.replace("0.35", "1");
-        rects[i - 1].stroke = strokeColor;
+        //let strokeColor = rects[i - 1].fill.replace("0.35", "1");
+        rects[i - 1].strokeEnabled = true;
       } else {
         selComment.classList.remove("selected-comment");
-        rects[i - 1].stroke = "";
+        rects[i - 1].strokeEnabled = false;
       }
     }
   };
@@ -188,13 +214,24 @@ export default class Annoation extends Component {
       return value !== rect;
     });
 
+    for (let i = 0; i < filteredRect.length; i++) {
+      filteredRect[i].name = `rect${i + 1}`;
+    }
+
     var filteredComm = this.state.comments.filter(function(value, index) {
       return indexRect !== index;
     });
 
+    let index = name[name.length - 1];
+    console.log(document.getElementById(`comment${index}`));
+    document
+      .getElementById(`comment${index}`)
+      .classList.remove("selected-comment");
+
     this.setState({
       rectangles: filteredRect,
-      comments: filteredComm
+      comments: filteredComm,
+      selectedShapeName: ""
     });
   };
 
@@ -239,18 +276,20 @@ export default class Annoation extends Component {
             />
           </Layer>
         </Stage>
-        <button type="button" onClick={this.addNewRect}>
-          Add
-        </button>
-        <button type="button" onClick={this.removeRect}>
-          Remove
-        </button>
-        <div>
-          {this.state.comments.map((comm, i) => (
-            <div id={`comment${i + 1}`} className="">
-              {comm}
-            </div>
-          ))}
+        <div className="annoationMenu">
+          <button type="button" onClick={this.addNewRect}>
+            Add
+          </button>
+          <button type="button" onClick={this.removeRect}>
+            Remove
+          </button>
+          <div>
+            {this.state.comments.map((comm, i) => (
+              <div id={`comment${i + 1}`} className="">
+                {comm}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

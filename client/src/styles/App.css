@@ -40,10 +40,9 @@ select:-webkit-autofill {
 .annoation-layer {
   position: absolute;
   top: 0;
-  padding-top: 5rem;
+  margin-top: 8.7rem;
 }
 
 .selected-comment {
   color: red;
 }
-
