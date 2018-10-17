@@ -46,6 +46,4 @@ select:-webkit-autofill {
 .selected-comment {
   color: red;
 }
-.not-selected-comment {
-  color: white;
-}
+

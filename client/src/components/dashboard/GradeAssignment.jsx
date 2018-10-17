@@ -2,35 +2,16 @@ import React, { Component } from "react";
 
 import { Document, Page } from "react-pdf";
 
-import { Stage, Layer, Rect, Text, Line } from "react-konva";
-import Konva from "konva";
-import TransformerComponent from "../common/TransformerComponent";
+import Annoation from "../common/Annoation";
 
-var sample = require("./sample.pdf");
-
-const highlightPattern = (text, pattern) => {
-  const splitText = text.split(pattern);
-  console.log(splitText);
-  if (splitText.length <= 1) {
-    return text;
-  }
-
-  const matches = text.match(pattern);
-
-  return splitText.reduce(
-    (arr, element, index) =>
-      matches[index]
-        ? [...arr, element, <mark>{matches[index]}</mark>]
-        : [...arr, element],
-    []
-  );
-};
+var sample = require("./sample2.pdf");
 
 export default class GradeAssignment extends Component {
   state = {
     numPages: null,
     pageNumber: 1,
-    searchText: ""
+    pageWidth: 600,
+    pageHeight: 750
   };
 
   onDocumentLoad = ({ numPages }) => {
@@ -45,6 +26,14 @@ export default class GradeAssignment extends Component {
     });
   };
 
+  onPageLoadSuccess = page => {
+    console.log(page.originalHeight);
+    this.setState({
+      pageWidth: page.originalWidth,
+      pageHeight: page.originalHeight
+    });
+  };
+
   changePage = offset =>
     this.setState(prevState => ({
       pageNumber: prevState.pageNumber + offset
@@ -54,32 +43,25 @@ export default class GradeAssignment extends Component {
 
   nextPage = () => this.changePage(1);
 
-  makeTextRenderer = searchText => textItem =>
-    highlightPattern(textItem.str, searchText);
+  //componentDidUpdate(old) {}
 
-  onChange = event => this.setState({ searchText: event.target.value });
+  //let pdfWidth = document.getElementById("foo").offsetWidth;
 
   render() {
-    const { numPages, pageNumber, searchText } = this.state;
-
-    const CANVAS_VIRTUAL_WIDTH = 612;
-    const CANVAS_VIRTUAL_HEIGHT = 796;
-
-    const scale = Math.min(
-      window.innerWidth / CANVAS_VIRTUAL_WIDTH,
-      window.innerHeight / CANVAS_VIRTUAL_HEIGHT
-    );
+    const { numPages, pageNumber, pageWidth, pageHeight } = this.state;
 
     const react_pdf = (
       <div>
         <Document file={sample} onLoadSuccess={this.onDocumentLoadSuccess}>
           <Page
             pageNumber={pageNumber}
-            renderAnnotations={true}
             renderInteractiveForms={true}
             renderMode="svg"
             className="pdfpage"
-            customTextRenderer={this.makeTextRenderer(searchText)}
+            inputRef={ref => {
+              this.myPage = ref;
+            }}
+            onLoadSuccess={this.onPageLoadSuccess}
           />
         </Document>
         <p>
@@ -106,7 +88,7 @@ export default class GradeAssignment extends Component {
       <div>
         <div>{react_pdf}</div>
 
-        <TransformerComponent />
+        <Annoation stageWidth={pageWidth} stageHeight={pageHeight} />
       </div>
     );
   }

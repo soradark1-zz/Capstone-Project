@@ -36,6 +36,9 @@ class Rectangle extends React.Component {
         onDragEnd={this.handleChange}
         onTransformEnd={this.handleChange}
         draggable
+        stroke={this.props.stroke}
+        strokeWidth={2}
+        strokeScaleEnabled={false}
       />
     );
   }
@@ -81,14 +84,18 @@ class TransformerComponent extends React.Component {
   }
 }
 
-export default class App extends Component {
+export default class Annoation extends Component {
   state = {
     rectangles: data.rectangles,
     comments: data.comments,
     commentColor: "white",
-    selectedShapeName: ""
+    selectedShapeName: "",
+    scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
   };
+
   handleStageMouseDown = e => {
+    this.handleStageClick(e);
+
     // clicked on stage - cler selection
     if (e.target === e.target.getStage()) {
       this.setState({
@@ -149,18 +156,21 @@ export default class App extends Component {
 
   handleStageClick = e => {
     let name = e.target.name();
-    console.log(name);
-    if (name === undefined) return;
+    console.log(typeof e.target);
+    if (name === undefined || !name.includes("rect")) return;
     let index = name[name.length - 1];
+    let rects = this.state.rectangles;
 
-    for (var i = 1; i < this.state.comments.length + 1; i++) {
+    for (let i = 1; i < this.state.comments.length + 1; i++) {
       let selComment = document.getElementById(`comment${i}`);
       if (i === Number(index)) {
-        console.log(i);
         selComment.classList.add("selected-comment");
+
+        let strokeColor = rects[i - 1].fill.replace("0.35", "1");
+        rects[i - 1].stroke = strokeColor;
       } else {
-        console.log(i, " != ", index);
         selComment.classList.remove("selected-comment");
+        rects[i - 1].stroke = "";
       }
     }
   };
@@ -189,28 +199,29 @@ export default class App extends Component {
   };
 
   sizeOfStage = () => {
-    if (window.innerWidth > 612) {
-      return 1;
-    }
-    return 0.5;
+    this.setState({
+      scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
+    });
   };
 
   render() {
-    //console.log(this.state);
+    //console.log(this.props);
+
+    const { scale } = this.state;
+    const { stageWidth, stageHeight } = this.props;
+    window.addEventListener("resize", this.sizeOfStage);
     return (
       <div>
         <Stage
           className="annoation-layer"
-          width={612}
-          height={796}
-          scaleX={this.sizeOfStage()}
-          scaleY={this.sizeOfStage()}
+          width={stageWidth * scale}
+          height={stageHeight * scale}
+          scaleX={scale}
+          scaleY={scale}
           onMouseDown={this.handleStageMouseDown}
-          onClick={this.handleStageClick}
-          onMouseOut={() => {
-            this.setState({
-              commentColor: "white"
-            });
+          onTap={this.handleStageMouseDown}
+          ref={node => {
+            this.stage = node;
           }}
         >
           <Layer>
