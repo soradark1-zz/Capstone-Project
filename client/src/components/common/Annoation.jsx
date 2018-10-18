@@ -9,21 +9,19 @@ import data from "./data.json";
 //https://codesandbox.io/s/8k2m333m92?from-embed
 
 const styles = theme => ({
-  brand: {
-    fontFamily: "Pacifico",
-    fontSize: "9rem"
+  annoationPlacement: {
+    position: "absolute",
+    top: 0,
+    marginTop: "8.7rem"
+  },
+  annoationDisplay: {
+    display: "flex"
   },
   button: {
     textTransform: "inherit",
     margin: "0.6rem",
     fontSize: "1.2rem",
     backgroundColor: theme.palette.secondary.main
-  },
-  login: {
-    backgroundColor: theme.palette.secondary.main
-  },
-  lead: {
-    fontSize: "1.3rem"
   }
 });
 
@@ -108,7 +106,7 @@ class TransformerComponent extends React.Component {
   }
 }
 
-export default class Annoation extends Component {
+class Annoation extends Component {
   state = {
     rectangles: data.rectangles,
     comments: data.comments,
@@ -246,52 +244,68 @@ export default class Annoation extends Component {
 
     const { scale } = this.state;
     const { stageWidth, stageHeight } = this.props;
+    const { classes } = this.props;
+
     window.addEventListener("resize", this.sizeOfStage);
     return (
-      <div>
-        <Stage
-          className="annoation-layer"
-          width={stageWidth * scale}
-          height={stageHeight * scale}
-          scaleX={scale}
-          scaleY={scale}
-          onMouseDown={this.handleStageMouseDown}
-          onTap={this.handleStageMouseDown}
-          ref={node => {
-            this.stage = node;
-          }}
-        >
-          <Layer>
-            {this.state.rectangles.map((rect, i) => (
-              <Rectangle
-                key={i}
-                {...rect}
-                onTransform={newProps => {
-                  this.handleRectChange(i, newProps);
-                }}
+      <div className={classNames(classes.annoationPlacement)}>
+        <div className={classNames(classes.annoationDisplay)}>
+          <Stage
+            className=""
+            width={stageWidth * scale}
+            height={stageHeight * scale}
+            scaleX={scale}
+            scaleY={scale}
+            onMouseDown={this.handleStageMouseDown}
+            onTap={this.handleStageMouseDown}
+            ref={node => {
+              this.stage = node;
+            }}
+          >
+            <Layer>
+              {this.state.rectangles.map((rect, i) => (
+                <Rectangle
+                  key={i}
+                  {...rect}
+                  onTransform={newProps => {
+                    this.handleRectChange(i, newProps);
+                  }}
+                />
+              ))}
+              <TransformerComponent
+                selectedShapeName={this.state.selectedShapeName}
               />
-            ))}
-            <TransformerComponent
-              selectedShapeName={this.state.selectedShapeName}
-            />
-          </Layer>
-        </Stage>
-        <div className="annoationMenu">
-          <button type="button" onClick={this.addNewRect}>
-            Add
-          </button>
-          <button type="button" onClick={this.removeRect}>
-            Remove
-          </button>
-          <div>
-            {this.state.comments.map((comm, i) => (
-              <div id={`comment${i + 1}`} className="">
-                {comm}
-              </div>
-            ))}
+            </Layer>
+          </Stage>
+          <div className="annoationMenu">
+            <Button
+              variant="contained"
+              onClick={this.addNewRect}
+              className={classNames(classes.button)}
+            >
+              Add
+            </Button>
+
+            <Button
+              variant="contained"
+              disabled={this.state.selectedShapeName === ""}
+              onClick={this.removeRect}
+              className={classNames(classes.button)}
+            >
+              Remove
+            </Button>
+            <div>
+              {this.state.comments.map((comm, i) => (
+                <div id={`comment${i + 1}`} className="">
+                  {comm}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
     );
   }
 }
+
+export default withStyles(styles, { withTheme: true })(Annoation);
