@@ -7,6 +7,8 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 
+import data from "../common/data.json";
+
 var sample = require("./sample2.pdf");
 
 const styles = theme => ({
@@ -111,7 +113,11 @@ class GradeAssignment extends Component {
       <div>
         <div>{react_pdf}</div>
 
-        <Annoation stageWidth={pageWidth} stageHeight={pageHeight} />
+        <Annoation
+          stageWidth={pageWidth}
+          stageHeight={pageHeight}
+          annoations={data.pages[pageNumber - 1]}
+        />
       </div>
     );
   }

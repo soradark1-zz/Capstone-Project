@@ -4,8 +4,6 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 
-import data from "./data.json";
-
 //https://codesandbox.io/s/8k2m333m92?from-embed
 
 const styles = theme => ({
@@ -67,16 +65,26 @@ class Rectangle extends React.Component {
 }
 
 class TransformerComponent extends React.Component {
+  state = {
+    selectedShapeName: this.props.selectedShapeName
+  };
+
   componentDidMount() {
     this.checkNode();
   }
-  componentDidUpdate() {
-    this.checkNode();
+  componentDidUpdate(prevProps) {
+    if (prevProps.selectedShapeName === this.props.selectedShapeName) {
+      console.log(prevProps, this.props);
+      this.checkNode();
+    }
   }
+
   checkNode() {
     // here we need to manually attach or detach Transformer node
     const stage = this.transformer.getStage();
     const { selectedShapeName } = this.props;
+
+    console.log("UPDATED", selectedShapeName);
 
     const selectedNode = stage.findOne("." + selectedShapeName);
     // do nothing if selected node is already attached
@@ -108,16 +116,29 @@ class TransformerComponent extends React.Component {
 
 class Annoation extends Component {
   state = {
-    rectangles: data.rectangles,
-    comments: data.comments,
-    commentColor: "white",
+    rectangles: this.props.annoations.rectangles,
     selectedShapeName: "",
     scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
   };
 
-  handleStageMouseDown = e => {
-    this.handleStageClick(e);
+  componentWillUpdate(nextProps, nextState) {
+    if (nextProps.annoations !== this.props.annoations) {
+      this.setState(
+        {
+          rectangles: nextProps.annoations.rectangles,
+          selecedShapeName: ""
+        },
+        () => {
+          this.updateHighlight("");
+          //this.transformer.transformer.detach();
+          console.log(this.transformer);
+        }
+      );
+      //this.updateHighlight("");
+    }
+  }
 
+  handleStageMouseDown = e => {
     // clicked on stage - cler selection
     if (e.target === e.target.getStage()) {
       this.setState({
@@ -125,6 +146,7 @@ class Annoation extends Component {
       });
       return;
     }
+
     // clicked on transformer - do nothing
     const clickedOnTransformer =
       e.target.getParent().className === "Transformer";
@@ -134,6 +156,7 @@ class Annoation extends Component {
 
     // find clicked rect by its name
     const name = e.target.name();
+    this.updateHighlight(name);
     const rect = this.state.rectangles.find(r => r.name === name);
     if (rect) {
       this.setState({
@@ -164,28 +187,35 @@ class Annoation extends Component {
       fill: "rgba(255,255,0, 0.35)",
       name: `rect${this.state.rectangles.length + 1}`,
       stroke: "rgba(239, 170, 21, 1)",
-      strokeEnabled: false
+      strokeEnabled: false,
+      comment: "This is a brand new comment!"
     };
 
     let rects = this.state.rectangles;
     rects.push(newRect);
-    let comms = this.state.comments;
-    comms.push("This is a brand new comment!");
 
     this.setState({
-      rectangles: rects,
-      comments: comms
+      rectangles: rects
     });
   };
 
-  handleStageClick = e => {
-    let name = e.target.name();
-    console.log(typeof e.target);
-    if (name === undefined || !name.includes("rect")) return;
-    let index = name[name.length - 1];
+  updateHighlight = name => {
     let rects = this.state.rectangles;
 
-    for (let i = 1; i < this.state.comments.length + 1; i++) {
+    //Resets all highlights to none
+    if (name === "") {
+      for (let i = 1; i < this.state.rectangles.length + 1; i++) {
+        let selComment = document.getElementById(`comment${i}`);
+        selComment.classList.remove("selected-comment");
+        rects[i - 1].strokeEnabled = false;
+      }
+      return;
+    }
+
+    //Highlights selected annoation
+    let index = name.slice(4);
+    console.log(name);
+    for (let i = 1; i < this.state.rectangles.length + 1; i++) {
       let selComment = document.getElementById(`comment${i}`);
       if (i === Number(index)) {
         selComment.classList.add("selected-comment");
@@ -216,19 +246,15 @@ class Annoation extends Component {
       filteredRect[i].name = `rect${i + 1}`;
     }
 
-    var filteredComm = this.state.comments.filter(function(value, index) {
-      return indexRect !== index;
-    });
-
-    let index = name[name.length - 1];
-    console.log(document.getElementById(`comment${index}`));
+    //let index = name.splice(4);
+    console.log(document.getElementById(`comment${indexRect + 1}`));
     document
-      .getElementById(`comment${index}`)
+      .getElementById(`comment${indexRect + 1}`)
       .classList.remove("selected-comment");
 
     this.setState({
       rectangles: filteredRect,
-      comments: filteredComm,
+      //comments: filteredComm,
       selectedShapeName: ""
     });
   };
@@ -274,12 +300,16 @@ class Annoation extends Component {
               ))}
               <TransformerComponent
                 selectedShapeName={this.state.selectedShapeName}
+                ref={node => {
+                  this.transformer = node;
+                }}
               />
             </Layer>
           </Stage>
           <div className="annoationMenu">
             <Button
               variant="contained"
+              disabled={this.state.rectangles.length >= 20}
               onClick={this.addNewRect}
               className={classNames(classes.button)}
             >
@@ -295,9 +325,9 @@ class Annoation extends Component {
               Remove
             </Button>
             <div>
-              {this.state.comments.map((comm, i) => (
+              {this.state.rectangles.map((rect, i) => (
                 <div id={`comment${i + 1}`} className="">
-                  {comm}
+                  {i + 1}. {rect.comment}
                 </div>
               ))}
             </div>

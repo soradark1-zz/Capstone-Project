@@ -1,4 +1,58 @@
 {
+  "pages": [
+    {
+      "rectangles": [
+        {
+          "x": 10,
+          "y": 200,
+          "width": 100,
+          "height": 100,
+          "fill": "rgba(255, 0, 0, 0.35)",
+          "name": "rect1",
+          "stroke": "rgba(255, 0, 0, 1)",
+          "strokeEnabled": false,
+          "comment": "This is a comment"
+        },
+        {
+          "x": 10,
+          "y": 350,
+          "width": 100,
+          "height": 100,
+          "fill": "rgba(0, 0, 255, 0.35)",
+          "name": "rect2",
+          "stroke": "rgba(0, 0, 255, 1)",
+          "strokeEnabled": false,
+          "comment": "Is this a comment? yes!"
+        },
+        {
+          "x": 10,
+          "y": 500,
+          "width": 100,
+          "height": 100,
+          "fill": "rgba(0, 255, 0, 0.35)",
+          "name": "rect3",
+          "stroke": "rgba(21, 119, 41, 1)",
+          "strokeEnabled": false,
+          "comment": "Are you even reading this?!"
+        }
+      ]
+    },
+    {
+      "rectangles": [
+        {
+          "x": 10,
+          "y": 200,
+          "width": 100,
+          "height": 100,
+          "fill": "rgba(255, 0, 0, 0.35)",
+          "name": "rect1",
+          "stroke": "rgba(255, 0, 0, 1)",
+          "strokeEnabled": false,
+          "comment": "This is a comment"
+        }
+      ]
+    }
+  ],
   "rectangles": [
     {
       "x": 10,
@@ -8,7 +62,8 @@
       "fill": "rgba(255, 0, 0, 0.35)",
       "name": "rect1",
       "stroke": "rgba(255, 0, 0, 1)",
-      "strokeEnabled": false
+      "strokeEnabled": false,
+      "comment": "This is a comment"
     },
     {
       "x": 10,
@@ -18,7 +73,8 @@
       "fill": "rgba(0, 0, 255, 0.35)",
       "name": "rect2",
       "stroke": "rgba(0, 0, 255, 1)",
-      "strokeEnabled": false
+      "strokeEnabled": false,
+      "comment": "Is this a comment? yes!"
     },
     {
       "x": 10,
@@ -28,7 +84,8 @@
       "fill": "rgba(0, 255, 0, 0.35)",
       "name": "rect3",
       "stroke": "rgba(21, 119, 41, 1)",
-      "strokeEnabled": false
+      "strokeEnabled": false,
+      "comment": "Are you even reading this?!"
     }
   ],
   "comments": [
