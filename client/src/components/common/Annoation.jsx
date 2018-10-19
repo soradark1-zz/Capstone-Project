@@ -73,18 +73,13 @@ class TransformerComponent extends React.Component {
     this.checkNode();
   }
   componentDidUpdate(prevProps) {
-    if (prevProps.selectedShapeName === this.props.selectedShapeName) {
-      console.log(prevProps, this.props);
-      this.checkNode();
-    }
+    this.checkNode();
   }
 
   checkNode() {
     // here we need to manually attach or detach Transformer node
     const stage = this.transformer.getStage();
     const { selectedShapeName } = this.props;
-
-    console.log("UPDATED", selectedShapeName);
 
     const selectedNode = stage.findOne("." + selectedShapeName);
     // do nothing if selected node is already attached
@@ -121,17 +116,18 @@ class Annoation extends Component {
     scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
   };
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.annoations !== this.props.annoations) {
+      this.props.updateAnnoations({ rectangles: this.state.rectangles });
       this.setState(
         {
           rectangles: nextProps.annoations.rectangles,
-          selecedShapeName: ""
+          selectedShapeName: ""
         },
         () => {
           this.updateHighlight("");
-          //this.transformer.transformer.detach();
-          console.log(this.transformer);
+
+          console.log("Ann State", this.state);
         }
       );
       //this.updateHighlight("");

@@ -27,12 +27,44 @@ const styles = theme => ({
 });
 
 class GradeAssignment extends Component {
-  state = {
-    numPages: null,
-    pageNumber: 1,
-    pageWidth: 600,
-    pageHeight: 750
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      numPages: null,
+      pageNumber: 1,
+      pageWidth: 600,
+      pageHeight: 750,
+      annoations: data
+    };
+
+    this.updateAnnoations = this.updateAnnoations.bind(this);
+  }
+
+  updateAnnoations(updatedPage) {
+    let { annoations, pageNumber } = this.state;
+    /*updatedPage = {
+      rectangles: [
+        {
+          x: 10,
+          y: 350,
+          width: 100,
+          height: 100,
+          fill: "rgba(0, 0, 255, 0.35)",
+          name: "rect1",
+          stroke: "rgba(0, 0, 255, 1)",
+          strokeEnabled: false,
+          comment: "Is this a comment? yes!"
+        }
+      ]
+    };*/
+    annoations.pages[pageNumber - 1] = updatedPage;
+
+    /*this.setState({
+      //annoations
+    });*/
+
+    console.log("Grade State", this.state);
+  }
 
   onDocumentLoad = ({ numPages }) => {
     this.setState({ numPages });
@@ -73,6 +105,13 @@ class GradeAssignment extends Component {
     const react_pdf = (
       <div>
         <div className={classNames(classes.pdfMenu)}>
+          <Button
+            variant="contained"
+            onClick={this.updateAnnoations}
+            className={classNames(classes.button)}
+          >
+            UpdateTHING
+          </Button>
           <Button
             variant="contained"
             disabled={pageNumber <= 1}
@@ -116,7 +155,8 @@ class GradeAssignment extends Component {
         <Annoation
           stageWidth={pageWidth}
           stageHeight={pageHeight}
-          annoations={data.pages[pageNumber - 1]}
+          annoations={this.state.annoations.pages[pageNumber - 1]}
+          updateAnnoations={this.updateAnnoations}
         />
       </div>
     );
