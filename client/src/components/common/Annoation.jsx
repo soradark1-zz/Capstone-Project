@@ -56,7 +56,7 @@ class Rectangle extends React.Component {
         onTransformEnd={this.handleChange}
         draggable
         stroke={this.props.stroke}
-        strokeWidth={3}
+        strokeWidth={2}
         strokeEnabled={this.props.strokeEnabled}
         strokeScaleEnabled={false}
       />
@@ -118,24 +118,42 @@ class Annoation extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.annoations !== this.props.annoations) {
-      this.props.updateAnnoations({ rectangles: this.state.rectangles });
-      this.setState(
-        {
-          rectangles: nextProps.annoations.rectangles,
-          selectedShapeName: ""
-        },
-        () => {
-          this.updateHighlight("");
-
-          console.log("Ann State", this.state);
-        }
+      //Updates the current page's annoations before loading next page
+      //Does not save those changes to database
+      this.props.updateAnnoations(
+        { rectangles: this.state.rectangles },
+        this.props.pageNumber
       );
-      //this.updateHighlight("");
+
+      //Next page doesn't have any annoations
+      if (nextProps.annoations === undefined) {
+        this.setState(
+          {
+            rectangles: [],
+            selectedShapeName: ""
+          },
+          () => {
+            this.updateHighlight("");
+          }
+        );
+      }
+      //Next page does have annoations already
+      else {
+        this.setState(
+          {
+            rectangles: nextProps.annoations.rectangles,
+            selectedShapeName: ""
+          },
+          () => {
+            this.updateHighlight("");
+          }
+        );
+      }
     }
   }
 
   handleStageMouseDown = e => {
-    // clicked on stage - cler selection
+    // clicked on stage - clear selection
     if (e.target === e.target.getStage()) {
       this.setState({
         selectedShapeName: ""

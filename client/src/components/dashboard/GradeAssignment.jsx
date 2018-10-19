@@ -7,7 +7,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 
-import data from "../common/data.json";
+import data from "../common/data2.json";
 
 var sample = require("./sample2.pdf");
 
@@ -40,8 +40,8 @@ class GradeAssignment extends Component {
     this.updateAnnoations = this.updateAnnoations.bind(this);
   }
 
-  updateAnnoations(updatedPage) {
-    let { annoations, pageNumber } = this.state;
+  updateAnnoations(updatedPage, index) {
+    let { annoations } = this.state;
     /*updatedPage = {
       rectangles: [
         {
@@ -57,11 +57,11 @@ class GradeAssignment extends Component {
         }
       ]
     };*/
-    annoations.pages[pageNumber - 1] = updatedPage;
+    annoations.pages[index - 1] = updatedPage;
 
-    /*this.setState({
-      //annoations
-    });*/
+    this.setState({
+      annoations
+    });
 
     console.log("Grade State", this.state);
   }
@@ -107,13 +107,6 @@ class GradeAssignment extends Component {
         <div className={classNames(classes.pdfMenu)}>
           <Button
             variant="contained"
-            onClick={this.updateAnnoations}
-            className={classNames(classes.button)}
-          >
-            UpdateTHING
-          </Button>
-          <Button
-            variant="contained"
             disabled={pageNumber <= 1}
             onClick={this.previousPage}
             className={classNames(classes.button)}
@@ -157,6 +150,7 @@ class GradeAssignment extends Component {
           stageHeight={pageHeight}
           annoations={this.state.annoations.pages[pageNumber - 1]}
           updateAnnoations={this.updateAnnoations}
+          pageNumber={pageNumber}
         />
       </div>
     );
