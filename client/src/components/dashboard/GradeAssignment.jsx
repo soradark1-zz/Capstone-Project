@@ -6,10 +6,13 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 import data from "../common/data2.json";
 
 var sample = require("./sample2.pdf");
+
+let isLoaded = false;
 
 const styles = theme => ({
   button: {
@@ -34,6 +37,7 @@ class GradeAssignment extends Component {
       pageNumber: 1,
       pageWidth: 600,
       pageHeight: 750,
+      isLoaded: false,
       annoations: data
     };
 
@@ -70,11 +74,12 @@ class GradeAssignment extends Component {
     this.setState({ numPages });
   };
 
-  onDocumentLoadSuccess = document => {
-    const { numPages } = document;
+  onDocumentLoadSuccess = doc => {
+    const { numPages } = doc;
     this.setState({
       numPages,
-      pageNumber: 1
+      pageNumber: 1,
+      isLoaded: true
     });
   };
 
@@ -100,11 +105,17 @@ class GradeAssignment extends Component {
   //let pdfWidth = document.getElementById("foo").offsetWidth;
 
   render() {
-    const { numPages, pageNumber, pageWidth, pageHeight } = this.state;
+    const {
+      numPages,
+      pageNumber,
+      pageWidth,
+      pageHeight,
+      isLoaded
+    } = this.state;
     const { classes } = this.props;
     const react_pdf = (
       <div>
-        <div className={classNames(classes.pdfMenu)}>
+        <div className={classNames(isLoaded ? classes.pdfMenu : "no-display")}>
           <Button
             variant="contained"
             disabled={pageNumber <= 1}
@@ -126,7 +137,11 @@ class GradeAssignment extends Component {
             <Icon className="fas fa-angle-right" />
           </Button>
         </div>
-        <Document file={sample} onLoadSuccess={this.onDocumentLoadSuccess}>
+        <Document
+          file={sample}
+          onLoadSuccess={this.onDocumentLoadSuccess}
+          loading={<CircularProgress color="secondary" size={50} />}
+        >
           <Page
             pageNumber={pageNumber}
             renderInteractiveForms={true}
@@ -151,6 +166,7 @@ class GradeAssignment extends Component {
           annoations={this.state.annoations.pages[pageNumber - 1]}
           updateAnnoations={this.updateAnnoations}
           pageNumber={pageNumber}
+          isLoaded={isLoaded}
         />
       </div>
     );

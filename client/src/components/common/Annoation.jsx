@@ -4,6 +4,16 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import Typography from "@material-ui/core/Typography";
+
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import TextField from "@material-ui/core/TextField";
+
 //https://codesandbox.io/s/8k2m333m92?from-embed
 
 const styles = theme => ({
@@ -20,6 +30,16 @@ const styles = theme => ({
     margin: "0.6rem",
     fontSize: "1.2rem",
     backgroundColor: theme.palette.secondary.main
+  },
+  commentList: {
+    width: "20rem"
+  },
+  commentPrev: {
+    maxWidth: "14.5rem"
+  },
+  annoationMenu: {
+    marginLeft: "2rem",
+    marginTop: "-3.7rem"
   }
 });
 
@@ -155,6 +175,7 @@ class Annoation extends Component {
   handleStageMouseDown = e => {
     // clicked on stage - clear selection
     if (e.target === e.target.getStage()) {
+      this.updateHighlight("");
       this.setState({
         selectedShapeName: ""
       });
@@ -192,6 +213,16 @@ class Annoation extends Component {
     this.setState({ rectangles });
   };
 
+  handleCommentChange = (evt, index) => {
+    const rectangles = this.state.rectangles;
+    rectangles[index] = {
+      ...rectangles[index],
+      comment: evt.target.value
+    };
+
+    this.setState({ rectangles });
+  };
+
   addNewRect = () => {
     const newRect = {
       x: 10,
@@ -219,8 +250,8 @@ class Annoation extends Component {
     //Resets all highlights to none
     if (name === "") {
       for (let i = 1; i < this.state.rectangles.length + 1; i++) {
-        let selComment = document.getElementById(`comment${i}`);
-        selComment.classList.remove("selected-comment");
+        //let selComment = document.getElementById(`comment${i}`);
+        //selComment.classList.remove("selected-comment");
         rects[i - 1].strokeEnabled = false;
       }
       return;
@@ -230,14 +261,14 @@ class Annoation extends Component {
     let index = name.slice(4);
     console.log(name);
     for (let i = 1; i < this.state.rectangles.length + 1; i++) {
-      let selComment = document.getElementById(`comment${i}`);
+      //let selComment = document.getElementById(`comment${i}`);
       if (i === Number(index)) {
-        selComment.classList.add("selected-comment");
+        //selComment.classList.add("selected-comment");
 
         //let strokeColor = rects[i - 1].fill.replace("0.35", "1");
         rects[i - 1].strokeEnabled = true;
       } else {
-        selComment.classList.remove("selected-comment");
+        //selComment.classList.remove("selected-comment");
         rects[i - 1].strokeEnabled = false;
       }
     }
@@ -250,7 +281,7 @@ class Annoation extends Component {
     const name = this.state.selectedShapeName;
     const rect = this.state.rectangles.find(r => r.name === name);
 
-    const indexRect = this.state.rectangles.indexOf(rect);
+    // /const indexRect = this.state.rectangles.indexOf(rect);
 
     var filteredRect = this.state.rectangles.filter(function(value) {
       return value !== rect;
@@ -260,15 +291,8 @@ class Annoation extends Component {
       filteredRect[i].name = `rect${i + 1}`;
     }
 
-    //let index = name.splice(4);
-    console.log(document.getElementById(`comment${indexRect + 1}`));
-    document
-      .getElementById(`comment${indexRect + 1}`)
-      .classList.remove("selected-comment");
-
     this.setState({
       rectangles: filteredRect,
-      //comments: filteredComm,
       selectedShapeName: ""
     });
   };
@@ -282,13 +306,17 @@ class Annoation extends Component {
   render() {
     //console.log(this.props);
 
-    const { scale } = this.state;
-    const { stageWidth, stageHeight } = this.props;
+    const { scale, selectedShapeName } = this.state;
+    const { stageWidth, stageHeight, isLoaded } = this.props;
     const { classes } = this.props;
 
     window.addEventListener("resize", this.sizeOfStage);
     return (
-      <div className={classNames(classes.annoationPlacement)}>
+      <div
+        className={classNames(
+          isLoaded ? classes.annoationPlacement : "no-display"
+        )}
+      >
         <div className={classNames(classes.annoationDisplay)}>
           <Stage
             className=""
@@ -313,14 +341,14 @@ class Annoation extends Component {
                 />
               ))}
               <TransformerComponent
-                selectedShapeName={this.state.selectedShapeName}
+                selectedShapeName={selectedShapeName}
                 ref={node => {
                   this.transformer = node;
                 }}
               />
             </Layer>
           </Stage>
-          <div className="annoationMenu">
+          <div className={classNames(classes.annoationMenu)}>
             <Button
               variant="contained"
               disabled={this.state.rectangles.length >= 20}
@@ -332,18 +360,63 @@ class Annoation extends Component {
 
             <Button
               variant="contained"
-              disabled={this.state.selectedShapeName === ""}
+              disabled={selectedShapeName === ""}
               onClick={this.removeRect}
               className={classNames(classes.button)}
             >
               Remove
             </Button>
             <div>
-              {this.state.rectangles.map((rect, i) => (
-                <div id={`comment${i + 1}`} className="">
-                  {i + 1}. {rect.comment}
-                </div>
-              ))}
+              <div className={classNames(classes.commentList)}>
+                {this.state.rectangles.map((rect, i) => (
+                  <ExpansionPanel
+                    expanded={selectedShapeName === rect.name}
+                    id={`comment${i}`}
+                  >
+                    <ExpansionPanelSummary
+                      onClick={() => {
+                        console.log(rect);
+                        this.updateHighlight(rect.name);
+                        this.setState(
+                          {
+                            selectedShapeName: rect.name
+                          },
+                          () => {
+                            //this.updateHighlight(selectedShapeName);
+                          }
+                        );
+                      }}
+                    >
+                      <Typography
+                        className={classNames(classes.commentPrev)}
+                        color={
+                          selectedShapeName === rect.name
+                            ? "secondary"
+                            : "default"
+                        }
+                        noWrap
+                      >
+                        {selectedShapeName === `rect${i + 1}`
+                          ? `Comment ${i + 1}`
+                          : rect.comment}
+                      </Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                      <TextField
+                        margin="none"
+                        variant="standard"
+                        multiline
+                        fullWidth
+                        rowsMax="4"
+                        value={rect.comment}
+                        onChange={evt => {
+                          this.handleCommentChange(evt, i);
+                        }}
+                      />
+                    </ExpansionPanelDetails>
+                  </ExpansionPanel>
+                ))}
+              </div>
             </div>
           </div>
         </div>
