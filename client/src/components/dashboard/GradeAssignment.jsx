@@ -8,11 +8,9 @@ import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import data from "../common/data2.json";
+import data from "../common/data.json";
 
 var sample = require("./sample2.pdf");
-
-let isLoaded = false;
 
 const styles = theme => ({
   button: {
@@ -26,6 +24,12 @@ const styles = theme => ({
   },
   pageNumber: {
     margin: "auto"
+  },
+  loading: {
+    marginTop: "45vh",
+    marginLeft: "-25px",
+    position: "absolute",
+    top: 0
   }
 });
 
@@ -78,8 +82,8 @@ class GradeAssignment extends Component {
     const { numPages } = doc;
     this.setState({
       numPages,
-      pageNumber: 1,
-      isLoaded: true
+      pageNumber: 1
+      //isLoaded: true
     });
   };
 
@@ -87,7 +91,8 @@ class GradeAssignment extends Component {
     //console.log(page);
     this.setState({
       pageWidth: page.originalWidth,
-      pageHeight: page.originalHeight
+      pageHeight: page.originalHeight,
+      isLoaded: true
     });
   };
 
@@ -140,7 +145,13 @@ class GradeAssignment extends Component {
         <Document
           file={sample}
           onLoadSuccess={this.onDocumentLoadSuccess}
-          loading={<CircularProgress color="secondary" size={50} />}
+          loading={
+            <CircularProgress
+              className={classNames(classes.loading)}
+              color="secondary"
+              size={50}
+            />
+          }
         >
           <Page
             pageNumber={pageNumber}

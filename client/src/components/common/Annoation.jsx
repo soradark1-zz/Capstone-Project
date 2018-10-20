@@ -9,10 +9,15 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
 import TextField from "@material-ui/core/TextField";
+
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+
+import annoationColors from "../common/annoationColors.json";
 
 //https://codesandbox.io/s/8k2m333m92?from-embed
 
@@ -133,7 +138,8 @@ class Annoation extends Component {
   state = {
     rectangles: this.props.annoations.rectangles,
     selectedShapeName: "",
-    scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
+    scale: Math.min(window.innerWidth / this.props.stageWidth, 1),
+    colorSelected: 0
   };
 
   componentWillReceiveProps(nextProps) {
@@ -224,14 +230,15 @@ class Annoation extends Component {
   };
 
   addNewRect = () => {
+    const colorSelected = this.state.colorSelected;
     const newRect = {
       x: 10,
       y: 10,
       width: 100,
       height: 100,
-      fill: "rgba(255,255,0, 0.35)",
+      fill: annoationColors.colors[colorSelected].fill,
       name: `rect${this.state.rectangles.length + 1}`,
-      stroke: "rgba(239, 170, 21, 1)",
+      stroke: annoationColors.colors[colorSelected].stroke,
       strokeEnabled: false,
       comment: "This is a brand new comment!"
     };
@@ -303,6 +310,12 @@ class Annoation extends Component {
     });
   };
 
+  handleColorChange = evt => {
+    this.setState({
+      colorSelected: evt.target.value
+    });
+  };
+
   render() {
     //console.log(this.props);
 
@@ -349,6 +362,20 @@ class Annoation extends Component {
             </Layer>
           </Stage>
           <div className={classNames(classes.annoationMenu)}>
+            <FormControl>
+              <InputLabel>Color</InputLabel>
+              <Select
+                value={this.state.colorSelected}
+                onChange={this.handleColorChange}
+                input={<Input name="colorSelected" />}
+                autoWidth
+              >
+                <MenuItem value={0}>Red</MenuItem>
+                <MenuItem value={1}>Green</MenuItem>
+                <MenuItem value={2}>Blue</MenuItem>
+                <MenuItem value={3}>Yellow</MenuItem>
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               disabled={this.state.rectangles.length >= 20}
@@ -366,6 +393,7 @@ class Annoation extends Component {
             >
               Remove
             </Button>
+
             <div>
               <div className={classNames(classes.commentList)}>
                 {this.state.rectangles.map((rect, i) => (
