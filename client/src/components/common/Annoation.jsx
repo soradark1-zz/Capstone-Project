@@ -10,6 +10,7 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import Typography from "@material-ui/core/Typography";
 
 import TextField from "@material-ui/core/TextField";
+import Icon from "@material-ui/core/Icon";
 
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -32,7 +33,9 @@ const styles = theme => ({
   },
   button: {
     textTransform: "inherit",
-    margin: "0.6rem",
+    marginTop: "0.6rem",
+    marginBottom: "0.6rem",
+    marginLeft: "0.6rem",
     fontSize: "1.2rem",
     backgroundColor: theme.palette.secondary.main
   },
@@ -45,6 +48,9 @@ const styles = theme => ({
   annoationMenu: {
     marginLeft: "2rem",
     marginTop: "-3.7rem"
+  },
+  scrollHeight: {
+    height: "93%"
   }
 });
 
@@ -209,27 +215,31 @@ class Annoation extends Component {
       });
     }
   };
+
   handleRectChange = (index, newProps) => {
+    //Handles change of position and size of rectangles
     const rectangles = this.state.rectangles.concat();
     rectangles[index] = {
       ...rectangles[index],
       ...newProps
     };
 
-    this.setState({ rectangles });
-  };
+    //Sorts rectangles by their new positions
+    const rect = rectangles.find(r => r.name === rectangles[index].name);
+    rectangles.sort(
+      (rect1, rect2) => (rect1.y > rect2.y ? 1 : rect2.y > rect1.y ? -1 : 0)
+    );
+    const rectIndex = rectangles.indexOf(rect);
+    rectangles.map((rect, i) => (rect.name = `rect${i + 1}`));
 
-  handleCommentChange = (evt, index) => {
-    const rectangles = this.state.rectangles;
-    rectangles[index] = {
-      ...rectangles[index],
-      comment: evt.target.value
-    };
-
-    this.setState({ rectangles });
+    this.setState({
+      rectangles,
+      selectedShapeName: `rect${rectIndex + 1}`
+    });
   };
 
   addNewRect = () => {
+    //Creates and adds new rectangle based on selected color
     const colorSelected = this.state.colorSelected;
     const newRect = {
       x: 10,
@@ -240,45 +250,23 @@ class Annoation extends Component {
       name: `rect${this.state.rectangles.length + 1}`,
       stroke: annoationColors.colors[colorSelected].stroke,
       strokeEnabled: false,
-      comment: "This is a brand new comment!"
+      comment: ""
     };
+    let rectangles = this.state.rectangles;
+    rectangles.push(newRect);
 
-    let rects = this.state.rectangles;
-    rects.push(newRect);
+    //Sorts all rectangles with new rectangle
+    const rect = rectangles.find(r => r.name === this.state.selectedShapeName);
+    rectangles.sort(
+      (rect1, rect2) => (rect1.y > rect2.y ? 1 : rect2.y > rect1.y ? -1 : 0)
+    );
+    const rectIndex = rectangles.indexOf(rect);
+    rectangles.map((rect, i) => (rect.name = `rect${i + 1}`));
 
     this.setState({
-      rectangles: rects
+      rectangles,
+      selectedShapeName: `rect${rectIndex + 1}`
     });
-  };
-
-  updateHighlight = name => {
-    let rects = this.state.rectangles;
-
-    //Resets all highlights to none
-    if (name === "") {
-      for (let i = 1; i < this.state.rectangles.length + 1; i++) {
-        //let selComment = document.getElementById(`comment${i}`);
-        //selComment.classList.remove("selected-comment");
-        rects[i - 1].strokeEnabled = false;
-      }
-      return;
-    }
-
-    //Highlights selected annoation
-    let index = name.slice(4);
-    console.log(name);
-    for (let i = 1; i < this.state.rectangles.length + 1; i++) {
-      //let selComment = document.getElementById(`comment${i}`);
-      if (i === Number(index)) {
-        //selComment.classList.add("selected-comment");
-
-        //let strokeColor = rects[i - 1].fill.replace("0.35", "1");
-        rects[i - 1].strokeEnabled = true;
-      } else {
-        //selComment.classList.remove("selected-comment");
-        rects[i - 1].strokeEnabled = false;
-      }
-    }
   };
 
   removeRect = () => {
@@ -287,8 +275,6 @@ class Annoation extends Component {
     }
     const name = this.state.selectedShapeName;
     const rect = this.state.rectangles.find(r => r.name === name);
-
-    // /const indexRect = this.state.rectangles.indexOf(rect);
 
     var filteredRect = this.state.rectangles.filter(function(value) {
       return value !== rect;
@@ -304,10 +290,28 @@ class Annoation extends Component {
     });
   };
 
-  sizeOfStage = () => {
-    this.setState({
-      scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
-    });
+  updateHighlight = name => {
+    let rects = this.state.rectangles;
+
+    //Resets all highlights to none
+    if (name === "") {
+      for (let i = 1; i < this.state.rectangles.length + 1; i++) {
+        rects[i - 1].strokeEnabled = false;
+      }
+      return;
+    }
+
+    //Highlights selected annoation
+    let index = name.slice(4);
+    console.log(name);
+    for (let i = 1; i < this.state.rectangles.length + 1; i++) {
+      if (i === Number(index)) {
+        rects[i - 1].strokeEnabled = true;
+      } else {
+        rects[i - 1].strokeEnabled = false;
+      }
+    }
+    document.getElementById(`comment${index}`).focus();
   };
 
   handleColorChange = evt => {
@@ -316,12 +320,35 @@ class Annoation extends Component {
     });
   };
 
-  render() {
-    //console.log(this.props);
+  handleCommentChange = (evt, index) => {
+    const rectangles = this.state.rectangles;
+    rectangles[index] = {
+      ...rectangles[index],
+      comment: evt.target.value
+    };
 
-    const { scale, selectedShapeName } = this.state;
+    this.setState({ rectangles });
+  };
+
+  sizeOfStage = () => {
+    this.setState({
+      scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
+    });
+  };
+
+  render() {
+    //console.log(styles);
+
+    const { scale, selectedShapeName, colorSelected } = this.state;
     const { stageWidth, stageHeight, isLoaded } = this.props;
     const { classes } = this.props;
+    const commentHeight = {
+      height: stageHeight
+    };
+
+    const colorSelectedStyle = {
+      color: annoationColors.colors[colorSelected].fill.replace("0.35", "1")
+    };
 
     window.addEventListener("resize", this.sizeOfStage);
     return (
@@ -368,12 +395,41 @@ class Annoation extends Component {
                 value={this.state.colorSelected}
                 onChange={this.handleColorChange}
                 input={<Input name="colorSelected" />}
+                style={colorSelectedStyle}
                 autoWidth
               >
-                <MenuItem value={0}>Red</MenuItem>
-                <MenuItem value={1}>Green</MenuItem>
-                <MenuItem value={2}>Blue</MenuItem>
-                <MenuItem value={3}>Yellow</MenuItem>
+                <MenuItem
+                  value={0}
+                  style={{
+                    color: annoationColors.colors[0].fill.replace("0.35", "1")
+                  }}
+                >
+                  Red
+                </MenuItem>
+                <MenuItem
+                  value={1}
+                  style={{
+                    color: annoationColors.colors[1].fill.replace("0.35", "1")
+                  }}
+                >
+                  Green
+                </MenuItem>
+                <MenuItem
+                  value={2}
+                  style={{
+                    color: annoationColors.colors[2].fill.replace("0.35", "1")
+                  }}
+                >
+                  Blue
+                </MenuItem>
+                <MenuItem
+                  value={3}
+                  style={{
+                    color: annoationColors.colors[3].fill.replace("0.35", "1")
+                  }}
+                >
+                  Yellow
+                </MenuItem>
               </Select>
             </FormControl>
             <Button
@@ -382,7 +438,7 @@ class Annoation extends Component {
               onClick={this.addNewRect}
               className={classNames(classes.button)}
             >
-              Add
+              <Icon className="fas fa-plus" />
             </Button>
 
             <Button
@@ -391,28 +447,25 @@ class Annoation extends Component {
               onClick={this.removeRect}
               className={classNames(classes.button)}
             >
-              Remove
+              <Icon className="fas fa-minus" />
             </Button>
 
-            <div>
+            <div
+              data-simplebar
+              data-simplebar-auto-hide="false"
+              className={"/*classNames(classes.scrollHeight)*/"}
+              style={commentHeight}
+            >
               <div className={classNames(classes.commentList)}>
                 {this.state.rectangles.map((rect, i) => (
-                  <ExpansionPanel
-                    expanded={selectedShapeName === rect.name}
-                    id={`comment${i}`}
-                  >
+                  <ExpansionPanel expanded={selectedShapeName === rect.name}>
                     <ExpansionPanelSummary
                       onClick={() => {
                         console.log(rect);
                         this.updateHighlight(rect.name);
-                        this.setState(
-                          {
-                            selectedShapeName: rect.name
-                          },
-                          () => {
-                            //this.updateHighlight(selectedShapeName);
-                          }
-                        );
+                        this.setState({
+                          selectedShapeName: rect.name
+                        });
                       }}
                     >
                       <Typography
@@ -431,11 +484,12 @@ class Annoation extends Component {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                       <TextField
+                        id={`comment${i + 1}`}
                         margin="none"
                         variant="standard"
                         multiline
                         fullWidth
-                        rowsMax="4"
+                        rowsMax="10"
                         value={rect.comment}
                         onChange={evt => {
                           this.handleCommentChange(evt, i);

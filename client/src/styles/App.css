@@ -50,3 +50,7 @@ select:-webkit-autofill {
 .no-display {
   display: none;
 }
+
+.simplebar-track.horizontal {
+  display: none;
+}
