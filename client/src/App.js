@@ -14,7 +14,7 @@ import PageNotFound from "./components/info/PageNotFound";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/dashboard/Dashboard";
-import CreateAssignment from "./components/forms/CreateAssignment";
+import CreateAssignment from "./components/dashboard/CreateAssignment";
 import GradeAssignment from "./components/dashboard/GradeAssignment";
 
 import compose from "recompose/compose";

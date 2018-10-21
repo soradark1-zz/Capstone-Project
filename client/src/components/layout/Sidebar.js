@@ -12,9 +12,9 @@ import Drawer from "@material-ui/core/Drawer";
 import List from "@material-ui/core/List";
 import Divider from "@material-ui/core/Divider";
 import Hidden from "@material-ui/core/Hidden";
-import IconButton from "@material-ui/core/IconButton";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+//import IconButton from "@material-ui/core/IconButton";
+//import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+//import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -26,6 +26,7 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
 
 import { toggleSidebar } from "../../actions/layoutActions";
+import { getUserClasses } from "../../actions/authActions";
 
 const drawerWidth = 240;
 
@@ -82,8 +83,13 @@ const styles = theme => ({
 class Sidebar extends React.Component {
   state = {
     drawer_open: true,
+    classes: [],
     class_open: false
   };
+
+  componentWillMount() {
+    this.setState({});
+  }
 
   // Class handles
   handleClick = () => {
@@ -92,7 +98,7 @@ class Sidebar extends React.Component {
 
   render() {
     const { open } = this.props.layout;
-    const { classes, theme } = this.props;
+    const { classes } = this.props;
 
     const drawerContent = (
       <div>

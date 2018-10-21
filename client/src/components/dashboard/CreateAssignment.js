@@ -113,6 +113,20 @@ class CreateAssignment extends Component {
             rows="4"
             rowsMax="4"
           />
+
+          <TextField
+            error={errors.name ? true : false}
+            label="Max Grade"
+            name="maxGrade"
+            value={this.state.maxGrade}
+            onChange={this.onChange}
+            className={classes.textField}
+            helperText={errors.name}
+            type="maxGrade"
+            margin="normal"
+            variant="outlined"
+          />
+
           <div>
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <DateTimePicker

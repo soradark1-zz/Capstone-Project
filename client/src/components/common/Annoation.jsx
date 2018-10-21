@@ -20,8 +20,6 @@ import Select from "@material-ui/core/Select";
 
 import annoationColors from "../common/annoationColors.json";
 
-//https://codesandbox.io/s/8k2m333m92?from-embed
-
 const styles = theme => ({
   annoationPlacement: {
     position: "absolute",
@@ -157,7 +155,7 @@ class Annoation extends Component {
         this.props.pageNumber
       );
 
-      //Next page doesn't have any annoations
+      //Next page doesn't have any annoations, make empty list
       if (nextProps.annoations === undefined) {
         this.setState(
           {
@@ -169,7 +167,7 @@ class Annoation extends Component {
           }
         );
       }
-      //Next page does have annoations already
+      //Next page does have annoations already, load those
       else {
         this.setState(
           {
