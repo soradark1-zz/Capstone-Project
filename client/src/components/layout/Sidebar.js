@@ -83,7 +83,7 @@ const styles = theme => ({
 class Sidebar extends React.Component {
   state = {
     drawer_open: true,
-    classes: [],
+    userEnrolledClasses: [],
     class_open: false
   };
 
@@ -98,7 +98,9 @@ class Sidebar extends React.Component {
 
   render() {
     const { open } = this.props.layout;
-    const { classes } = this.props;
+    const { classes, userEnrolledClasses } = this.props;
+
+    console.log(userEnrolledClasses);
 
     const drawerContent = (
       <div>
@@ -122,15 +124,11 @@ class Sidebar extends React.Component {
         </ListItem>
         <Collapse in={this.state.class_open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button className={classes.nested}>
-              <ListItemText inset primary="CSCE 482" />
-            </ListItem>
-            <ListItem button className={classes.nested}>
-              <ListItemText inset primary="CSCE 465" />
-            </ListItem>
-            <ListItem button className={classes.nested}>
-              <ListItemText inset primary="CSCE 420" />
-            </ListItem>
+            {userEnrolledClasses.map((userClass, i) => (
+              <ListItem button className={classes.nested}>
+                <ListItemText inset primary={userClass} />
+              </ListItem>
+            ))}
           </List>
         </Collapse>
 
@@ -223,7 +221,8 @@ Sidebar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  layout: state.layout
+  layout: state.layout,
+  userEnrolledClasses: state.auth.userEnrolledClasses
 });
 
 export default compose(

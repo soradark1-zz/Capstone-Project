@@ -7,7 +7,7 @@ import classes from "./classes.json";
 const initialState = {
   isAuthenticated: false,
   user: {},
-  classes
+  userEnrolledClasses: classes.enrolled_classes
 };
 
 export default function(state = initialState, action) {
