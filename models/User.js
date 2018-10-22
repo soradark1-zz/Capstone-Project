@@ -21,16 +21,24 @@ const UserSchema = new Schema({
   },
   profile: {
     enrolled_classes: [{
-      type: String
+      name: String,
+      id: String
     }],
     teaching_classes: [{
-      type: String
+      name: String,
+      id: String
     }],
     uploaded_document_ids: [{
-      type: String
+      id: String,
+      doc_name: String,
+      class_name: String,
+      class_id: String
     }],
     commented_document_ids: [{
-      type: String
+      id: String,
+      doc_name: String,
+      class_name: String,
+      class_id: String
     }]
   }
 });

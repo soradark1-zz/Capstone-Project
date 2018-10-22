@@ -8,6 +8,7 @@ const passport = require('passport');
 // Load Input Validation
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
+const validateUpdateInput = require('../../validation/update');
 
 // Load User model
 const User = require('../../models/User');
@@ -100,6 +101,28 @@ router.post('/login', (req, res) => {
       }
     });
   });
+});
+
+// @route   GET api/users/update
+// @desc    update User / Returning updated user
+// @access  Public
+router.patch('/update',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+  const { errors, isValid } = validateUpdateInput(req.body);
+
+  // Check Validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  res.json({
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email
+    });
+
+  
 });
 
 // @route   GET api/users/current
