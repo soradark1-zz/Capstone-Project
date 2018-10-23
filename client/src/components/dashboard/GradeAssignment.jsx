@@ -30,6 +30,15 @@ const styles = theme => ({
     marginLeft: "-25px",
     position: "absolute",
     top: 0
+  },
+  pdfAndAnnoation: {
+    display: "grid",
+    gridTemplateColumns: "auto auto",
+    gridTemplateAreas: '"main right"'
+  },
+  pdfDisplay: {
+    gridColumnStart: "main-start",
+    gridRow: 1
   }
 });
 
@@ -153,23 +162,25 @@ class GradeAssignment extends Component {
             />
           }
         >
-          <Page
-            pageNumber={pageNumber}
-            renderInteractiveForms={true}
-            renderMode="svg"
-            className="pdfpage"
-            inputRef={ref => {
-              this.myPage = ref;
-            }}
-            onLoadSuccess={this.onPageLoadSuccess}
-          />
+          <div id="pdfpage">
+            <Page
+              pageNumber={pageNumber}
+              renderInteractiveForms={true}
+              renderMode="svg"
+              className="pdfpage"
+              inputRef={ref => {
+                this.myPage = ref;
+              }}
+              onLoadSuccess={this.onPageLoadSuccess}
+            />
+          </div>
         </Document>
       </div>
     );
 
     return (
-      <div>
-        <div>{react_pdf}</div>
+      <div className={classNames(classes.pdfAndAnnoation)}>
+        <div className={classNames(classes.pdfDisplay)}>{react_pdf}</div>
 
         <Annoation
           stageWidth={pageWidth}

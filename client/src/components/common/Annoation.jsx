@@ -30,9 +30,13 @@ import annoationColors from "../common/annoationColors.json";
 
 const styles = theme => ({
   annoationPlacement: {
-    position: "absolute",
-    top: 0,
-    marginTop: "8.7rem"
+    //position: "absolute",
+    //top: 0,
+    //marginTop: "8.7rem"
+    marginTop: "3.7rem",
+    gridColumnStart: "main-start",
+    gridColumnEnd: "right-end",
+    gridRow: 1
   },
   annoationDisplay: {
     display: "flex"
@@ -372,8 +376,10 @@ class Annoation extends Component {
   };
 
   sizeOfStage = () => {
+    let mywidth = document.getElementById("pdfpage").clientWidth;
+    console.log(mywidth);
     this.setState({
-      scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
+      scale: Math.min(mywidth / this.props.stageWidth, 1)
     });
   };
 
@@ -390,6 +396,37 @@ class Annoation extends Component {
     const colorSelectedStyle = {
       color: annoationColors.colors[colorSelected].fill.replace("0.35", "1")
     };
+
+    const myDialog = (
+      <Hidden mdUp>
+        <Button
+          onClick={this.handleDialog}
+          disabled={selectedShapeName === ""}
+          variant="contained"
+          className={classNames(classes.button)}
+        >
+          Edit
+        </Button>
+        <Dialog open={this.state.dialogOpen} onClose={this.handleDialog}>
+          <DialogTitle>{`Comment ${selectedShapeName.slice(4)}`}</DialogTitle>
+          <DialogContent>{this.selectedCommentDialog()}</DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Subscribe
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleClose} color="primary">
+              Subscribe
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Hidden>
+    );
 
     //this.selectedCommentDialog();
 
@@ -545,30 +582,6 @@ class Annoation extends Component {
                 </div>
               </div>
             </div>
-          </Hidden>
-
-          <Hidden mdUp>
-            <Button onClick={this.handleDialog}>Open form dialog</Button>
-            <Dialog open={this.state.dialogOpen} onClose={this.handleDialog}>
-              <DialogTitle>{`Comment ${selectedShapeName.slice(
-                4
-              )}`}</DialogTitle>
-              <DialogContent>{this.selectedCommentDialog()}</DialogContent>
-              <DialogActions>
-                <Button onClick={this.handleClose} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={this.handleClose} color="primary">
-                  Subscribe
-                </Button>
-                <Button onClick={this.handleClose} color="primary">
-                  Cancel
-                </Button>
-                <Button onClick={this.handleClose} color="primary">
-                  Subscribe
-                </Button>
-              </DialogActions>
-            </Dialog>
           </Hidden>
         </div>
       </div>
