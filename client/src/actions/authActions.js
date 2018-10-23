@@ -58,10 +58,3 @@ export const logoutUser = () => dispatch => {
   // Set current user to {} which will set isAuthenticated to false
   dispatch(setCurrentUser({}));
 };
-
-// Set logged in user
-export const getUserClasses = () => {
-  return {
-    type: GET_USER_CLASSES
-  };
-};

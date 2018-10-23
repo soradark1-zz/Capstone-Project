@@ -18,6 +18,14 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 
+import Hidden from "@material-ui/core/Hidden";
+
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+
 import annoationColors from "../common/annoationColors.json";
 
 const styles = theme => ({
@@ -45,7 +53,8 @@ const styles = theme => ({
   },
   annoationMenu: {
     marginLeft: "2rem",
-    marginTop: "-3.7rem"
+    marginTop: "-3.7rem",
+    width: "20rem"
   },
   scrollHeight: {
     height: "93%"
@@ -143,7 +152,8 @@ class Annoation extends Component {
     rectangles: this.props.annoations.rectangles,
     selectedShapeName: "",
     scale: Math.min(window.innerWidth / this.props.stageWidth, 1),
-    colorSelected: 0
+    colorSelected: 0,
+    dialogOpen: false
   };
 
   componentWillReceiveProps(nextProps) {
@@ -309,7 +319,7 @@ class Annoation extends Component {
         rects[i - 1].strokeEnabled = false;
       }
     }
-    document.getElementById(`comment${index}`).focus();
+    //document.getElementById(`comment${index}`).focus();
   };
 
   handleColorChange = evt => {
@@ -328,6 +338,39 @@ class Annoation extends Component {
     this.setState({ rectangles });
   };
 
+  handleDialog = () => {
+    this.setState({ dialogOpen: !this.state.dialogOpen });
+  };
+
+  selectedCommentDialog = () => {
+    const { rectangles, selectedShapeName } = this.state;
+
+    let rect = rectangles.find(rect => {
+      return rect.name === selectedShapeName;
+    });
+
+    if (rect === undefined) return;
+
+    console.log("DIALOG", rect);
+
+    let rectIndex = parseInt(rect.name.slice(4)) - 1;
+    console.log(rectIndex);
+    return (
+      <TextField
+        id={`comment${rectIndex + 1}`}
+        margin="none"
+        variant="standard"
+        multiline
+        fullWidth
+        rowsMax="10"
+        value={rect.comment}
+        onChange={evt => {
+          this.handleCommentChange(evt, rectIndex);
+        }}
+      />
+    );
+  };
+
   sizeOfStage = () => {
     this.setState({
       scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
@@ -337,7 +380,7 @@ class Annoation extends Component {
   render() {
     //console.log(styles);
 
-    const { scale, selectedShapeName, colorSelected } = this.state;
+    const { scale, selectedShapeName, colorSelected, rectangles } = this.state;
     const { stageWidth, stageHeight, isLoaded } = this.props;
     const { classes } = this.props;
     const commentHeight = {
@@ -347,6 +390,8 @@ class Annoation extends Component {
     const colorSelectedStyle = {
       color: annoationColors.colors[colorSelected].fill.replace("0.35", "1")
     };
+
+    //this.selectedCommentDialog();
 
     window.addEventListener("resize", this.sizeOfStage);
     return (
@@ -369,7 +414,7 @@ class Annoation extends Component {
             }}
           >
             <Layer>
-              {this.state.rectangles.map((rect, i) => (
+              {rectangles.map((rect, i) => (
                 <Rectangle
                   key={i}
                   {...rect}
@@ -386,119 +431,145 @@ class Annoation extends Component {
               />
             </Layer>
           </Stage>
-          <div className={classNames(classes.annoationMenu)}>
-            <FormControl>
-              <InputLabel>Color</InputLabel>
-              <Select
-                value={this.state.colorSelected}
-                onChange={this.handleColorChange}
-                input={<Input name="colorSelected" />}
-                style={colorSelectedStyle}
-                autoWidth
+
+          <Hidden smDown>
+            <div className={classNames(classes.annoationMenu)}>
+              <FormControl>
+                <InputLabel>Color</InputLabel>
+                <Select
+                  value={this.state.colorSelected}
+                  onChange={this.handleColorChange}
+                  input={<Input name="colorSelected" />}
+                  style={colorSelectedStyle}
+                  autoWidth
+                >
+                  <MenuItem
+                    value={0}
+                    style={{
+                      color: annoationColors.colors[0].fill.replace("0.35", "1")
+                    }}
+                  >
+                    Red
+                  </MenuItem>
+                  <MenuItem
+                    value={1}
+                    style={{
+                      color: annoationColors.colors[1].fill.replace("0.35", "1")
+                    }}
+                  >
+                    Green
+                  </MenuItem>
+                  <MenuItem
+                    value={2}
+                    style={{
+                      color: annoationColors.colors[2].fill.replace("0.35", "1")
+                    }}
+                  >
+                    Blue
+                  </MenuItem>
+                  <MenuItem
+                    value={3}
+                    style={{
+                      color: annoationColors.colors[3].fill.replace("0.35", "1")
+                    }}
+                  >
+                    Yellow
+                  </MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                variant="contained"
+                disabled={rectangles.length >= 20}
+                onClick={this.addNewRect}
+                className={classNames(classes.button)}
               >
-                <MenuItem
-                  value={0}
-                  style={{
-                    color: annoationColors.colors[0].fill.replace("0.35", "1")
-                  }}
-                >
-                  Red
-                </MenuItem>
-                <MenuItem
-                  value={1}
-                  style={{
-                    color: annoationColors.colors[1].fill.replace("0.35", "1")
-                  }}
-                >
-                  Green
-                </MenuItem>
-                <MenuItem
-                  value={2}
-                  style={{
-                    color: annoationColors.colors[2].fill.replace("0.35", "1")
-                  }}
-                >
-                  Blue
-                </MenuItem>
-                <MenuItem
-                  value={3}
-                  style={{
-                    color: annoationColors.colors[3].fill.replace("0.35", "1")
-                  }}
-                >
-                  Yellow
-                </MenuItem>
-              </Select>
-            </FormControl>
-            <Button
-              variant="contained"
-              disabled={this.state.rectangles.length >= 20}
-              onClick={this.addNewRect}
-              className={classNames(classes.button)}
-            >
-              <Icon className="fas fa-plus" />
-            </Button>
+                <Icon className="fas fa-plus" />
+              </Button>
 
-            <Button
-              variant="contained"
-              disabled={selectedShapeName === ""}
-              onClick={this.removeRect}
-              className={classNames(classes.button)}
-            >
-              <Icon className="fas fa-minus" />
-            </Button>
+              <Button
+                variant="contained"
+                disabled={selectedShapeName === ""}
+                onClick={this.removeRect}
+                className={classNames(classes.button)}
+              >
+                <Icon className="fas fa-minus" />
+              </Button>
 
-            <div
-              data-simplebar
-              data-simplebar-auto-hide="false"
-              className={"/*classNames(classes.scrollHeight)*/"}
-              style={commentHeight}
-            >
-              <div className={classNames(classes.commentList)}>
-                {this.state.rectangles.map((rect, i) => (
-                  <ExpansionPanel expanded={selectedShapeName === rect.name}>
-                    <ExpansionPanelSummary
-                      onClick={() => {
-                        console.log(rect);
-                        this.updateHighlight(rect.name);
-                        this.setState({
-                          selectedShapeName: rect.name
-                        });
-                      }}
-                    >
-                      <Typography
-                        className={classNames(classes.commentPrev)}
-                        color={
-                          selectedShapeName === rect.name
-                            ? "secondary"
-                            : "default"
-                        }
-                        noWrap
-                      >
-                        {selectedShapeName === `rect${i + 1}`
-                          ? `Comment ${i + 1}`
-                          : rect.comment}
-                      </Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                      <TextField
-                        id={`comment${i + 1}`}
-                        margin="none"
-                        variant="standard"
-                        multiline
-                        fullWidth
-                        rowsMax="10"
-                        value={rect.comment}
-                        onChange={evt => {
-                          this.handleCommentChange(evt, i);
+              <div
+                data-simplebar
+                data-simplebar-auto-hide="false"
+                style={commentHeight}
+              >
+                <div className={classNames(classes.commentList)}>
+                  {rectangles.map((rect, i) => (
+                    <ExpansionPanel expanded={selectedShapeName === rect.name}>
+                      <ExpansionPanelSummary
+                        onClick={() => {
+                          console.log(rect);
+                          this.updateHighlight(rect.name);
+                          this.setState({
+                            selectedShapeName: rect.name
+                          });
                         }}
-                      />
-                    </ExpansionPanelDetails>
-                  </ExpansionPanel>
-                ))}
+                      >
+                        <Typography
+                          className={classNames(classes.commentPrev)}
+                          color={
+                            selectedShapeName === rect.name
+                              ? "secondary"
+                              : "default"
+                          }
+                          noWrap
+                        >
+                          {selectedShapeName === `rect${i + 1}`
+                            ? `Comment ${i + 1}`
+                            : rect.comment}
+                        </Typography>
+                      </ExpansionPanelSummary>
+                      <ExpansionPanelDetails>
+                        <TextField
+                          id={`comment${i + 1}`}
+                          margin="none"
+                          variant="standard"
+                          multiline
+                          fullWidth
+                          rowsMax="10"
+                          value={rect.comment}
+                          onChange={evt => {
+                            this.handleCommentChange(evt, i);
+                          }}
+                        />
+                      </ExpansionPanelDetails>
+                    </ExpansionPanel>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          </Hidden>
+
+          <Hidden mdUp>
+            <Button onClick={this.handleDialog}>Open form dialog</Button>
+            <Dialog open={this.state.dialogOpen} onClose={this.handleDialog}>
+              <DialogTitle>{`Comment ${selectedShapeName.slice(
+                4
+              )}`}</DialogTitle>
+              <DialogContent>{this.selectedCommentDialog()}</DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={this.handleClose} color="primary">
+                  Subscribe
+                </Button>
+                <Button onClick={this.handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={this.handleClose} color="primary">
+                  Subscribe
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </Hidden>
         </div>
       </div>
     );

@@ -26,7 +26,6 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
 
 import { toggleSidebar } from "../../actions/layoutActions";
-import { getUserClasses } from "../../actions/authActions";
 
 const drawerWidth = 240;
 
