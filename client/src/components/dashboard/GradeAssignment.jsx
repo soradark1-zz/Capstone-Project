@@ -33,11 +33,15 @@ const styles = theme => ({
   },
   pdfAndAnnoation: {
     display: "grid",
-    gridTemplateColumns: "auto auto",
-    gridTemplateAreas: '"main right"'
+    gridTemplateColumns: "auto",
+    gridTemplateAreas: '"pdf" "menu"',
+    [theme.breakpoints.up("md")]: {
+      gridTemplateColumns: "auto auto",
+      gridTemplateAreas: '"pdf menu" "bottom bottom"'
+    }
   },
   pdfDisplay: {
-    gridColumnStart: "main-start",
+    gridColumnStart: "pdf-start",
     gridRow: 1
   }
 });
@@ -168,6 +172,7 @@ class GradeAssignment extends Component {
               renderInteractiveForms={true}
               renderMode="svg"
               className="pdfpage"
+              scale={1}
               inputRef={ref => {
                 this.myPage = ref;
               }}
@@ -186,6 +191,8 @@ class GradeAssignment extends Component {
           stageWidth={pageWidth}
           stageHeight={pageHeight}
           annoations={this.state.annoations.pages[pageNumber - 1]}
+          finalComment={this.state.annoations.finalComment}
+          grade={this.state.annoations.grade}
           updateAnnoations={this.updateAnnoations}
           pageNumber={pageNumber}
           isLoaded={isLoaded}

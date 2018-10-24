@@ -34,12 +34,18 @@ const styles = theme => ({
     //top: 0,
     //marginTop: "8.7rem"
     marginTop: "3.7rem",
-    gridColumnStart: "main-start",
-    gridColumnEnd: "right-end",
+    gridColumnStart: "pdf-start",
+    gridColumnEnd: "menu-end",
     gridRow: 1
   },
   annoationDisplay: {
-    display: "flex"
+    display: "grid",
+    gridTemplateColumns: "auto",
+    //gridTemplateAreas: "stage comments",
+    [theme.breakpoints.up("md")]: {
+      gridTemplateColumns: "auto auto"
+      //gridTemplateAreas: "stage comments"
+    }
   },
   button: {
     textTransform: "inherit",
@@ -56,12 +62,31 @@ const styles = theme => ({
     maxWidth: "14.5rem"
   },
   annoationMenu: {
-    marginLeft: "2rem",
-    marginTop: "-3.7rem",
-    width: "20rem"
+    marginLeft: "",
+    marginTop: "",
+    width: "",
+    [theme.breakpoints.up("md")]: {
+      //marginLeft: "1rem",
+      marginTop: "-3.7rem",
+      width: "20rem"
+    }
   },
-  scrollHeight: {
-    height: "93%"
+  moblieMenu: {
+    display: "inline-flex",
+    marginTop: "1rem"
+  },
+  final: {
+    gridColumnStart: 1,
+    gridColumnEnd: 2,
+    [theme.breakpoints.up("md")]: {
+      gridColumnEnd: 3,
+      marginLeft: "20%",
+      marginRight: "20%"
+    }
+  },
+  dialog: {
+    width: "50vw",
+    minWidth: "200px"
   }
 });
 
@@ -159,6 +184,13 @@ class Annoation extends Component {
     colorSelected: 0,
     dialogOpen: false
   };
+
+  componentWillMount() {
+    this.setState({
+      finalComment: this.props.finalComment,
+      grade: this.props.grade
+    });
+  }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.annoations !== this.props.annoations) {
@@ -276,8 +308,7 @@ class Annoation extends Component {
     rectangles.map((rect, i) => (rect.name = `rect${i + 1}`));
 
     this.setState({
-      rectangles,
-      selectedShapeName: `rect${rectIndex + 1}`
+      rectangles
     });
   };
 
@@ -355,7 +386,7 @@ class Annoation extends Component {
 
     if (rect === undefined) return;
 
-    console.log("DIALOG", rect);
+    //console.log("DIALOG", rect);
 
     let rectIndex = parseInt(rect.name.slice(4)) - 1;
     console.log(rectIndex);
@@ -375,11 +406,34 @@ class Annoation extends Component {
     );
   };
 
-  sizeOfStage = () => {
-    let mywidth = document.getElementById("pdfpage").clientWidth;
-    console.log(mywidth);
+  handleFinalComment = evt => {
     this.setState({
-      scale: Math.min(mywidth / this.props.stageWidth, 1)
+      finalComment: evt.target.value
+    });
+  };
+
+  handleGrade = evt => {
+    let newGrade = evt.target.value;
+    if (newGrade === "") {
+      this.setState({
+        grade: newGrade
+      });
+      return;
+    }
+    newGrade = parseInt(newGrade, 10);
+
+    if (isNaN(newGrade)) return;
+
+    this.setState({
+      grade: newGrade
+    });
+  };
+
+  sizeOfStage = () => {
+    //let pdfWidth = document.getElementById("pdfpage").offsetWidth;
+    //console.log(pdfWidth);
+    this.setState({
+      scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
     });
   };
 
@@ -397,38 +451,81 @@ class Annoation extends Component {
       color: annoationColors.colors[colorSelected].fill.replace("0.35", "1")
     };
 
-    const myDialog = (
-      <Hidden mdUp>
-        <Button
-          onClick={this.handleDialog}
-          disabled={selectedShapeName === ""}
-          variant="contained"
-          className={classNames(classes.button)}
-        >
-          Edit
-        </Button>
-        <Dialog open={this.state.dialogOpen} onClose={this.handleDialog}>
-          <DialogTitle>{`Comment ${selectedShapeName.slice(4)}`}</DialogTitle>
-          <DialogContent>{this.selectedCommentDialog()}</DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleClose} color="primary">
-              Subscribe
-            </Button>
-            <Button onClick={this.handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleClose} color="primary">
-              Subscribe
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Hidden>
+    const commentDialog = (
+      <Dialog open={this.state.dialogOpen} onClose={this.handleDialog}>
+        <DialogTitle>{`Comment ${selectedShapeName.slice(4)}`}</DialogTitle>
+        <DialogContent className={classNames(classes.dialog)}>
+          {this.selectedCommentDialog()}
+        </DialogContent>
+      </Dialog>
     );
 
-    //this.selectedCommentDialog();
+    const annoationMenu = (
+      <div>
+        <FormControl>
+          <InputLabel>Color</InputLabel>
+          <Select
+            value={this.state.colorSelected}
+            onChange={this.handleColorChange}
+            input={<Input name="colorSelected" />}
+            style={colorSelectedStyle}
+            autoWidth
+          >
+            <MenuItem
+              value={0}
+              style={{
+                color: annoationColors.colors[0].fill.replace("0.35", "1")
+              }}
+            >
+              Red
+            </MenuItem>
+            <MenuItem
+              value={1}
+              style={{
+                color: annoationColors.colors[1].fill.replace("0.35", "1")
+              }}
+            >
+              Green
+            </MenuItem>
+            <MenuItem
+              value={2}
+              style={{
+                color: annoationColors.colors[2].fill.replace("0.35", "1")
+              }}
+            >
+              Blue
+            </MenuItem>
+            <MenuItem
+              value={3}
+              style={{
+                color: annoationColors.colors[3].fill.replace("0.35", "1")
+              }}
+            >
+              Yellow
+            </MenuItem>
+          </Select>
+        </FormControl>
+        <Button
+          variant="contained"
+          disabled={rectangles.length >= 20}
+          onClick={this.addNewRect}
+          className={classNames(classes.button)}
+        >
+          <Icon className="fas fa-plus" />
+        </Button>
+
+        <Button
+          variant="contained"
+          disabled={selectedShapeName === ""}
+          onClick={this.removeRect}
+          className={classNames(classes.button)}
+        >
+          <Icon className="fas fa-minus" />
+        </Button>
+      </div>
+    );
+
+    console.log("STATE", this.props);
 
     window.addEventListener("resize", this.sizeOfStage);
     return (
@@ -469,69 +566,9 @@ class Annoation extends Component {
             </Layer>
           </Stage>
 
-          <Hidden smDown>
-            <div className={classNames(classes.annoationMenu)}>
-              <FormControl>
-                <InputLabel>Color</InputLabel>
-                <Select
-                  value={this.state.colorSelected}
-                  onChange={this.handleColorChange}
-                  input={<Input name="colorSelected" />}
-                  style={colorSelectedStyle}
-                  autoWidth
-                >
-                  <MenuItem
-                    value={0}
-                    style={{
-                      color: annoationColors.colors[0].fill.replace("0.35", "1")
-                    }}
-                  >
-                    Red
-                  </MenuItem>
-                  <MenuItem
-                    value={1}
-                    style={{
-                      color: annoationColors.colors[1].fill.replace("0.35", "1")
-                    }}
-                  >
-                    Green
-                  </MenuItem>
-                  <MenuItem
-                    value={2}
-                    style={{
-                      color: annoationColors.colors[2].fill.replace("0.35", "1")
-                    }}
-                  >
-                    Blue
-                  </MenuItem>
-                  <MenuItem
-                    value={3}
-                    style={{
-                      color: annoationColors.colors[3].fill.replace("0.35", "1")
-                    }}
-                  >
-                    Yellow
-                  </MenuItem>
-                </Select>
-              </FormControl>
-              <Button
-                variant="contained"
-                disabled={rectangles.length >= 20}
-                onClick={this.addNewRect}
-                className={classNames(classes.button)}
-              >
-                <Icon className="fas fa-plus" />
-              </Button>
-
-              <Button
-                variant="contained"
-                disabled={selectedShapeName === ""}
-                onClick={this.removeRect}
-                className={classNames(classes.button)}
-              >
-                <Icon className="fas fa-minus" />
-              </Button>
-
+          <div className={classNames(classes.annoationMenu)}>
+            <Hidden smDown>
+              {annoationMenu}
               <div
                 data-simplebar
                 data-simplebar-auto-hide="false"
@@ -581,8 +618,47 @@ class Annoation extends Component {
                   ))}
                 </div>
               </div>
-            </div>
-          </Hidden>
+            </Hidden>
+
+            <Hidden mdUp>
+              <div className={classNames(classes.moblieMenu)}>
+                {annoationMenu}
+                <Button
+                  onClick={this.handleDialog}
+                  disabled={selectedShapeName === ""}
+                  variant="contained"
+                  className={classNames(classes.button)}
+                >
+                  Edit
+                </Button>
+              </div>
+              {commentDialog}
+            </Hidden>
+          </div>
+
+          <div className={classNames(classes.final)}>
+            <TextField
+              variant="outlined"
+              label="Final Comments"
+              multiline
+              fullWidth
+              rowsMax="10"
+              value={this.state.finalComment}
+              margin="normal"
+              onChange={this.handleFinalComment}
+            />
+            <TextField
+              variant="outlined"
+              label="Grade"
+              value={this.state.grade}
+              margin="normal"
+              onChange={this.handleGrade}
+            />
+
+            <Button variant="contained" className={classNames(classes.button)}>
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
     );
