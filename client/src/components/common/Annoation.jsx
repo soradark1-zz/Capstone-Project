@@ -21,9 +21,9 @@ import Select from "@material-ui/core/Select";
 import Hidden from "@material-ui/core/Hidden";
 
 import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
+//import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
+//import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 import annoationColors from "../common/annoationColors.json";
@@ -76,12 +76,16 @@ const styles = theme => ({
     marginTop: "1rem"
   },
   final: {
+    display: "grid",
     gridColumnStart: 1,
     gridColumnEnd: 2,
+    width: "95%",
+    margin: "auto",
     [theme.breakpoints.up("md")]: {
       gridColumnEnd: 3,
       marginLeft: "20%",
-      marginRight: "20%"
+      marginRight: "20%",
+      width: "auto"
     }
   },
   dialog: {
@@ -654,10 +658,20 @@ class Annoation extends Component {
               margin="normal"
               onChange={this.handleGrade}
             />
-
-            <Button variant="contained" className={classNames(classes.button)}>
-              Submit
-            </Button>
+            <div>
+              <Button
+                variant="contained"
+                className={classNames(classes.button)}
+              >
+                Save
+              </Button>
+              <Button
+                variant="contained"
+                className={classNames(classes.button)}
+              >
+                Submit
+              </Button>
+            </div>
           </div>
         </div>
       </div>

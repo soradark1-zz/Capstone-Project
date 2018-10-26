@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
 
 import MuiPickersUtilsProvider from "material-ui-pickers/utils/MuiPickersUtilsProvider";
 import { DateTimePicker } from "material-ui-pickers";
@@ -61,10 +62,10 @@ class CreateAssignment extends Component {
 
   render() {
     const { errors } = this.state;
-    const { classes, theme } = this.props;
+    const { classes } = this.props;
 
     return (
-      <div id="login" className={classes.form}>
+      <div id="create_assignment" className={classes.form}>
         <div className={classes.formTitle}>Create Assignment</div>
         <form
           onSubmit={this.onSubmit}
@@ -72,18 +73,20 @@ class CreateAssignment extends Component {
           className={classes.formFields}
         >
           <TextField
-            error={errors.class ? true : false}
+            select
             label="Class"
             name="class"
             value={this.state.class}
             onChange={this.onChange}
             className={classes.textField}
-            helperText={errors.class}
             type="class"
             margin="normal"
             variant="outlined"
-            autoFocus
-          />
+          >
+            <MenuItem value="CSCE 482">CSCE 482</MenuItem>
+            <MenuItem value="CSCE 465">CSCE 465</MenuItem>
+            <MenuItem value="CSCE 420">CSCE 420</MenuItem>
+          </TextField>
 
           <TextField
             error={errors.name ? true : false}
