@@ -99,7 +99,7 @@ class Sidebar extends React.Component {
     const { open } = this.props.layout;
     const { classes, userEnrolledClasses } = this.props;
 
-    console.log(userEnrolledClasses);
+    //console.log(userEnrolledClasses);
 
     const drawerContent = (
       <div>
@@ -137,7 +137,7 @@ class Sidebar extends React.Component {
           </ListItemIcon>
           <ListItemText primary="Calendar" />
         </ListItem>
-        <ListItem button>
+        <ListItem button component={Link} to="/assignments">
           <ListItemIcon>
             <Icon className="fas fa-pencil-alt" />
           </ListItemIcon>
