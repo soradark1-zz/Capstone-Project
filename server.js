@@ -4,7 +4,9 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const path = require('path');
 
+// API modules to  include
 const users = require('./routes/api/users');
+const classes = require('./routes/api/classes');
 
 const app = express();
 
@@ -29,6 +31,7 @@ require('./config/passport')(passport);
 
 // Use Routes
 app.use('/api/users', users);
+app.use('/api/classes', classes);
 
 // Server static assets if in production
 if (process.env.NODE_ENV === 'production') {

@@ -22,11 +22,11 @@ const UserSchema = new Schema({
   profile: {
     enrolled_classes: [{
       name: String,
-      id: String
+      code: String
     }],
     teaching_classes: [{
       name: String,
-      id: String
+      code: String
     }],
     uploaded_document_ids: [{
       id: String,
