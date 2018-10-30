@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 
-import MuiPickersUtilsProvider from "material-ui-pickers/MuiPickersUtilsProvider";
+import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import { DateTimePicker } from "material-ui-pickers";
 import MomentUtils from "material-ui-pickers/utils/moment-utils";
 
