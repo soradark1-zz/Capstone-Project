@@ -14,7 +14,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "concurrently": "^3.5.1",
-    "express": "^4.16.3",
+    "express": "^4.16.4",
     "gravatar": "^1.6.0",
     "jsonwebtoken": "^8.2.0",
     "mongoose": "^5.3.4",
@@ -23,9 +23,9 @@
     "validator": "^9.4.1"
   },
   "devDependencies": {
-    "nodemon": "^1.17.3",
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-prettier": "^3.0.0",
+    "nodemon": "^1.18.5",
     "prettier": "^1.14.3"
   }
 }
