@@ -15,12 +15,31 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  avatar: {
-    type: String
-  },
   date: {
     type: Date,
     default: Date.now
+  },
+  profile: {
+    enrolled_classes: [{
+      name: String,
+      code: String
+    }],
+    teaching_classes: [{
+      name: String,
+      code: String
+    }],
+    uploaded_document_ids: [{
+      id: String,
+      doc_name: String,
+      class_name: String,
+      class_id: String
+    }],
+    commented_document_ids: [{
+      id: String,
+      doc_name: String,
+      class_name: String,
+      class_id: String
+    }]
   }
 });
 
