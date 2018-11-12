@@ -164,7 +164,7 @@ router.post('/delete',
             console.log("Unexpected error when removing a course: " + err);
         }
         console.log(course);
-        return;
+        res.json(course);
     });
     return res.status(200);
     
