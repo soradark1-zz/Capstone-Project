@@ -24,11 +24,33 @@ select:-webkit-autofill {
 
 /*Keeps Sidebar Icons all the same size*/
 .svg-inline--fa.fa-w-12 {
-    width: 21px;
+  width: 21px;
 }
 .svg-inline--fa.fa-w-16 {
-    width: 21px;
+  width: 21px;
 }
 .svg-inline--fa.fa-w-18 {
-    width: 21px;
+  width: 21px;
+}
+
+.pdfpage {
+  display: inline-flex;
+}
+
+.annoation-layer {
+  position: absolute;
+  top: 0;
+  margin-top: 8.7rem;
+}
+
+.selected-comment {
+  color: red;
+}
+
+.no-display {
+  display: none;
+}
+
+.simplebar-track.horizontal {
+  display: none;
 }

@@ -7,10 +7,11 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
 
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
-import { DateTimePicker } from 'material-ui-pickers';
-import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+import { MuiPickersUtilsProvider } from "material-ui-pickers";
+import { DateTimePicker } from "material-ui-pickers";
+import MomentUtils from "material-ui-pickers/utils/moment-utils";
 
 import styles from "../../styles/formstyle";
 
@@ -31,9 +32,7 @@ class CreateAssignment extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-
   componentWillReceiveProps(nextProps) {
-
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
@@ -54,19 +53,19 @@ class CreateAssignment extends Component {
     this.setState({ [e.target.name]: e.target.value });
   }
 
-  handleDateAssignedChange = (date) => {
+  handleDateAssignedChange = date => {
     this.setState({ dateAssigned: date });
-  }
-  handleDateDueChange = (date) => {
+  };
+  handleDateDueChange = date => {
     this.setState({ dateDue: date });
-  }
+  };
 
   render() {
     const { errors } = this.state;
-    const { classes, theme } = this.props;
+    const { classes, userEnrolledClasses } = this.props;
 
     return (
-      <div id="login" className={classes.form}>
+      <div id="create_assignment" className={classes.form}>
         <div className={classes.formTitle}>Create Assignment</div>
         <form
           onSubmit={this.onSubmit}
@@ -74,18 +73,20 @@ class CreateAssignment extends Component {
           className={classes.formFields}
         >
           <TextField
-            error={errors.class ? true : false}
+            select
             label="Class"
             name="class"
             value={this.state.class}
             onChange={this.onChange}
             className={classes.textField}
-            helperText={errors.class}
             type="class"
             margin="normal"
             variant="outlined"
-            autoFocus
-          />
+          >
+            {userEnrolledClasses.map((userClass, i) => (
+              <MenuItem value={userClass}>{userClass}</MenuItem>
+            ))}
+          </TextField>
 
           <TextField
             error={errors.name ? true : false}
@@ -115,12 +116,26 @@ class CreateAssignment extends Component {
             rows="4"
             rowsMax="4"
           />
+
+          <TextField
+            error={errors.name ? true : false}
+            label="Max Grade"
+            name="maxGrade"
+            value={this.state.maxGrade}
+            onChange={this.onChange}
+            className={classes.textField}
+            helperText={errors.name}
+            type="maxGrade"
+            margin="normal"
+            variant="outlined"
+          />
+
           <div>
             <MuiPickersUtilsProvider utils={MomentUtils}>
               <DateTimePicker
                 className={classes.datePicker}
                 label="Date to be assigned"
-                name='dateAssigned'
+                name="dateAssigned"
                 value={this.state.dateAssigned}
                 onChange={this.handleDateAssignedChange}
                 disablePast
@@ -128,17 +143,13 @@ class CreateAssignment extends Component {
               <DateTimePicker
                 className={classes.datePicker}
                 label="Date due"
-                name='dateDue'
+                name="dateDue"
                 value={this.state.dateDue}
                 onChange={this.handleDateDueChange}
                 disablePast
               />
             </MuiPickersUtilsProvider>
           </div>
-
-
-
-
 
           <Button
             type="submit"
@@ -160,7 +171,7 @@ CreateAssignment.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth,
+  userEnrolledClasses: state.auth.userEnrolledClasses,
   errors: state.errors
 });
 

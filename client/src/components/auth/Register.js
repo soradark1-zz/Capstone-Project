@@ -107,12 +107,12 @@ class Register extends Component {
           />
           <TextField
             error={errors.email ? true : false}
-            label="Password"
-            name="password"
-            value={this.state.password}
+            label="Comfirm Password"
+            name="password2"
+            value={this.state.password2}
             onChange={this.onChange}
             className={classes.textField}
-            helperText={errors.password}
+            helperText={errors.password2}
             type="password"
             margin="normal"
             variant="outlined"

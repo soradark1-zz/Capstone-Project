@@ -54,10 +54,10 @@ const theme = createMuiTheme({
   overrides: {
     MuiButton: {
       textPrimary: {
-        color: 'white',
-      },
-    },
-  },
+        color: "white"
+      }
+    }
+  }
 });
 
 ReactDOM.render(

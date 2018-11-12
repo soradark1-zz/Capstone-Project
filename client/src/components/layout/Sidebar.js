@@ -1,232 +1,233 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import compose from "recompose/compose";
 
-import '../../styles/sidebar.css'
+import "../../styles/sidebar.css";
 
+import classNames from "classnames";
+import { withStyles } from "@material-ui/core/styles";
+import Drawer from "@material-ui/core/Drawer";
+import List from "@material-ui/core/List";
+import Divider from "@material-ui/core/Divider";
+import Hidden from "@material-ui/core/Hidden";
+//import IconButton from "@material-ui/core/IconButton";
+//import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+//import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 
-import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Icon from "@material-ui/core/Icon";
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Collapse from "@material-ui/core/Collapse";
 
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import Collapse from '@material-ui/core/Collapse';
-
-
-
-
-const options = [
-  'Show some love to Material-UI',
-  'Show all notification content',
-  'Hide sensitive notification content',
-  'Hide all notification content',
-];
-
+import { toggleSidebar } from "../../actions/layoutActions";
 
 const drawerWidth = 240;
 
 const styles = theme => ({
-
   menuButton: {
     marginLeft: 12,
-    marginRight: 36,
+    marginRight: 36
   },
   hide: {
-    display: 'none',
+    display: "none"
   },
   drawerPaper: {
-    position: 'absolute',
-    whiteSpace: 'nowrap',
+    position: "fixed",
+    whiteSpace: "nowrap",
     width: drawerWidth,
-    height: '100vh',
-    transition: theme.transitions.create('width', {
+    height: "100vh",
+    transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+      duration: theme.transitions.duration.enteringScreen
+    })
   },
   drawerPaperClose: {
-    overflowX: 'hidden',
-    transition: theme.transitions.create('width', {
+    overflowX: "hidden",
+    transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
+      duration: theme.transitions.duration.leavingScreen
     }),
     width: theme.spacing.unit * 7,
-    [theme.breakpoints.up('sm')]: {
-      width: theme.spacing.unit * 9,
-    },
+    [theme.breakpoints.up("sm")]: {
+      width: theme.spacing.unit * 9
+    }
   },
   toolbar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: '0 8px',
-    ...theme.mixins.toolbar,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    padding: "0 8px",
+    ...theme.mixins.toolbar
   },
   fas: {
-    width: '21px',
+    width: "21px"
+  },
+
+  expandIcon: {
+    fill: "white"
   },
 
   heading: {
     fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular,
-  },
+    fontWeight: theme.typography.fontWeightRegular
+  }
 });
 
-class MiniDrawer extends React.Component {
+class Sidebar extends React.Component {
   state = {
     drawer_open: true,
-    class_open: false,
+    userEnrolledClasses: [],
+    class_open: false
   };
 
-  //Drawer handles
-
-  handleDrawerOpen = () => {
-    this.setState({ drawer_open: true });
-  };
-
-  handleDrawerClose = () => {
-    this.setState({ drawer_open: false });
-  };
-
-  handleDrawerToggle = () => {
-    this.setState({ drawer_open: !this.state.drawer_open });
-  };
+  componentWillMount() {
+    this.setState({});
+  }
 
   // Class handles
   handleClick = () => {
     this.setState(state => ({ class_open: !state.class_open }));
   };
 
-
   render() {
-    const { classes, theme } = this.props;
-    const { anchorEl } = this.state;
+    const { open } = this.props.layout;
+    const { classes, userEnrolledClasses } = this.props;
+
+    //console.log(userEnrolledClasses);
+
+    const drawerContent = (
+      <div>
+        <div className={classes.toolbar} />
+        <Divider />
+
+        <ListItem button onClick={this.handleClick}>
+          <ListItemIcon>
+            <Icon className="fas fa-book" />
+          </ListItemIcon>
+          <ListItemText inset primary="Classes" />
+          {this.state.class_open ? (
+            <ListItemIcon>
+              <ExpandLess />
+            </ListItemIcon>
+          ) : (
+            <ListItemIcon>
+              <ExpandMore />
+            </ListItemIcon>
+          )}
+        </ListItem>
+        <Collapse in={this.state.class_open} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {userEnrolledClasses.map((userClass, i) => (
+              <ListItem button className={classes.nested}>
+                <ListItemText inset primary={userClass} />
+              </ListItem>
+            ))}
+          </List>
+        </Collapse>
+
+        <ListItem button>
+          <ListItemIcon>
+            <Icon className="fas fa-calendar-alt" />
+          </ListItemIcon>
+          <ListItemText primary="Calendar" />
+        </ListItem>
+        <ListItem button component={Link} to="/assignments">
+          <ListItemIcon>
+            <Icon className="fas fa-pencil-alt" />
+          </ListItemIcon>
+          <ListItemText primary="Assignments" />
+        </ListItem>
+        <ListItem button>
+          <ListItemIcon>
+            <Icon className="fas fa-paper-plane" />
+          </ListItemIcon>
+          <ListItemText primary="Submissions" />
+        </ListItem>
+
+        <Divider />
+
+        <ListItem button component={Link} to="/grade-assignment">
+          <ListItemIcon>
+            <Icon className="fas fa-edit" />
+          </ListItemIcon>
+          <ListItemText primary="Grade Assignments" />
+        </ListItem>
+        <ListItem button component={Link} to="/create-assignment">
+          <ListItemIcon>
+            <Icon className="fas fa-file-medical" />
+          </ListItemIcon>
+          <ListItemText primary="Create Assignment" />
+        </ListItem>
+
+        <Divider />
+
+        <ListItem button>
+          <ListItemIcon>
+            <Icon className={(classes.icon, "fas fa-cog")} />
+          </ListItemIcon>
+          <ListItemText primary="Settings" />
+        </ListItem>
+      </div>
+    );
 
     return (
       <div>
-        <Drawer
-          variant="permanent"
-          classes={{
-            paper: classNames(classes.drawerPaper, !this.state.drawer_open && classes.drawerPaperClose),
-          }}
-          open={this.state.open}
-        >
-          <div className={classes.toolbar}>
-            <IconButton onClick={this.handleDrawerToggle}>
-              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-            </IconButton>
-          </div>
-          <ListItem button onClick={this.handleDrawerToggle}>
-            <ListItemIcon>
-              {this.state.drawer_open ?  <ChevronLeftIcon /> : <ChevronRightIcon />}
-            </ListItemIcon>
-            <ListItemText primary="Collapse" />
-          </ListItem>
-
-          <Divider/>
-
-            <ListItem button onClick={this.handleClick}>
-              <ListItemIcon>
-                <Icon className='fas fa-book' />
-              </ListItemIcon>
-              <ListItemText inset primary="Classes" />
-              {this.state.class_open ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse in={this.state.class_open} timeout="auto" unmountOnExit>
-              <List component="div" disablePadding>
-                <ListItem button className={classes.nested}>
-
-                  <ListItemText inset primary="CSCE 482" />
-                </ListItem>
-                <ListItem button className={classes.nested}>
-
-                  <ListItemText inset primary="CSCE 465" />
-                </ListItem>
-                <ListItem button className={classes.nested}>
-
-                  <ListItemText inset primary="CSCE 420" />
-                </ListItem>
-              </List>
-            </Collapse>
-
-          <ListItem button>
-            <ListItemIcon>
-              <Icon className='fas fa-calendar-alt' />
-            </ListItemIcon>
-            <ListItemText primary="Calendar" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <Icon className='fas fa-pencil-alt' />
-            </ListItemIcon>
-            <ListItemText primary="Assignments" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <Icon className='fas fa-paper-plane' />
-            </ListItemIcon>
-            <ListItemText primary="Submissions" />
-          </ListItem>
-
-          <Divider/>
-
-          <ListItem button >
-            <ListItemIcon>
-              <Icon className='fas fa-edit' />
-            </ListItemIcon>
-            <ListItemText primary="Grade Assignments" />
-          </ListItem>
-          <ListItem button component={Link} to='/create-assignment'>
-            <ListItemIcon>
-              <Icon className='fas fa-file-medical' />
-            </ListItemIcon>
-            <ListItemText primary="Create Assignment" />
-          </ListItem>
-
-          <Divider/>
-
-          <ListItem button>
-            <ListItemIcon>
-              <Icon className={classes.icon, 'fas fa-cog'} />
-            </ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItem>
-
-
-
-
-
-        </Drawer>
-
-
-
+        <Hidden smDown>
+          <Drawer
+            variant="permanent"
+            classes={{
+              paper: classNames(
+                classes.drawerPaper,
+                !open && classes.drawerPaperClose
+              )
+            }}
+            open={open}
+          >
+            {drawerContent}
+          </Drawer>
+        </Hidden>
+        <Hidden mdUp>
+          <Drawer
+            variant="temporary"
+            classes={{
+              paper: classNames(classes.drawerPaper)
+            }}
+            open={open}
+            onClose={this.props.toggleSidebar}
+            ModalProps={{
+              keepMounted: true // Better open performance on mobile.
+            }}
+          >
+            {drawerContent}
+          </Drawer>
+        </Hidden>
       </div>
-
     );
   }
 }
 
-MiniDrawer.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
+//export default withStyles(styles, { withTheme: true })(MiniDrawer);
+
+Sidebar.propTypes = {
+  toggleSidebar: PropTypes.func.isRequired,
+  layout: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(MiniDrawer);
+const mapStateToProps = state => ({
+  layout: state.layout,
+  userEnrolledClasses: state.auth.userEnrolledClasses
+});
+
+export default compose(
+  withStyles(styles, { withTheme: true }),
+  connect(
+    mapStateToProps,
+    { toggleSidebar }
+  )
+)(Sidebar);
