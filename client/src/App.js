@@ -42,7 +42,7 @@ class App extends Component {
   render() {
     const { classes, theme } = this.props;
     const { isAuthenticated, user } = this.props.auth;
-    console.log(theme);
+    //console.log(theme);
 
     return (
       <Router>

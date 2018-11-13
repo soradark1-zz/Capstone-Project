@@ -1,6 +1,7 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
+import isEmpty from "../validation/is-empty.js";
 
 import { GET_ERRORS, SET_CURRENT_USER, GET_USER_CLASSES } from "./types";
 
@@ -31,7 +32,7 @@ export const loginUser = userData => dispatch => {
       // Decode token to get user data
       const decoded = jwt_decode(token);
       // Set current user
-      dispatch(setCurrentUser(decoded));
+      dispatch(getCurrentUser(decoded));
     })
     .catch(err =>
       dispatch({
@@ -47,6 +48,44 @@ export const setCurrentUser = decoded => {
     type: SET_CURRENT_USER,
     payload: decoded
   };
+};
+
+export const getCurrentUser = decoded => async dispatch => {
+  if (!isEmpty(decoded)) {
+    await axios
+      .get("/api/users/current")
+      .then(async res => {
+        const user = {
+          name: res.data.name,
+          profile: res.data.profile,
+          date: res.data.date,
+          email: res.data.email,
+          id: res.data.id,
+          exp: decoded.exp,
+          iat: decoded.iat
+        };
+        await dispatch(setCurrentUser(user));
+      })
+      .catch(err => console.log(err));
+  } else {
+    await dispatch(setCurrentUser({}));
+  }
+
+  /*return axios
+    .get("/api/users/current")
+    .then(res => {
+      const user = {
+        name: res.data.name,
+        profile: res.data.profile,
+        date: res.data.date,
+        email: res.data.email,
+        id: res.data.id
+        //exp: decoded.exp,
+        //iat: decoded.iat
+      };
+      return user;
+    })
+    .catch(err => console.log(err));*/
 };
 
 // Log user out

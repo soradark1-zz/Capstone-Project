@@ -37,6 +37,12 @@ class Landing extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
+    }
+  }
+
   render() {
     const { classes } = this.props;
 
