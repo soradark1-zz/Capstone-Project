@@ -87,10 +87,8 @@ const styles = theme => ({
 
 class Sidebar extends React.Component {
   state = {
-    drawer_open: true,
-    userEnrolledClasses: [],
-    userTeachingClasses: [],
-    class_open: false
+    enrolled_class_open: false,
+    teaching_class_open: false
   };
 
   componentWillMount() {
@@ -98,14 +96,19 @@ class Sidebar extends React.Component {
   }
 
   // Class handles
-  handleClick = () => {
-    this.setState(state => ({ class_open: !state.class_open }));
+  handleClickEnrolled = () => {
+    this.setState({ enrolled_class_open: !this.state.enrolled_class_open });
+  };
+
+  handleClickTeaching = () => {
+    this.setState({ teaching_class_open: !this.state.teaching_class_open });
   };
 
   render() {
     const { open } = this.props.layout;
     const { classes } = this.props;
-    const { userEnrolledClasses, userTeachingClasses } = this.state;
+
+    //console.log(this.props);
 
     const drawerContent = (
       <div>
@@ -114,12 +117,12 @@ class Sidebar extends React.Component {
         <Typography className={classNames(classes.sectionTitle)}>
           Studnet
         </Typography>
-        <ListItem button onClick={this.handleClick}>
+        <ListItem button onClick={this.handleClickEnrolled} name="class_open">
           <ListItemIcon>
             <Icon className="fas fa-book" />
           </ListItemIcon>
           <ListItemText inset primary="Classes" />
-          {this.state.class_open ? (
+          {this.state.enrolled_class_open ? (
             <ListItemIcon>
               <ExpandLess />
             </ListItemIcon>
@@ -129,9 +132,13 @@ class Sidebar extends React.Component {
             </ListItemIcon>
           )}
         </ListItem>
-        <Collapse in={this.state.class_open} timeout="auto" unmountOnExit>
+        <Collapse
+          in={this.state.enrolled_class_open}
+          timeout="auto"
+          unmountOnExit
+        >
           <List component="div" disablePadding>
-            {userEnrolledClasses.map((userClass, i) => (
+            {this.props.user.enrolled_classes.map((userClass, i) => (
               <ListItem button className={classes.nested}>
                 <ListItemText inset primary={userClass.name} />
               </ListItem>
@@ -163,12 +170,12 @@ class Sidebar extends React.Component {
         <Typography className={classNames(classes.sectionTitle)}>
           Teacher
         </Typography>
-        <ListItem button onClick={this.handleClick}>
+        <ListItem button onClick={this.handleClickTeaching}>
           <ListItemIcon>
             <Icon className="fas fa-book" />
           </ListItemIcon>
           <ListItemText inset primary="Classes" />
-          {this.state.class_open ? (
+          {this.state.teaching_class_open ? (
             <ListItemIcon>
               <ExpandLess />
             </ListItemIcon>
@@ -178,9 +185,13 @@ class Sidebar extends React.Component {
             </ListItemIcon>
           )}
         </ListItem>
-        <Collapse in={this.state.class_open} timeout="auto" unmountOnExit>
+        <Collapse
+          in={this.state.teaching_class_open}
+          timeout="auto"
+          unmountOnExit
+        >
           <List component="div" disablePadding>
-            {userTeachingClasses.map((userClass, i) => (
+            {this.props.user.teaching_classes.map((userClass, i) => (
               <ListItem button className={classes.nested}>
                 <ListItemText inset primary={userClass.name} />
               </ListItem>
@@ -256,9 +267,8 @@ Sidebar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  layout: state.layout
-  //userEnrolledClasses: state.auth.user.profile.enrolled_classes,
-  //userTeachingClasses: state.auth.user.profile.teaching_classes
+  layout: state.layout,
+  user: state.auth.user
 });
 
 export default compose(

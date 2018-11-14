@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import compose from "recompose/compose";
 import { withStyles } from "@material-ui/core/styles";
 
-import { createClass } from "../../actions/classesActions";
+import { createClass, enrollClass } from "../../actions/classesActions";
 
 const styles = theme => ({
   root: {
@@ -20,7 +20,13 @@ class Dashboard extends Component {
   constructor() {
     super();
 
+    this.state = {
+      classCode: ""
+    };
+
     this.createNewClass = this.createNewClass.bind(this);
+    this.enrollInClass = this.enrollInClass.bind(this);
+    this.classCodeHandler = this.classCodeHandler.bind(this);
   }
 
   createNewClass() {
@@ -31,10 +37,34 @@ class Dashboard extends Component {
     this.props.createClass(newClassData);
   }
 
+  enrollInClass() {
+    const newClassData = {
+      code: this.state.classCode
+    };
+
+    this.props.enrollClass(newClassData);
+  }
+
+  classCodeHandler(evt) {
+    this.setState({
+      classCode: evt.target.value
+    });
+  }
+
   render() {
     return (
       <div>
-        <button onClick={this.createNewClass}>Add Class</button>
+        <div>
+          <button onClick={this.createNewClass}>Add Class</button>
+        </div>
+        <div>
+          <input
+            placeholder="Class Code"
+            value={this.state.classCode}
+            onChange={this.classCodeHandler}
+          />
+          <button onClick={this.enrollInClass}>Enroll Class</button>
+        </div>
       </div>
     );
   }
@@ -49,6 +79,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { createClass }
+    { createClass, enrollClass }
   )
 )(Dashboard);

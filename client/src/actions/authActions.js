@@ -3,7 +3,7 @@ import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
 import isEmpty from "../validation/is-empty.js";
 
-import { GET_ERRORS, SET_CURRENT_USER, GET_USER_CLASSES } from "./types";
+import { GET_ERRORS, SET_CURRENT_USER, UPDATE_USER } from "./types";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
@@ -32,7 +32,11 @@ export const loginUser = userData => dispatch => {
       // Decode token to get user data
       const decoded = jwt_decode(token);
       // Set current user
-      dispatch(getCurrentUser(decoded));
+      dispatch(setCurrentUser(decoded));
+      return decoded;
+    })
+    .then(() => {
+      dispatch(getCurrentUser());
     })
     .catch(err =>
       dispatch({
@@ -50,26 +54,26 @@ export const setCurrentUser = decoded => {
   };
 };
 
-export const getCurrentUser = decoded => async dispatch => {
-  if (!isEmpty(decoded)) {
-    await axios
-      .get("/api/users/current")
-      .then(async res => {
-        const user = {
-          name: res.data.name,
-          profile: res.data.profile,
-          date: res.data.date,
-          email: res.data.email,
-          id: res.data.id,
-          exp: decoded.exp,
-          iat: decoded.iat
-        };
-        await dispatch(setCurrentUser(user));
-      })
-      .catch(err => console.log(err));
-  } else {
-    await dispatch(setCurrentUser({}));
-  }
+export const getCurrentUser = () => dispatch => {
+  console.log("Updating");
+  axios
+    .get("/api/users/current")
+    .then(async res => {
+      /*const user = {
+        name: res.data.name,
+        profile: res.data.profile,
+        date: res.data.date,
+        email: res.data.email,
+        id: res.data.id,
+        exp: decoded.exp,
+        iat: decoded.iat
+      };*/
+      dispatch({
+        type: UPDATE_USER,
+        payload: res.data.profile
+      });
+    })
+    .catch(err => console.log(err));
 
   /*return axios
     .get("/api/users/current")
