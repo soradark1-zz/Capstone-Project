@@ -85,14 +85,19 @@ const styles = theme => ({
   }
 });
 
-class Sidebar extends React.Component {
+class Sidebar extends Component {
   state = {
     enrolled_class_open: false,
     teaching_class_open: false
   };
 
-  componentWillMount() {
-    this.setState({});
+  componentWillReceiveProps() {
+    if (this.props.layout.open) {
+      this.setState({
+        enrolled_class_open: false,
+        teaching_class_open: false
+      });
+    }
   }
 
   // Class handles
@@ -106,6 +111,7 @@ class Sidebar extends React.Component {
 
   render() {
     const { open } = this.props.layout;
+    const { enrolled_classes, teaching_classes } = this.props.user;
     const { classes } = this.props;
 
     //console.log(this.props);
@@ -114,105 +120,126 @@ class Sidebar extends React.Component {
       <div>
         <div className={classes.toolbar} />
         <Divider />
-        <Typography className={classNames(classes.sectionTitle)}>
-          Studnet
-        </Typography>
-        <ListItem button onClick={this.handleClickEnrolled} name="class_open">
-          <ListItemIcon>
-            <Icon className="fas fa-book" />
-          </ListItemIcon>
-          <ListItemText inset primary="Classes" />
-          {this.state.enrolled_class_open ? (
-            <ListItemIcon>
-              <ExpandLess />
-            </ListItemIcon>
-          ) : (
-            <ListItemIcon>
-              <ExpandMore />
-            </ListItemIcon>
-          )}
-        </ListItem>
-        <Collapse
-          in={this.state.enrolled_class_open}
-          timeout="auto"
-          unmountOnExit
-        >
-          <List component="div" disablePadding>
-            {this.props.user.enrolled_classes.map((userClass, i) => (
-              <ListItem button className={classes.nested}>
-                <ListItemText inset primary={userClass.name} />
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
+        {enrolled_classes.length !== 0 && (
+          <div>
+            <Typography className={classNames(classes.sectionTitle)}>
+              Studnet
+            </Typography>
+            <ListItem
+              button
+              onClick={this.handleClickEnrolled}
+              name="class_open"
+            >
+              <ListItemIcon>
+                <Icon className="fas fa-book" />
+              </ListItemIcon>
+              <ListItemText inset primary="Classes" />
+              {this.state.enrolled_class_open ? (
+                <ListItemIcon>
+                  <ExpandLess />
+                </ListItemIcon>
+              ) : (
+                <ListItemIcon>
+                  <ExpandMore />
+                </ListItemIcon>
+              )}
+            </ListItem>
+            <Collapse
+              in={this.state.enrolled_class_open}
+              timeout="auto"
+              unmountOnExit
+            >
+              <List component="div" disablePadding>
+                {enrolled_classes.map((userClass, i) => (
+                  <ListItem
+                    button
+                    component={Link}
+                    to={{
+                      pathname: `/${userClass.code}/assignments`,
+                      testvalue: "hello"
+                    }}
+                    params={{ testvalue: "hello" }}
+                    className={classes.nested}
+                  >
+                    <ListItemText inset primary={userClass.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
 
-        <ListItem button>
-          <ListItemIcon>
-            <Icon className="fas fa-calendar-alt" />
-          </ListItemIcon>
-          <ListItemText primary="Calendar" />
-        </ListItem>
-        <ListItem button component={Link} to="/assignments">
-          <ListItemIcon>
-            <Icon className="fas fa-pencil-alt" />
-          </ListItemIcon>
-          <ListItemText primary="Assignments" />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon>
-            <Icon className="fas fa-paper-plane" />
-          </ListItemIcon>
-          <ListItemText primary="Submissions" />
-        </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <Icon className="fas fa-calendar-alt" />
+              </ListItemIcon>
+              <ListItemText primary="Calendar" />
+            </ListItem>
+            <ListItem button component={Link} to="/assignments">
+              <ListItemIcon>
+                <Icon className="fas fa-pencil-alt" />
+              </ListItemIcon>
+              <ListItemText primary="Assignments" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <Icon className="fas fa-paper-plane" />
+              </ListItemIcon>
+              <ListItemText primary="Submissions" />
+            </ListItem>
 
-        <Divider />
+            <Divider />
+          </div>
+        )}
 
-        <Typography className={classNames(classes.sectionTitle)}>
-          Teacher
-        </Typography>
-        <ListItem button onClick={this.handleClickTeaching}>
-          <ListItemIcon>
-            <Icon className="fas fa-book" />
-          </ListItemIcon>
-          <ListItemText inset primary="Classes" />
-          {this.state.teaching_class_open ? (
-            <ListItemIcon>
-              <ExpandLess />
-            </ListItemIcon>
-          ) : (
-            <ListItemIcon>
-              <ExpandMore />
-            </ListItemIcon>
-          )}
-        </ListItem>
-        <Collapse
-          in={this.state.teaching_class_open}
-          timeout="auto"
-          unmountOnExit
-        >
-          <List component="div" disablePadding>
-            {this.props.user.teaching_classes.map((userClass, i) => (
-              <ListItem button className={classes.nested}>
-                <ListItemText inset primary={userClass.name} />
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
+        {teaching_classes.length !== 0 && (
+          <div>
+            <Typography className={classNames(classes.sectionTitle)}>
+              Teacher
+            </Typography>
+            <ListItem button onClick={this.handleClickTeaching}>
+              <ListItemIcon>
+                <Icon className="fas fa-book" />
+              </ListItemIcon>
+              <ListItemText inset primary="Classes" />
+              {this.state.teaching_class_open ? (
+                <ListItemIcon>
+                  <ExpandLess />
+                </ListItemIcon>
+              ) : (
+                <ListItemIcon>
+                  <ExpandMore />
+                </ListItemIcon>
+              )}
+            </ListItem>
+            <Collapse
+              in={this.state.teaching_class_open}
+              timeout="auto"
+              unmountOnExit
+            >
+              <List component="div" disablePadding>
+                {teaching_classes.map((userClass, i) => (
+                  <ListItem button className={classes.nested}>
+                    <ListItemText inset primary={userClass.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
 
-        <ListItem button component={Link} to="/grade-assignment">
-          <ListItemIcon>
-            <Icon className="fas fa-edit" />
-          </ListItemIcon>
-          <ListItemText primary="Grade Assignments" />
-        </ListItem>
-        <ListItem button component={Link} to="/create-assignment">
-          <ListItemIcon>
-            <Icon className="fas fa-file-medical" />
-          </ListItemIcon>
-          <ListItemText primary="Create Assignment" />
-        </ListItem>
+            <ListItem button component={Link} to="/grade-assignment">
+              <ListItemIcon>
+                <Icon className="fas fa-edit" />
+              </ListItemIcon>
+              <ListItemText primary="Grade Assignments" />
+            </ListItem>
+            <ListItem button component={Link} to="/create-assignment">
+              <ListItemIcon>
+                <Icon className="fas fa-file-medical" />
+              </ListItemIcon>
+              <ListItemText primary="Create Assignment" />
+            </ListItem>
 
-        <Divider />
+            <Divider />
+          </div>
+        )}
 
         <ListItem button>
           <ListItemIcon>

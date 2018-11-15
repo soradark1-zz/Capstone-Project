@@ -28,11 +28,28 @@ export const createClass = classData => dispatch => {
     });
 };
 
-// Add Class
+// Enroll in a Class
 export const enrollClass = classData => dispatch => {
   dispatch(clearErrors());
   axios
     .post("/api/classes/enroll", classData)
+    .then(() => {
+      dispatch(getCurrentUser());
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
+// Drop a Class
+export const dropClass = classData => dispatch => {
+  dispatch(clearErrors());
+  axios
+    .post("/api/classes/drop", classData)
     .then(() => {
       dispatch(getCurrentUser());
     })

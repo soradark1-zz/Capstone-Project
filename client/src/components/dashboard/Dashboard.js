@@ -3,7 +3,11 @@ import { connect } from "react-redux";
 import compose from "recompose/compose";
 import { withStyles } from "@material-ui/core/styles";
 
-import { createClass, enrollClass } from "../../actions/classesActions";
+import {
+  createClass,
+  enrollClass,
+  dropClass
+} from "../../actions/classesActions";
 
 const styles = theme => ({
   root: {
@@ -21,17 +25,19 @@ class Dashboard extends Component {
     super();
 
     this.state = {
+      className: "",
       classCode: ""
     };
 
     this.createNewClass = this.createNewClass.bind(this);
     this.enrollInClass = this.enrollInClass.bind(this);
-    this.classCodeHandler = this.classCodeHandler.bind(this);
+    this.dropAClass = this.dropAClass.bind(this);
+    this.handleInput = this.handleInput.bind(this);
   }
 
   createNewClass() {
     const newClassData = {
-      name: "My new Class"
+      name: this.state.className
     };
 
     this.props.createClass(newClassData);
@@ -45,9 +51,17 @@ class Dashboard extends Component {
     this.props.enrollClass(newClassData);
   }
 
-  classCodeHandler(evt) {
+  dropAClass() {
+    const newClassData = {
+      code: this.state.classCode
+    };
+
+    this.props.dropClass(newClassData);
+  }
+
+  handleInput(evt) {
     this.setState({
-      classCode: evt.target.value
+      [evt.target.name]: evt.target.value
     });
   }
 
@@ -55,15 +69,23 @@ class Dashboard extends Component {
     return (
       <div>
         <div>
+          <input
+            placeholder="Class Name"
+            value={this.state.className}
+            onChange={this.handleInput}
+            name="className"
+          />
           <button onClick={this.createNewClass}>Add Class</button>
         </div>
         <div>
           <input
             placeholder="Class Code"
             value={this.state.classCode}
-            onChange={this.classCodeHandler}
+            onChange={this.handleInput}
+            name="classCode"
           />
           <button onClick={this.enrollInClass}>Enroll Class</button>
+          <button onClick={this.dropAClass}>Drop Class</button>
         </div>
       </div>
     );
@@ -79,6 +101,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { createClass, enrollClass }
+    { createClass, enrollClass, dropClass }
   )
 )(Dashboard);
