@@ -8,6 +8,7 @@ const passport = require('passport');
 // Load Input Validation
 const validateEnrollInput = require('../../validation/enroll');
 const validateDropInput = require('../../validation/drop');
+const validateInfoInput = require('../../validation/info');
 const validateCreateClassInput = require('../../validation/create_class');
 const validateClassDeleteInput = require('../../validation/delete_class');
 
@@ -35,6 +36,21 @@ router.post('/enroll',
 
     Class.findOne({ code: req.body.code }).then(course => {
         if (course) {
+
+            for (var i = 0; i < req.user.profile.enrolled_classes.length; i++) {
+                if (req.user.profile.enrolled_classes[i].code === req.body.code) {
+                    errors.code = 'Already enrolled in the class for the code given';
+                    return res.status(400).json(errors);
+                }
+            }
+
+            for (var i = 0; i < req.user.profile.teaching_classes.length; i++) {
+                if (req.user.profile.teaching_classes[i].code === req.body.code) {
+                    errors.code = 'You can not enroll as a student in a class that you are teaching';
+                    return res.status(400).json(errors);
+                }
+            }
+
             course.enrolled_students.push({name: req.user.name, id: req.user.id});
             req.user.profile.enrolled_classes.push({name: course.name, code: course.code});
 
@@ -100,6 +116,30 @@ router.post('/drop',
     });
 });
 
+// @route   POST api/classes/info
+// @desc    class code / Returning queried class object of exists
+// @access  Private
+router.post('/info',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+    const { errors, isValid } = validateInfoInput(req.body);
+
+    // Check Validation
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    Class.findOne({ code: req.body.code }).then(course => {
+        if (course) {
+            res.json(course);
+
+        } else {
+            errors.code = 'Class for given course code does not exist';
+            return res.status(400).json(errors);
+        }
+    });
+});
+
 
 //TODO:Fix this fucnction because it crashes every time
 // @route   POST api/classes/delete
@@ -147,7 +187,7 @@ router.post('/delete',
                     }
                 })
             }   
-
+            res.json(course);
         } else if (!(req.user.id === course.owner)){
             errors.code = 'User id and course owner id do not match';
             errors.user_id = req.user.id;
@@ -157,15 +197,16 @@ router.post('/delete',
             errors.code = 'Course code does not exist';
             return res.status(400).json(errors);
         }
+
     });
 
-    Class.findOneAndDelete({ code: req.body.code }, function(err, course){
-        if (err){
-            console.log("Unexpected error when removing a course: " + err);
-        }
-        console.log(course);
-        res.json(course);
-    });
+    // Class.findOneAndDelete({ code: req.body.code }, function(err, course){
+    //     if (err){
+    //         console.log("Unexpected error when removing a course: " + err);
+    //     }
+    //     console.log(course);
+    //     res.json(course);
+    // });
     return res.status(200);
     
 });
