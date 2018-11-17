@@ -14,7 +14,7 @@ import PageNotFound from "./components/info/PageNotFound";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/dashboard/Dashboard";
-import Assignments from "./components/dashboard/Assignments";
+import ClassAssignments from "./components/dashboard/ClassAssignments";
 import CreateAssignment from "./components/dashboard/CreateAssignment";
 import GradeAssignment from "./components/dashboard/GradeAssignment";
 
@@ -42,7 +42,7 @@ class App extends Component {
   render() {
     const { classes, theme } = this.props;
     const { isAuthenticated, user } = this.props.auth;
-    console.log(theme);
+    //console.log(theme);
 
     return (
       <Router>
@@ -60,7 +60,12 @@ class App extends Component {
                 <PrivateRoute
                   exact
                   path="/assignments"
-                  component={Assignments}
+                  component={ClassAssignments}
+                />
+                <PrivateRoute
+                  exact
+                  path="/:classCode/assignments"
+                  component={ClassAssignments}
                 />
                 <PrivateRoute
                   exact

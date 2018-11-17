@@ -1,8 +1,9 @@
 import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
+import isEmpty from "../validation/is-empty.js";
 
-import { GET_ERRORS, SET_CURRENT_USER, GET_USER_CLASSES } from "./types";
+import { GET_ERRORS, SET_CURRENT_USER, UPDATE_USER } from "./types";
 
 // Register User
 export const registerUser = (userData, history) => dispatch => {
@@ -32,6 +33,10 @@ export const loginUser = userData => dispatch => {
       const decoded = jwt_decode(token);
       // Set current user
       dispatch(setCurrentUser(decoded));
+      return decoded;
+    })
+    .then(() => {
+      dispatch(getCurrentUser());
     })
     .catch(err =>
       dispatch({
@@ -47,6 +52,44 @@ export const setCurrentUser = decoded => {
     type: SET_CURRENT_USER,
     payload: decoded
   };
+};
+
+export const getCurrentUser = () => dispatch => {
+  console.log("Updating");
+  axios
+    .get("/api/users/current")
+    .then(async res => {
+      /*const user = {
+        name: res.data.name,
+        profile: res.data.profile,
+        date: res.data.date,
+        email: res.data.email,
+        id: res.data.id,
+        exp: decoded.exp,
+        iat: decoded.iat
+      };*/
+      dispatch({
+        type: UPDATE_USER,
+        payload: res.data.profile
+      });
+    })
+    .catch(err => console.log(err));
+
+  /*return axios
+    .get("/api/users/current")
+    .then(res => {
+      const user = {
+        name: res.data.name,
+        profile: res.data.profile,
+        date: res.data.date,
+        email: res.data.email,
+        id: res.data.id
+        //exp: decoded.exp,
+        //iat: decoded.iat
+      };
+      return user;
+    })
+    .catch(err => console.log(err));*/
 };
 
 // Log user out

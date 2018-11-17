@@ -15,6 +15,7 @@ import Hidden from "@material-ui/core/Hidden";
 //import IconButton from "@material-ui/core/IconButton";
 //import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 //import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import Typography from "@material-ui/core/Typography";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -76,96 +77,169 @@ const styles = theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular
+  },
+
+  sectionTitle: {
+    textAlign: "center",
+    marginTop: "0.3rem"
   }
 });
 
-class Sidebar extends React.Component {
+class Sidebar extends Component {
   state = {
-    drawer_open: true,
-    userEnrolledClasses: [],
-    class_open: false
+    enrolled_class_open: false,
+    teaching_class_open: false
   };
 
-  componentWillMount() {
-    this.setState({});
+  componentWillReceiveProps() {
+    if (this.props.layout.open) {
+      this.setState({
+        enrolled_class_open: false,
+        teaching_class_open: false
+      });
+    }
   }
 
   // Class handles
-  handleClick = () => {
-    this.setState(state => ({ class_open: !state.class_open }));
+  handleClickEnrolled = () => {
+    this.setState({ enrolled_class_open: !this.state.enrolled_class_open });
+  };
+
+  handleClickTeaching = () => {
+    this.setState({ teaching_class_open: !this.state.teaching_class_open });
   };
 
   render() {
     const { open } = this.props.layout;
-    const { classes, userEnrolledClasses } = this.props;
+    const { enrolled_classes, teaching_classes } = this.props.user;
+    const { classes } = this.props;
 
-    //console.log(userEnrolledClasses);
+    //console.log(this.props);
 
     const drawerContent = (
       <div>
         <div className={classes.toolbar} />
         <Divider />
+        {enrolled_classes.length !== 0 && (
+          <div>
+            <Typography className={classNames(classes.sectionTitle)}>
+              Studnet
+            </Typography>
+            <ListItem
+              button
+              onClick={this.handleClickEnrolled}
+              name="class_open"
+            >
+              <ListItemIcon>
+                <Icon className="fas fa-book" />
+              </ListItemIcon>
+              <ListItemText inset primary="Classes" />
+              {this.state.enrolled_class_open ? (
+                <ListItemIcon>
+                  <ExpandLess />
+                </ListItemIcon>
+              ) : (
+                <ListItemIcon>
+                  <ExpandMore />
+                </ListItemIcon>
+              )}
+            </ListItem>
+            <Collapse
+              in={this.state.enrolled_class_open}
+              timeout="auto"
+              unmountOnExit
+            >
+              <List component="div" disablePadding>
+                {enrolled_classes.map((userClass, i) => (
+                  <ListItem
+                    button
+                    component={Link}
+                    to={{
+                      pathname: `/${userClass.code}/assignments`,
+                      testvalue: "hello"
+                    }}
+                    params={{ testvalue: "hello" }}
+                    className={classes.nested}
+                  >
+                    <ListItemText inset primary={userClass.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
 
-        <ListItem button onClick={this.handleClick}>
-          <ListItemIcon>
-            <Icon className="fas fa-book" />
-          </ListItemIcon>
-          <ListItemText inset primary="Classes" />
-          {this.state.class_open ? (
-            <ListItemIcon>
-              <ExpandLess />
-            </ListItemIcon>
-          ) : (
-            <ListItemIcon>
-              <ExpandMore />
-            </ListItemIcon>
-          )}
-        </ListItem>
-        <Collapse in={this.state.class_open} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {userEnrolledClasses.map((userClass, i) => (
-              <ListItem button className={classes.nested}>
-                <ListItemText inset primary={userClass} />
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
+            <ListItem button>
+              <ListItemIcon>
+                <Icon className="fas fa-calendar-alt" />
+              </ListItemIcon>
+              <ListItemText primary="Calendar" />
+            </ListItem>
+            <ListItem button component={Link} to="/assignments">
+              <ListItemIcon>
+                <Icon className="fas fa-pencil-alt" />
+              </ListItemIcon>
+              <ListItemText primary="Assignments" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <Icon className="fas fa-paper-plane" />
+              </ListItemIcon>
+              <ListItemText primary="Submissions" />
+            </ListItem>
 
-        <ListItem button>
-          <ListItemIcon>
-            <Icon className="fas fa-calendar-alt" />
-          </ListItemIcon>
-          <ListItemText primary="Calendar" />
-        </ListItem>
-        <ListItem button component={Link} to="/assignments">
-          <ListItemIcon>
-            <Icon className="fas fa-pencil-alt" />
-          </ListItemIcon>
-          <ListItemText primary="Assignments" />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon>
-            <Icon className="fas fa-paper-plane" />
-          </ListItemIcon>
-          <ListItemText primary="Submissions" />
-        </ListItem>
+            <Divider />
+          </div>
+        )}
 
-        <Divider />
+        {teaching_classes.length !== 0 && (
+          <div>
+            <Typography className={classNames(classes.sectionTitle)}>
+              Teacher
+            </Typography>
+            <ListItem button onClick={this.handleClickTeaching}>
+              <ListItemIcon>
+                <Icon className="fas fa-book" />
+              </ListItemIcon>
+              <ListItemText inset primary="Classes" />
+              {this.state.teaching_class_open ? (
+                <ListItemIcon>
+                  <ExpandLess />
+                </ListItemIcon>
+              ) : (
+                <ListItemIcon>
+                  <ExpandMore />
+                </ListItemIcon>
+              )}
+            </ListItem>
+            <Collapse
+              in={this.state.teaching_class_open}
+              timeout="auto"
+              unmountOnExit
+            >
+              <List component="div" disablePadding>
+                {teaching_classes.map((userClass, i) => (
+                  <ListItem button className={classes.nested}>
+                    <ListItemText inset primary={userClass.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
 
-        <ListItem button component={Link} to="/grade-assignment">
-          <ListItemIcon>
-            <Icon className="fas fa-edit" />
-          </ListItemIcon>
-          <ListItemText primary="Grade Assignments" />
-        </ListItem>
-        <ListItem button component={Link} to="/create-assignment">
-          <ListItemIcon>
-            <Icon className="fas fa-file-medical" />
-          </ListItemIcon>
-          <ListItemText primary="Create Assignment" />
-        </ListItem>
+            <ListItem button component={Link} to="/grade-assignment">
+              <ListItemIcon>
+                <Icon className="fas fa-edit" />
+              </ListItemIcon>
+              <ListItemText primary="Grade Assignments" />
+            </ListItem>
+            <ListItem button component={Link} to="/create-assignment">
+              <ListItemIcon>
+                <Icon className="fas fa-file-medical" />
+              </ListItemIcon>
+              <ListItemText primary="Create Assignment" />
+            </ListItem>
 
-        <Divider />
+            <Divider />
+          </div>
+        )}
 
         <ListItem button>
           <ListItemIcon>
@@ -221,7 +295,7 @@ Sidebar.propTypes = {
 
 const mapStateToProps = state => ({
   layout: state.layout,
-  userEnrolledClasses: state.auth.userEnrolledClasses
+  user: state.auth.user
 });
 
 export default compose(

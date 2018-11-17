@@ -62,8 +62,8 @@ class CreateAssignment extends Component {
 
   render() {
     const { errors } = this.state;
-    const { classes, userEnrolledClasses } = this.props;
-
+    const { classes } = this.props;
+    console.log(this.props);
     return (
       <div id="create_assignment" className={classes.form}>
         <div className={classes.formTitle}>Create Assignment</div>
@@ -83,8 +83,8 @@ class CreateAssignment extends Component {
             margin="normal"
             variant="outlined"
           >
-            {userEnrolledClasses.map((userClass, i) => (
-              <MenuItem value={userClass}>{userClass}</MenuItem>
+            {this.props.user.teaching_classes.map((userClass, i) => (
+              <MenuItem value={userClass.name}>{userClass.name}</MenuItem>
             ))}
           </TextField>
 
@@ -171,7 +171,7 @@ CreateAssignment.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  userEnrolledClasses: state.auth.userEnrolledClasses,
+  user: state.auth.user,
   errors: state.errors
 });
 

@@ -3,7 +3,6 @@ import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-import { clearCurrentProfile } from "../../actions/profileActions";
 import { toggleSidebar } from "../../actions/layoutActions";
 
 import compose from "recompose/compose";
@@ -62,7 +61,6 @@ class Navbar extends Component {
 
   onLogoutClick(e) {
     e.preventDefault();
-    this.props.clearCurrentProfile();
     this.props.logoutUser();
     this.props.history.push("/");
   }
@@ -243,6 +241,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { logoutUser, clearCurrentProfile, toggleSidebar }
+    { logoutUser, toggleSidebar }
   )
 )(withRouter(Navbar));
