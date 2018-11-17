@@ -170,7 +170,7 @@ router.post('/delete',
                         }
                         student.save();
                     }
-                })
+                });
             }
 
             for (var i = 0; i < course.teachers.length; i++) {
@@ -185,7 +185,7 @@ router.post('/delete',
                         }
                         teacher.save();
                     }
-                })
+                });
             }   
             res.json(course);
         } else if (!(req.user.id === course.owner)){
