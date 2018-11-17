@@ -62,6 +62,23 @@ export const dropClass = classData => dispatch => {
     });
 };
 
+// Delete a Class
+export const deleteClass = classData => dispatch => {
+  dispatch(clearErrors());
+  axios
+    .post("/api/classes/delete", classData)
+    .then(() => {
+      dispatch(getCurrentUser());
+    })
+    .catch(err => {
+      console.log(err);
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
 // Clear errors
 export const clearErrors = () => {
   return {

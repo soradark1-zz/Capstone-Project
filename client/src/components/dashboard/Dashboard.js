@@ -6,7 +6,8 @@ import { withStyles } from "@material-ui/core/styles";
 import {
   createClass,
   enrollClass,
-  dropClass
+  dropClass,
+  deleteClass
 } from "../../actions/classesActions";
 
 const styles = theme => ({
@@ -32,6 +33,7 @@ class Dashboard extends Component {
     this.createNewClass = this.createNewClass.bind(this);
     this.enrollInClass = this.enrollInClass.bind(this);
     this.dropAClass = this.dropAClass.bind(this);
+    this.deleteAClass = this.deleteAClass.bind(this);
     this.handleInput = this.handleInput.bind(this);
   }
 
@@ -57,6 +59,14 @@ class Dashboard extends Component {
     };
 
     this.props.dropClass(newClassData);
+  }
+
+  deleteAClass() {
+    const newClassData = {
+      code: this.state.classCode
+    };
+
+    this.props.deleteClass(newClassData);
   }
 
   handleInput(evt) {
@@ -86,6 +96,7 @@ class Dashboard extends Component {
           />
           <button onClick={this.enrollInClass}>Enroll Class</button>
           <button onClick={this.dropAClass}>Drop Class</button>
+          <button onClick={this.deleteAClass}>Delete Class</button>
         </div>
       </div>
     );
@@ -101,6 +112,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { createClass, enrollClass, dropClass }
+    { createClass, enrollClass, dropClass, deleteClass }
   )
 )(Dashboard);
