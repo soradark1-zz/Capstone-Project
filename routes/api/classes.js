@@ -200,13 +200,13 @@ router.post('/delete',
 
     });
 
-    // Class.findOneAndDelete({ code: req.body.code }, function(err, course){
-    //     if (err){
-    //         console.log("Unexpected error when removing a course: " + err);
-    //     }
-    //     console.log(course);
-    //     res.json(course);
-    // });
+    Class.findOneAndDelete({ code: req.body.code }, function(err, course){
+        if (err){
+            console.log("Unexpected error when removing a course: " + err);
+        }
+        console.log(course);
+        res.json(course);
+    });
     return res.status(200);
     
 });
