@@ -11,6 +11,7 @@ import classes from "./classes.json";
 const initialState = {
   isAuthenticated: false,
   user: {
+    isLoaded: false,
     name: "",
     id: "",
     enrolled_classes: [],
@@ -31,7 +32,8 @@ export default function(state = initialState, action) {
         ...state,
         user: {
           ...state.user,
-          ...action.payload
+          ...action.payload,
+          isLoaded: true
         }
       };
     case GET_USER_CLASSES:

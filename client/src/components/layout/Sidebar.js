@@ -155,10 +155,9 @@ class Sidebar extends Component {
                     button
                     component={Link}
                     to={{
-                      pathname: `/${userClass.code}/assignments`,
+                      pathname: `/student/${userClass.code}`,
                       testvalue: "hello"
                     }}
-                    params={{ testvalue: "hello" }}
                     className={classes.nested}
                   >
                     <ListItemText inset primary={userClass.name} />
@@ -217,7 +216,15 @@ class Sidebar extends Component {
             >
               <List component="div" disablePadding>
                 {teaching_classes.map((userClass, i) => (
-                  <ListItem button className={classes.nested}>
+                  <ListItem
+                    button
+                    component={Link}
+                    to={{
+                      pathname: `/teacher/${userClass.code}`,
+                      testvalue: "hello"
+                    }}
+                    className={classes.nested}
+                  >
                     <ListItemText inset primary={userClass.name} />
                   </ListItem>
                 ))}

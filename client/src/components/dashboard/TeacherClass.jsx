@@ -43,32 +43,34 @@ const rows = [
   createData("Homework 1", 159, 6.0, 24, 4.0)
 ];
 
-class ClassAssignments extends React.Component {
+class TeacherClass extends React.Component {
   state = {
     className: "",
     classCode: ""
   };
 
   setClass() {
-    const {
-      match: { params }
-    } = this.props;
+    if (this.props.user.isLoaded) {
+      const {
+        match: { params }
+      } = this.props;
 
-    const enrolled_classes = this.props.user.enrolled_classes;
-    const currentClass = enrolled_classes.find(userClass => {
-      return userClass.code === params.classCode;
-    });
-
-    //Is enrolled in class
-    if (currentClass) {
-      this.setState({
-        className: currentClass.name,
-        classCode: currentClass.code
+      const teaching_classes = this.props.user.teaching_classes;
+      const currentClass = teaching_classes.find(userClass => {
+        return userClass.code === params.classCode;
       });
-    }
-    //If not enrolled, redirect to Dashboard
-    else if (!enrolled_classes) {
-      this.props.history.push(`/dashboard`);
+
+      //Is teacher of class
+      if (currentClass) {
+        this.setState({
+          className: currentClass.name,
+          classCode: currentClass.code
+        });
+      }
+      //If not teacher, redirect to Dashboard
+      else {
+        this.props.history.push(`/dashboard`);
+      }
     }
   }
 
@@ -83,40 +85,12 @@ class ClassAssignments extends React.Component {
   }
 
   render() {
-    const { classes } = this.props;
+    //const { classes } = this.props;
     const { className, classCode } = this.state;
-    console.log(this.props);
+    //console.log(this.props);
     return (
       <div>
         <h1>{className + " " + classCode}</h1>
-        <Paper className={classes.root}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Assignments</TableCell>
-                <TableCell>Dates</TableCell>
-                <TableCell>Date Due</TableCell>
-                <TableCell>Grade</TableCell>
-                <TableCell>Submited</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map(row => {
-                return (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
-                    </TableCell>
-                    <TableCell>{row.calories}</TableCell>
-                    <TableCell>{row.fat}</TableCell>
-                    <TableCell>{row.carbs}</TableCell>
-                    <TableCell>{row.protein}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Paper>
       </div>
     );
   }
@@ -125,6 +99,7 @@ class ClassAssignments extends React.Component {
 //export default withStyles(styles)(SimpleTable);
 
 const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
   user: state.auth.user
 });
 
@@ -134,4 +109,4 @@ export default compose(
     mapStateToProps,
     {}
   )
-)(ClassAssignments);
+)(TeacherClass);

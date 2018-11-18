@@ -14,13 +14,15 @@ import PageNotFound from "./components/info/PageNotFound";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/dashboard/Dashboard";
-import ClassAssignments from "./components/dashboard/ClassAssignments";
+import StudentClass from "./components/dashboard/StudentClass";
+import TeacherClass from "./components/dashboard/TeacherClass";
 import CreateAssignment from "./components/dashboard/CreateAssignment";
+import CreateClass from "./components/dashboard/CreateClass";
 import GradeAssignment from "./components/dashboard/GradeAssignment";
 
 import compose from "recompose/compose";
 import "./styles/App.css";
-import classNames from "classnames";
+//import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 
 const styles = theme => ({
@@ -60,12 +62,22 @@ class App extends Component {
                 <PrivateRoute
                   exact
                   path="/assignments"
-                  component={ClassAssignments}
+                  component={StudentClass}
                 />
                 <PrivateRoute
                   exact
-                  path="/:classCode/assignments"
-                  component={ClassAssignments}
+                  path="/create-class"
+                  component={CreateClass}
+                />
+                <PrivateRoute
+                  exact
+                  path="/student/:classCode"
+                  component={StudentClass}
+                />
+                <PrivateRoute
+                  exact
+                  path="/teacher/:classCode"
+                  component={TeacherClass}
                 />
                 <PrivateRoute
                   exact
