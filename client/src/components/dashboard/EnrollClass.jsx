@@ -7,15 +7,15 @@ import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { createClass } from "../../actions/classesActions";
+import { enrollClass } from "../../actions/classesActions";
 
 import styles from "../../styles/formstyle";
 
-class CreateClass extends Component {
+class EnrollClass extends Component {
   constructor() {
     super();
     this.state = {
-      name: "",
+      code: "",
       errors: {}
     };
 
@@ -32,9 +32,9 @@ class CreateClass extends Component {
   onSubmit(e) {
     e.preventDefault();
 
-    const classData = { name: this.state.name };
+    const classData = { code: this.state.code };
 
-    this.props.createClass(classData);
+    this.props.enrollClass(classData);
   }
 
   onChange(e) {
@@ -53,21 +53,20 @@ class CreateClass extends Component {
     const { classes } = this.props;
     return (
       <div id="create_assignment" className={classes.form}>
-        <div className={classes.formTitle}>Create Class</div>
+        <div className={classes.formTitle}>Enroll into a Class</div>
         <form
           onSubmit={this.onSubmit}
           noValidate
           className={classes.formFields}
         >
           <TextField
-            error={errors.name ? true : false}
-            label="Class Name"
-            name="name"
-            value={this.state.name}
+            error={errors.code ? true : false}
+            label="Class Code"
+            name="code"
+            value={this.state.code}
             onChange={this.onChange}
             className={classes.textField}
-            helperText={errors.name}
-            type="name"
+            helperText={errors.code}
             margin="normal"
             variant="outlined"
           />
@@ -78,7 +77,7 @@ class CreateClass extends Component {
             variant="contained"
             size="large"
           >
-            Create
+            Enroll
           </Button>
         </form>
       </div>
@@ -86,7 +85,7 @@ class CreateClass extends Component {
   }
 }
 
-CreateClass.propTypes = {
+EnrollClass.propTypes = {
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -100,6 +99,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { createClass }
+    { enrollClass }
   )
-)(CreateClass);
+)(EnrollClass);

@@ -2,8 +2,11 @@ import React from "react";
 
 import { connect } from "react-redux";
 import compose from "recompose/compose";
-
+import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
+
+import Button from "@material-ui/core/Button";
+
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -13,11 +16,14 @@ import Paper from "@material-ui/core/Paper";
 
 import moment from "moment";
 
+import { dropClass } from "../../actions/classesActions";
+
 const styles = theme => ({
-  root: {
-    width: "100%",
-    marginTop: theme.spacing.unit * 3,
-    overflowX: "auto"
+  button: {
+    textTransform: "inherit",
+    margin: "0.6rem",
+    fontSize: "1.2rem",
+    backgroundColor: theme.palette.secondary.main
   },
   table: {
     minWidth: 700,
@@ -44,10 +50,16 @@ const rows = [
 ];
 
 class StudnetClass extends React.Component {
-  state = {
-    className: "",
-    classCode: ""
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      className: "",
+      classCode: ""
+    };
+
+    this.dropClass = this.dropClass.bind(this);
+  }
 
   setClass() {
     if (this.props.user.isLoaded) {
@@ -84,6 +96,14 @@ class StudnetClass extends React.Component {
     this.setClass();
   }
 
+  dropClass() {
+    const newClassData = {
+      code: this.state.classCode
+    };
+
+    this.props.dropClass(newClassData);
+  }
+
   render() {
     const { classes } = this.props;
     const { className } = this.state;
@@ -118,6 +138,15 @@ class StudnetClass extends React.Component {
             </TableBody>
           </Table>
         </Paper>
+
+        <Button
+          className={classNames(classes.button)}
+          variant="contained"
+          size="large"
+          onClick={this.dropClass}
+        >
+          Drop Class
+        </Button>
       </div>
     );
   }
@@ -133,6 +162,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    {}
+    { dropClass }
   )
 )(StudnetClass);

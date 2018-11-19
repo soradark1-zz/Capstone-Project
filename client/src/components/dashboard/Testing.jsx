@@ -1,24 +1,24 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import compose from "recompose/compose";
-import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
 
 import {
   createClass,
   enrollClass,
   dropClass,
-  deleteClass
+  deleteClass,
+  getClass
 } from "../../actions/classesActions";
 
 const styles = theme => ({
-  button: {
-    textTransform: "inherit",
-    margin: "0.6rem",
-    fontSize: "1.2rem",
-    backgroundColor: theme.palette.secondary.main
+  root: {
+    width: "100%",
+    marginTop: theme.spacing.unit * 3,
+    overflowX: "auto"
+  },
+  table: {
+    minWidth: 700
   }
 });
 
@@ -35,6 +35,7 @@ class Dashboard extends Component {
     this.enrollInClass = this.enrollInClass.bind(this);
     this.dropAClass = this.dropAClass.bind(this);
     this.deleteAClass = this.deleteAClass.bind(this);
+    this.getClass = this.getClass.bind(this);
     this.handleInput = this.handleInput.bind(this);
   }
 
@@ -70,6 +71,14 @@ class Dashboard extends Component {
     this.props.deleteClass(newClassData);
   }
 
+  getClass() {
+    const newClassData = {
+      code: this.state.classCode
+    };
+
+    this.props.getClass(newClassData);
+  }
+
   handleInput(evt) {
     this.setState({
       [evt.target.name]: evt.target.value
@@ -77,28 +86,29 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { classes } = this.props;
-
     return (
       <div>
-        <Button
-          component={Link}
-          to="/create-class"
-          className={classNames(classes.button)}
-          variant="contained"
-          size="large"
-        >
-          Create Class
-        </Button>
-        <Button
-          component={Link}
-          to="/enroll-class"
-          className={classNames(classes.button)}
-          variant="contained"
-          size="large"
-        >
-          Enroll Class
-        </Button>
+        <div>
+          <input
+            placeholder="Class Name"
+            value={this.state.className}
+            onChange={this.handleInput}
+            name="className"
+          />
+          <button onClick={this.createNewClass}>Add Class</button>
+        </div>
+        <div>
+          <input
+            placeholder="Class Code"
+            value={this.state.classCode}
+            onChange={this.handleInput}
+            name="classCode"
+          />
+          <button onClick={this.enrollInClass}>Enroll Class</button>
+          <button onClick={this.dropAClass}>Drop Class</button>
+          <button onClick={this.deleteAClass}>Delete Class</button>
+          <button onClick={this.getClass}>Get Class</button>
+        </div>
       </div>
     );
   }
@@ -113,6 +123,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { createClass, enrollClass, dropClass, deleteClass }
+    { createClass, enrollClass, dropClass, deleteClass, getClass }
   )
 )(Dashboard);

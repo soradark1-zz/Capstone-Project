@@ -1,17 +1,16 @@
-import isEmpty from "../validation/is-empty";
-
-import { CREATE_CLASS } from "../actions/types";
+import { SET_CLASS } from "../actions/types";
+import isEmpty from "../validation/is-empty.js";
 
 const initialState = {
-  classes: {}
+  isLoaded: false
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case CREATE_CLASS:
+    case SET_CLASS:
       return {
-        ...state,
-        classes: action.payload
+        isLoaded: !isEmpty(action.payload),
+        ...action.payload
       };
     default:
       return state;

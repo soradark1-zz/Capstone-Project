@@ -2,22 +2,35 @@ import React from "react";
 
 import { connect } from "react-redux";
 import compose from "recompose/compose";
-
+import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
+import Button from "@material-ui/core/Button";
+
+/*import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
+import Paper from "@material-ui/core/Paper";*/
+
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+import { deleteClass, getClass } from "../../actions/classesActions";
 
 import moment from "moment";
 
 const styles = theme => ({
-  root: {
-    width: "100%",
-    marginTop: theme.spacing.unit * 3,
-    overflowX: "auto"
+  button: {
+    textTransform: "inherit",
+    margin: "0.6rem",
+    fontSize: "1.2rem",
+    backgroundColor: theme.palette.secondary.main
+  },
+  loading: {
+    marginTop: "45vh",
+    marginLeft: "-25px",
+    position: "absolute",
+    top: 0
   },
   table: {
     minWidth: 700,
@@ -44,10 +57,17 @@ const rows = [
 ];
 
 class TeacherClass extends React.Component {
-  state = {
-    className: "",
-    classCode: ""
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      className: "",
+      classCode: ""
+    };
+
+    this.deleteClass = this.deleteClass.bind(this);
+    this.getClass = this.getClass.bind(this);
+  }
 
   setClass() {
     if (this.props.user.isLoaded) {
@@ -62,6 +82,7 @@ class TeacherClass extends React.Component {
 
       //Is teacher of class
       if (currentClass) {
+        this.props.getClass({ code: currentClass.code });
         this.setState({
           className: currentClass.name,
           classCode: currentClass.code
@@ -75,7 +96,8 @@ class TeacherClass extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.match !== this.props.match) {
+    if (prevProps.match.params !== this.props.match.params) {
+      this.props.getClass({});
       this.setClass();
     }
   }
@@ -84,13 +106,57 @@ class TeacherClass extends React.Component {
     this.setClass();
   }
 
+  componentWillUnmount() {
+    this.props.getClass({});
+  }
+
+  deleteClass() {
+    const newClassData = {
+      code: this.state.classCode
+    };
+    this.props.deleteClass(newClassData);
+    this.props.history.push(`/dashboard`);
+  }
+
+  getClass() {
+    const newClassData = {
+      code: this.state.classCode
+    };
+
+    this.props.getClass(newClassData);
+  }
+
   render() {
-    //const { classes } = this.props;
+    const { classes } = this.props;
     const { className, classCode } = this.state;
     //console.log(this.props);
     return (
       <div>
-        <h1>{className + " " + classCode}</h1>
+        {this.props.class.isLoaded ? (
+          <div>
+            <h1>{className}</h1>
+            <div>Class Code: {classCode}</div>
+            <div>Enrolled Students:</div>
+            {this.props.class.enrolled_students &&
+              this.props.class.enrolled_students.map((studnet, i) => (
+                <div key={i}>{studnet.name}</div>
+              ))}
+            <Button
+              className={classNames(classes.button)}
+              variant="contained"
+              size="large"
+              onClick={this.deleteClass}
+            >
+              Delete Class
+            </Button>
+          </div>
+        ) : (
+          <CircularProgress
+            className={classNames(classes.loading)}
+            color="secondary"
+            size={50}
+          />
+        )}
       </div>
     );
   }
@@ -100,13 +166,14 @@ class TeacherClass extends React.Component {
 
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
-  user: state.auth.user
+  user: state.auth.user,
+  class: state.class
 });
 
 export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    {}
+    { deleteClass, getClass }
   )
 )(TeacherClass);

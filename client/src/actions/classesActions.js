@@ -1,6 +1,7 @@
 import axios from "axios";
+import isEmpty from "../validation/is-empty.js";
 
-import { CREATE_CLASS, GET_ERRORS, CLEAR_ERRORS } from "./types";
+import { SET_CLASS, GET_ERRORS, CLEAR_ERRORS } from "./types";
 
 import { getCurrentUser } from "./authActions";
 
@@ -11,10 +12,6 @@ export const createClass = classData => dispatch => {
     .post("/api/classes/create", classData)
     .then(res => {
       console.log(res.data);
-      dispatch({
-        type: CREATE_CLASS,
-        payload: res.data
-      });
     })
     .then(() => {
       dispatch(getCurrentUser());
@@ -45,6 +42,34 @@ export const enrollClass = classData => dispatch => {
     });
 };
 
+// Get a Class' info
+export const getClass = classData => dispatch => {
+  //dispatch(clearErrors());
+
+  if (isEmpty(classData)) {
+    dispatch({
+      type: SET_CLASS,
+      payload: {}
+    });
+  } else {
+    axios
+      .post("/api/classes/info", classData)
+      .then(response => {
+        dispatch({
+          type: SET_CLASS,
+          payload: response.data
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        dispatch({
+          type: GET_ERRORS,
+          payload: err.response.data
+        });
+      });
+  }
+};
+
 // Drop a Class
 export const dropClass = classData => dispatch => {
   dispatch(clearErrors());
@@ -65,6 +90,7 @@ export const dropClass = classData => dispatch => {
 // Delete a Class
 export const deleteClass = classData => dispatch => {
   dispatch(clearErrors());
+
   axios
     .post("/api/classes/delete", classData)
     .then(() => {

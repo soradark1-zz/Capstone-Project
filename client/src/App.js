@@ -18,7 +18,10 @@ import StudentClass from "./components/dashboard/StudentClass";
 import TeacherClass from "./components/dashboard/TeacherClass";
 import CreateAssignment from "./components/dashboard/CreateAssignment";
 import CreateClass from "./components/dashboard/CreateClass";
+import EnrollClass from "./components/dashboard/EnrollClass";
 import GradeAssignment from "./components/dashboard/GradeAssignment";
+
+import Testing from "./components/dashboard/Testing";
 
 import compose from "recompose/compose";
 import "./styles/App.css";
@@ -59,15 +62,16 @@ class App extends Component {
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/about" component={About} />
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
-                <PrivateRoute
-                  exact
-                  path="/assignments"
-                  component={StudentClass}
-                />
+                <PrivateRoute exact path="/testing" component={Testing} />
                 <PrivateRoute
                   exact
                   path="/create-class"
                   component={CreateClass}
+                />
+                <PrivateRoute
+                  exact
+                  path="/enroll-class"
+                  component={EnrollClass}
                 />
                 <PrivateRoute
                   exact

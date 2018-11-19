@@ -22,9 +22,22 @@ const initialState = {
 export default function(state = initialState, action) {
   switch (action.type) {
     case SET_CURRENT_USER:
+      if (isEmpty(action.payload)) {
+        return {
+          ...state,
+          isAuthenticated: false,
+          user: {
+            isLoaded: false,
+            name: "",
+            id: "",
+            enrolled_classes: [],
+            teaching_classes: []
+          }
+        };
+      }
       return {
         ...state,
-        isAuthenticated: !isEmpty(action.payload),
+        isAuthenticated: true,
         user: { ...state.user, ...action.payload }
       };
     case UPDATE_USER:

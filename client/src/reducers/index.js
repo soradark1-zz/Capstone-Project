@@ -8,5 +8,5 @@ export default combineReducers({
   auth: authReducer,
   layout: layoutReducer,
   errors: errorReducer,
-  classes: classesReducer
+  class: classesReducer
 });

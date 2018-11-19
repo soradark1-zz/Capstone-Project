@@ -9,7 +9,7 @@ export const GET_USER_CLASSES = "GET_USER_CLASSES";
 export const UPDATE_USER = "UPDATE_USER";
 
 //Classes
-export const CREATE_CLASS = "CREATE_CLASS";
+export const SET_CLASS = "SET_CLASS";
 
 //Layout
 export const TOGGLE_SIDEBAR = "TOGGLE_SIDEBAR";

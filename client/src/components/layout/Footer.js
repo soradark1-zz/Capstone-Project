@@ -8,7 +8,6 @@ import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
 
-
 const styles = theme => ({
   footer: {
     top: "auto",
@@ -19,16 +18,14 @@ const styles = theme => ({
     justifyContent: "center"
   },
   footerText: {
-    padding: '1rem',
-    fontSize: '1rem',
+    padding: "1rem",
+    fontSize: "1rem"
   }
 });
 
 class Footer extends Component {
   render() {
-    const { classes, theme } = this.props;
-
-
+    const { classes } = this.props;
 
     return (
       <AppBar className={classes.footer}>

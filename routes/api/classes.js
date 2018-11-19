@@ -186,14 +186,14 @@ router.post('/delete',
                             teacher.save();
                         }
                     });
-                }   
+                }
 
                 Class.deleteOne({ code: course.code }, function (err) {
                     if (err) return handleError(err);
                 });
 
                 res.json(course);
-            
+
             } else if (!(req.user.id === course.owner)) {
                 errors.code = 'User id and course owner id do not match';
                 errors.user_id = req.user.id;

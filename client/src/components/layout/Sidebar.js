@@ -123,7 +123,7 @@ class Sidebar extends Component {
         {enrolled_classes.length !== 0 && (
           <div>
             <Typography className={classNames(classes.sectionTitle)}>
-              Studnet
+              Student
             </Typography>
             <ListItem
               button
@@ -152,6 +152,7 @@ class Sidebar extends Component {
               <List component="div" disablePadding>
                 {enrolled_classes.map((userClass, i) => (
                   <ListItem
+                    key={i}
                     button
                     component={Link}
                     to={{
@@ -217,6 +218,7 @@ class Sidebar extends Component {
               <List component="div" disablePadding>
                 {teaching_classes.map((userClass, i) => (
                   <ListItem
+                    key={i}
                     button
                     component={Link}
                     to={{
