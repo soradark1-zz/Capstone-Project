@@ -11,6 +11,7 @@ const validateDropInput = require('../../validation/drop');
 const validateInfoInput = require('../../validation/info');
 const validateCreateClassInput = require('../../validation/create_class');
 const validateClassDeleteInput = require('../../validation/delete_class');
+const validateCreateAssignmentInput = require('../../validation/create_assignment');
 
 // Load Class model
 const Class = require('../../models/Class');
@@ -269,12 +270,16 @@ router.post('/create_assignment',
                   });
 
                 course.save();
+
+                res.json(course);
             }
             else {
                 errors.code = 'Course code does not exist';
                 return res.status(400).json(errors);
             }
         });
+
+        res.status(200);
 });
 
 module.exports = router;

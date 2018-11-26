@@ -9,7 +9,7 @@ module.exports = function validateCreateAssignmentInput(data) {
   data.max_grade = !isEmpty(data.max_grade) ? data.max_grade : '';
   data.date_assigned = !isEmpty(data.date_assigned) ? data.date_assigned : '';
   data.date_due = !isEmpty(data.date_due) ? data.date_due : '';
-  data.class_code = !isEmpty(data.class_code) ? data.class_code : '';
+  data.code = !isEmpty(data.code) ? data.code : '';
 
   if (Validator.isEmpty(data.assignment_name)) {
     errors.assignment_name = 'assignment_name field is required';
@@ -19,7 +19,7 @@ module.exports = function validateCreateAssignmentInput(data) {
     errors.description = 'description field is required';
   }
 
-  if (Validator.isEmpty(data.max_grade)) {
+  if (!Validator.isInt(data.max_grade, {min: 0})) {
     errors.max_grade = 'max_grade field is required';
   }
 
@@ -31,8 +31,8 @@ module.exports = function validateCreateAssignmentInput(data) {
     errors.date_due = 'date_due field is required';
   }
 
-  if (Validator.isEmpty(data.class_code)) {
-    errors.class_code = 'class_code field is required';
+  if (Validator.isEmpty(data.code)) {
+    errors.code = 'class code field is required';
   }
 
   return {

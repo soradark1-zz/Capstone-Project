@@ -26,7 +26,7 @@ const ClassSchema = new Schema({
   assignments: [{
     assignment_name: String,
     description: String,
-    max_grade: Number,
+    max_grade: String,
     date_assigned: String,
     date_due: String,
     submitted_docs: [{
