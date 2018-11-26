@@ -35,10 +35,13 @@ const UserSchema = new Schema({
       class_id: String
     }],
     commented_document_ids: [{
-      id: String,
-      doc_name: String,
-      class_name: String,
-      class_id: String
+      doc_id: String,
+      class_code: String,
+      assign_name: String,
+      submitted: {
+        type: Boolean,
+        default: false
+      }
     }]
   }
 });

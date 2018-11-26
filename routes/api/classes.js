@@ -243,4 +243,38 @@ router.post('/create',
             .catch(err => console.log(err));
     });
 
+// @route   POST api/classes/create_assignment
+// @desc    Create a new assignment
+// @access  Private
+router.post('/create_assignment',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { errors, isValid } = validateCreateAssignmentInput(req.body);
+
+        // Check Validation
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+
+        Class.findOne({ code: req.body.code }).then(course => {
+            if (course){
+                course.assignments.push({
+                    assignment_name: req.body.assignment_name,
+                    description: req.body.description,
+                    max_grade: req.body.max_grade,
+                    date_assigned: req.body.date_assigned,
+                    date_due: req.body.date_due,
+                    submitted_docs: [],
+                    peer_grading_assignment: []
+                  });
+
+                course.save();
+            }
+            else {
+                errors.code = 'Course code does not exist';
+                return res.status(400).json(errors);
+            }
+        });
+});
+
 module.exports = router;
