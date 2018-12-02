@@ -13,13 +13,15 @@ import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import { DateTimePicker } from "material-ui-pickers";
 import MomentUtils from "material-ui-pickers/utils/moment-utils";
 
+import { createAssignment } from "../../actions/classesActions";
+
 import styles from "../../styles/formstyle";
 
 class CreateAssignment extends Component {
   constructor() {
     super();
     this.state = {
-      class: "",
+      classCode: "",
       name: "",
       description: "",
       dateAssigned: new Date(),
@@ -40,13 +42,27 @@ class CreateAssignment extends Component {
 
   onSubmit(e) {
     e.preventDefault();
+    const {
+      classCode,
+      name,
+      description,
+      dateAssigned,
+      dateDue,
+      maxGrade
+    } = this.state;
 
-    const userData = {
-      email: this.state.email,
-      password: this.state.password
+    const assignmentData = {
+      assignment_name: name,
+      description,
+      date_assigned: dateAssigned,
+      date_due: dateDue,
+      max_grade: "" + maxGrade,
+      code: classCode
     };
 
-    //this.props.loginUser(userData);
+    console.log(assignmentData);
+
+    this.props.createAssignment(assignmentData);
   }
 
   onChange(e) {
@@ -73,31 +89,33 @@ class CreateAssignment extends Component {
           className={classes.formFields}
         >
           <TextField
+            error={errors.code ? true : false}
             select
             label="Class"
-            name="class"
-            value={this.state.class}
+            name="classCode"
+            value={this.state.classCode}
             onChange={this.onChange}
             className={classes.textField}
+            helperText={errors.code}
             type="class"
             margin="normal"
             variant="outlined"
           >
             {this.props.user.teaching_classes.map((userClass, i) => (
-              <MenuItem key={i} value={userClass.name}>
+              <MenuItem key={i} value={userClass.code} id={i}>
                 {userClass.name}
               </MenuItem>
             ))}
           </TextField>
 
           <TextField
-            error={errors.name ? true : false}
+            error={errors.assignment_name ? true : false}
             label="Assignment Name"
             name="name"
             value={this.state.name}
             onChange={this.onChange}
             className={classes.textField}
-            helperText={errors.name}
+            helperText={errors.assignment_name}
             type="name"
             margin="normal"
             variant="outlined"
@@ -120,13 +138,13 @@ class CreateAssignment extends Component {
           />
 
           <TextField
-            error={errors.name ? true : false}
+            error={errors.max_grade ? true : false}
             label="Max Grade"
             name="maxGrade"
             value={this.state.maxGrade}
             onChange={this.onChange}
             className={classes.textField}
-            helperText={errors.name}
+            helperText={errors.max_grade}
             type="maxGrade"
             margin="normal"
             variant="outlined"
@@ -174,5 +192,8 @@ const mapStateToProps = state => ({
 
 export default compose(
   withStyles(styles, { withTheme: true }),
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    { createAssignment }
+  )
 )(CreateAssignment);

@@ -105,6 +105,26 @@ export const deleteClass = classData => dispatch => {
     });
 };
 
+// Create Assignment
+export const createAssignment = assignmentData => dispatch => {
+  dispatch(clearErrors());
+  axios
+    .post("/api/classes/create_assignment", assignmentData)
+    .then(res => {
+      console.log(res.data);
+    })
+    .then(() => {
+      dispatch(getCurrentUser());
+    })
+    .catch(err => {
+      console.log(err.response.data);
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
 // Clear errors
 export const clearErrors = () => {
   return {

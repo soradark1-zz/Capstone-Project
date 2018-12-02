@@ -141,6 +141,12 @@ class TeacherClass extends React.Component {
               this.props.class.enrolled_students.map((studnet, i) => (
                 <div key={i}>{studnet.name}</div>
               ))}
+
+            <div>Assignments:</div>
+            {this.props.class.assignments &&
+              this.props.class.assignments.map((assignment, i) => (
+                <div key={i}>{assignment.assignment_name}</div>
+              ))}
             <Button
               className={classNames(classes.button)}
               variant="contained"
