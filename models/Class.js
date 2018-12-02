@@ -24,10 +24,21 @@ const ClassSchema = new Schema({
     id: String
   }],
   assignments: [{
-    id: String,
-    doc_name: String,
-    class_name: String,
-    class_id: String
+    assignment_name: String,
+    description: String,
+    max_grade: String,
+    date_assigned: String,
+    date_due: String,
+    submitted_docs: [{
+      doc_id: String
+    }],
+    peer_grading_assignment: [{
+      owner: String,
+      doc_id: String,
+      graders: [{
+        user_id: String
+      }]
+    }]
   }]
 });
 
