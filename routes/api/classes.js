@@ -332,6 +332,7 @@ router.post('/submit_assignment',
                     assignment_name: assignment.assignment_name,
                     course_code: req.body.code,
                     date_submited: current_time.toString(),
+                    max_grade: parseInt(assignment.max_grade, 10),
                     comments: [],
                     grades: []
                 });
@@ -342,7 +343,15 @@ router.post('/submit_assignment',
                         course.assignments[i].submitted_docs.push({doc_id: newDoc._id});
                     }
                 }
-
+               
+                req.user.profile.uploaded_document_ids.push({
+                    doc_id: newDoc._id,
+                    doc_name: newDoc.name,
+                    class_name: course.name,
+                    class_code: course.code
+                });
+                
+                req.user.save();
                 newDoc.save();
                 course.save();
 
@@ -405,8 +414,15 @@ router.post('/update_comments',
             return res.status(400).json(errors);
         }
 
+        
+
         Doc.findOne({ _id: req.body.doc_id }).then(doc => {
             if (doc){
+
+                if (parseInt(req.body.grade, 10) > doc.max_grade) {
+                    errors.grade = 'Grade exceeds maximum';
+                    return res.status(400).json(errors);
+                }
 
                 doc.comments = req.body.comments;
                 var grader_exists = false;
@@ -421,6 +437,15 @@ router.post('/update_comments',
 
                 if (!grader_exists){
                     doc.grades.push({grader: req.user.id, grade: parseInt(req.body.grade, 10)});
+
+                    req.user.profile.commented_document_ids.push({
+                        doc_id: doc._id,
+                        class_code: doc.course_code,
+                        assign_name: doc.assignment_name,
+                        submitted: true
+                    });
+                    
+                    req.user.save();
                 }
 
                 doc.save();

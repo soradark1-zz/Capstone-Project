@@ -27,6 +27,10 @@ const DocSchema = new Schema({
     type: String,
     required: true
   },
+  max_grade: {
+    type: Number,
+    required: true
+  },
   comments: [],
   grades: [{
     grader: String,
