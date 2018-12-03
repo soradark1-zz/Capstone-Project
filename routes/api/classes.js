@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
 const passport = require('passport');
+const fileUpload = require('express-fileupload');
 
 // Load Input Validation
 const validateEnrollInput = require('../../validation/enroll');
@@ -12,10 +13,14 @@ const validateInfoInput = require('../../validation/info');
 const validateCreateClassInput = require('../../validation/create_class');
 const validateClassDeleteInput = require('../../validation/delete_class');
 const validateCreateAssignmentInput = require('../../validation/create_assignment');
+const validateAssignmentSubmissionInput = require('../../validation/submit_assignment');
+const validateGetDocumentInput = require('../../validation/get_document');
+const validateUpdateCommentsInput = require('../../validation/update_comments');
 
 // Load Class model
 const Class = require('../../models/Class');
 const User = require('../../models/User');
+const Doc = require('../../models/Doc');
 
 // @route   GET api/classes/test
 // @desc    Tests classes route
@@ -281,5 +286,178 @@ router.post('/create_assignment',
 
         res.status(200);
     });
+
+// @route   POST api/classes/upload_assignment
+// @desc    Upload a document for an assignment
+// @access  Private
+router.post('/submit_assignment',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { errors, isValid } = validateAssignmentSubmissionInput(req.body);
+
+        // Check Validation
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+
+        Class.findOne({ code: req.body.code }).then(course => {
+            if (course){
+
+                var assignment = null;
+                var current_time = (new Date()).getTime();
+
+                for (var i = 0; i < course.assignments.length; i++) {
+                    if (course.assignments[i].assignment_name === req.body.assignment_name){
+                        assignment = course.assignments[i];
+                        break;
+                    }
+                }
+
+                if (assignment === null){
+                    errors.assignment_name = 'Could not find assignment ' + req.body.assignment_name + ' for the course given';
+                    return res.status(400).json(errors);
+                }
+
+                if (Date.parse(assignment.date_due) < current_time){
+                    errors.late_submission = "Can not submit after the due date";
+                    return res.status(400).json(errors);
+                }
+
+
+                // make a new document
+                const newDoc = new Doc({
+                    name: req.body.doc_name,
+                    contents: req.body.doc_contents,
+                    owner: req.user.id,
+                    assignment_name: assignment.assignment_name,
+                    course_code: req.body.code,
+                    date_submited: current_time.toString(),
+                    max_grade: parseInt(assignment.max_grade, 10),
+                    comments: [],
+                    grades: []
+                });
+
+                // this is slopy but i dont know the reference vs deep copy rules of js
+                for (var i = 0; i < course.assignments.length; i++) {
+                    if (course.assignments[i].assignment_name === req.body.assignment_name){
+                        course.assignments[i].submitted_docs.push({doc_id: newDoc._id});
+                    }
+                }
+               
+                req.user.profile.uploaded_document_ids.push({
+                    doc_id: newDoc._id,
+                    doc_name: newDoc.name,
+                    class_name: course.name,
+                    class_code: course.code
+                });
+                
+                req.user.save();
+                newDoc.save();
+                course.save();
+
+                res.json({
+                    name: req.body.doc_name,
+                    owner: req.user.id,
+                    assignment_name: assignment.assignment_name,
+                    course_code: req.body.code,
+                    date_submited: current_time.toString(),
+                    comments: [],
+                    grades: []
+                });
+            }
+            else {
+                errors.code = 'Course code does not exist';
+                return res.status(400).json(errors);
+            }
+        });
+
+        res.status(200);
+});
+
+// @route   POST api/classes/get_document
+// @desc    Get the document given the doc id
+// @access  Private
+router.post('/get_document',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { errors, isValid } = validateGetDocumentInput(req.body);
+
+        // Check Validation
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+
+        Doc.findOne({ _id: req.body.doc_id }).then(doc => {
+            if (doc){
+
+                res.json(doc);
+            }
+            else {
+                errors.code = 'Doc code does not exist';
+                return res.status(400).json(errors);
+            }
+        });
+
+        res.status(200);
+});
+
+// @route   POST api/classes/update_comments
+// @desc    Update the comments and grade of the document
+// @access  Private
+router.post('/update_comments',
+    passport.authenticate('jwt', { session: false }),
+    (req, res) => {
+        const { errors, isValid } = validateUpdateCommentsInput(req.body);
+
+        // Check Validation
+        if (!isValid) {
+            return res.status(400).json(errors);
+        }
+
+        
+
+        Doc.findOne({ _id: req.body.doc_id }).then(doc => {
+            if (doc){
+
+                if (parseInt(req.body.grade, 10) > doc.max_grade) {
+                    errors.grade = 'Grade exceeds maximum';
+                    return res.status(400).json(errors);
+                }
+
+                doc.comments = req.body.comments;
+                var grader_exists = false;
+
+                for (var i = 0; i < doc.grades.length; i++) {
+                    if (doc.grades[i].grader === req.user.id){
+                        doc.grades[i].grade = parseInt(req.body.grade, 10);
+                        grader_exists = true;
+                        break;
+                    }
+                }
+
+                if (!grader_exists){
+                    doc.grades.push({grader: req.user.id, grade: parseInt(req.body.grade, 10)});
+
+                    req.user.profile.commented_document_ids.push({
+                        doc_id: doc._id,
+                        class_code: doc.course_code,
+                        assign_name: doc.assignment_name,
+                        submitted: true
+                    });
+                    
+                    req.user.save();
+                }
+
+                doc.save();
+                res.json(doc);
+            }
+            else {
+                errors.code = 'Doc code does not exist';
+                return res.status(400).json(errors);
+            }
+        });
+
+        res.status(200);
+});
 
 module.exports = router;

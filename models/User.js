@@ -29,10 +29,10 @@ const UserSchema = new Schema({
       code: String
     }],
     uploaded_document_ids: [{
-      id: String,
+      doc_id: String,
       doc_name: String,
       class_name: String,
-      class_id: String
+      class_code: String
     }],
     commented_document_ids: [{
       doc_id: String,
