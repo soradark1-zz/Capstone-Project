@@ -15,7 +15,9 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import Dashboard from "./components/dashboard/Dashboard";
 import StudentClass from "./components/dashboard/StudentClass";
+import StudentAssignment from "./components/dashboard/StudentAssignment";
 import TeacherClass from "./components/dashboard/TeacherClass";
+import TeacherAssignment from "./components/dashboard/TeacherAssignment";
 import CreateAssignment from "./components/dashboard/CreateAssignment";
 import CreateClass from "./components/dashboard/CreateClass";
 import EnrollClass from "./components/dashboard/EnrollClass";
@@ -80,8 +82,18 @@ class App extends Component {
                 />
                 <PrivateRoute
                   exact
+                  path="/student/:classCode/assignment/:assignmentId"
+                  component={StudentAssignment}
+                />
+                <PrivateRoute
+                  exact
                   path="/teacher/:classCode"
                   component={TeacherClass}
+                />
+                <PrivateRoute
+                  exact
+                  path="/teacher/:classCode/assignment/:assignmentId"
+                  component={TeacherAssignment}
                 />
                 <PrivateRoute
                   exact

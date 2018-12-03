@@ -258,7 +258,7 @@ router.post('/create_assignment',
         }
 
         Class.findOne({ code: req.body.code }).then(course => {
-            if (course){
+            if (course) {
                 course.assignments.push({
                     assignment_name: req.body.assignment_name,
                     description: req.body.description,
@@ -267,7 +267,7 @@ router.post('/create_assignment',
                     date_due: req.body.date_due,
                     submitted_docs: [],
                     peer_grading_assignment: []
-                  });
+                });
 
                 course.save();
 
@@ -280,6 +280,6 @@ router.post('/create_assignment',
         });
 
         res.status(200);
-});
+    });
 
 module.exports = router;

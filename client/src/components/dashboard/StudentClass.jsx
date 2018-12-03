@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import { connect } from "react-redux";
 import compose from "recompose/compose";
@@ -17,6 +18,7 @@ import Paper from "@material-ui/core/Paper";
 import moment from "moment";
 
 import { dropClass } from "../../actions/classesActions";
+import { getClass } from "../../actions/classesActions";
 
 const styles = theme => ({
   button: {
@@ -74,6 +76,7 @@ class StudnetClass extends React.Component {
 
       //Is enrolled in class
       if (currentClass) {
+        this.props.getClass({ code: currentClass.code });
         this.setState({
           className: currentClass.name,
           classCode: currentClass.code
@@ -94,6 +97,10 @@ class StudnetClass extends React.Component {
 
   componentDidMount() {
     this.setClass();
+  }
+
+  componentWillUnmount() {
+    this.props.getClass({});
   }
 
   dropClass() {
@@ -138,7 +145,15 @@ class StudnetClass extends React.Component {
             </TableBody>
           </Table>
         </Paper>
-
+        {this.props.class.assignments &&
+          this.props.class.assignments.map((assignment, i) => (
+            <Link
+              to={this.props.match.url + `/assignment/${assignment._id}`}
+              key={i}
+            >
+              {assignment.assignment_name}
+            </Link>
+          ))}
         <Button
           className={classNames(classes.button)}
           variant="contained"
@@ -155,13 +170,14 @@ class StudnetClass extends React.Component {
 //export default withStyles(styles)(SimpleTable);
 
 const mapStateToProps = state => ({
-  user: state.auth.user
+  user: state.auth.user,
+  class: state.class
 });
 
 export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { dropClass }
+    { dropClass, getClass }
   )
 )(StudnetClass);

@@ -6,19 +6,14 @@ import compose from "recompose/compose";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
-
-/*import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";*/
+import Input from "@material-ui/core/Input";
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-import { deleteClass, getClass } from "../../actions/classesActions";
+import { getClass } from "../../actions/classesActions";
 
 import moment from "moment";
+import axios from "axios";
 
 const styles = theme => ({
   button: {
@@ -39,35 +34,24 @@ const styles = theme => ({
   }
 });
 
-let id = 0;
-function createData(name, calories, fat, carbs, protein) {
-  id += 1;
-  return { id, name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData(
-    "Homework 1",
-    `Date Due: ${moment().format("LLL")}
-     Date Due: ${moment().format("LLL")} `,
-    "hello \n hello",
-    "-/100",
-    4.0
-  ),
-  createData("Homework 1", 159, 6.0, 24, 4.0)
-];
-
-class TeacherClass extends React.Component {
+class StudentAssignment extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       className: "",
-      classCode: ""
+      classCode: "",
+      assignment_name: "",
+      date_assigned: "",
+      date_due: "",
+      description: "",
+      max_grade: "",
+      uploadFile: null
     };
 
-    this.deleteClass = this.deleteClass.bind(this);
     this.getClass = this.getClass.bind(this);
+    this.fileHandler = this.fileHandler.bind(this);
+    this.fileSubmit = this.fileSubmit.bind(this);
   }
 
   setClass() {
@@ -76,14 +60,15 @@ class TeacherClass extends React.Component {
         match: { params }
       } = this.props;
 
-      const teaching_classes = this.props.user.teaching_classes;
-      const currentClass = teaching_classes.find(userClass => {
+      const enrolled_classes = this.props.user.enrolled_classes;
+      const currentClass = enrolled_classes.find(userClass => {
         return userClass.code === params.classCode;
       });
 
       //Is teacher of class
       if (currentClass) {
         this.props.getClass({ code: currentClass.code });
+
         this.setState({
           className: currentClass.name,
           classCode: currentClass.code
@@ -96,27 +81,40 @@ class TeacherClass extends React.Component {
     }
   }
 
+  setAssignment() {
+    const {
+      match: { params }
+    } = this.props;
+
+    const assignment = this.props.class.assignments.find(assignment => {
+      return params.assignmentId === assignment._id;
+    });
+
+    this.setState({ ...assignment });
+
+    console.log(assignment);
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.match.params !== this.props.match.params) {
       this.props.getClass({});
       this.setClass();
     }
+    if (
+      prevProps.class.isLoaded !== this.props.class.isLoaded &&
+      this.props.class.isLoaded
+    ) {
+      this.setAssignment();
+    }
   }
 
   componentDidMount() {
+    console.log("mounted");
     this.setClass();
   }
 
   componentWillUnmount() {
     this.props.getClass({});
-  }
-
-  deleteClass() {
-    const newClassData = {
-      code: this.state.classCode
-    };
-    this.props.deleteClass(newClassData);
-    this.props.history.push(`/dashboard`);
   }
 
   getClass() {
@@ -127,39 +125,61 @@ class TeacherClass extends React.Component {
     this.props.getClass(newClassData);
   }
 
+  fileHandler(evt) {
+    this.setState({
+      uploadFile: evt.target.files[0]
+    });
+  }
+
+  fileSubmit() {
+    const documentData = {
+      assignment_name: this.state.assignment_name,
+      code: this.state.classCode,
+      doc_name: "Some DOC",
+      doc_contents: this.state.uploadFile
+    };
+    console.log(documentData);
+    axios
+      .post("/api/classes/submit_assignment", documentData)
+      .then(() => {
+        console.log("Doc submited");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   render() {
     const { classes } = this.props;
-    const { className, classCode } = this.state;
-    console.log(this.props);
+    const {
+      className,
+      classCode,
+      assignment_name,
+      date_assigned,
+      date_due,
+      description,
+      max_grade
+    } = this.state;
+    //console.log(this.state);
+
     return (
       <div>
         {this.props.class.isLoaded ? (
           <div>
-            <h1>{className}</h1>
-            <div>Class Code: {classCode}</div>
-            <div>Enrolled Students:</div>
-            {this.props.class.enrolled_students &&
-              this.props.class.enrolled_students.map((studnet, i) => (
-                <div key={i}>{studnet.name}</div>
-              ))}
-
-            <div>Assignments:</div>
-            {this.props.class.assignments &&
-              this.props.class.assignments.map((assignment, i) => (
-                <Link
-                  to={this.props.match.url + `/assignment/${assignment._id}`}
-                  key={i}
-                >
-                  {assignment.assignment_name}
-                </Link>
-              ))}
+            <h1>{assignment_name}</h1>
+            <div>Description: {description}</div>
+            <div>Date Assigned: {`${moment(date_assigned).format("LLL")}`}</div>
+            <div>Date Due: {`${moment(date_due).format("LLL")}`}</div>
+            <div>Max Grade: {max_grade}</div>
+            <Input type="file" onChange={this.fileHandler} />
+            <br />
             <Button
               className={classNames(classes.button)}
               variant="contained"
               size="large"
-              onClick={this.deleteClass}
+              onClick={this.fileSubmit}
             >
-              Delete Class
+              Submit
             </Button>
           </div>
         ) : (
@@ -186,6 +206,6 @@ export default compose(
   withStyles(styles, { withTheme: true }),
   connect(
     mapStateToProps,
-    { deleteClass, getClass }
+    { getClass }
   )
-)(TeacherClass);
+)(StudentAssignment);
