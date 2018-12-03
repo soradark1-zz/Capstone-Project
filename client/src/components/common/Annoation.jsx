@@ -186,7 +186,9 @@ class Annoation extends Component {
     selectedShapeName: "",
     scale: Math.min(window.innerWidth / this.props.stageWidth, 1),
     colorSelected: 0,
-    dialogOpen: false
+    dialogOpen: false,
+    finalComment: this.props.finalComment,
+    grade: this.props.grade
   };
 
   componentWillMount() {
@@ -274,8 +276,8 @@ class Annoation extends Component {
 
     //Sorts rectangles by their new positions
     const rect = rectangles.find(r => r.name === rectangles[index].name);
-    rectangles.sort(
-      (rect1, rect2) => (rect1.y > rect2.y ? 1 : rect2.y > rect1.y ? -1 : 0)
+    rectangles.sort((rect1, rect2) =>
+      rect1.y > rect2.y ? 1 : rect2.y > rect1.y ? -1 : 0
     );
     const rectIndex = rectangles.indexOf(rect);
     rectangles.map((rect, i) => (rect.name = `rect${i + 1}`));
@@ -305,8 +307,8 @@ class Annoation extends Component {
 
     //Sorts all rectangles with new rectangle
     const rect = rectangles.find(r => r.name === this.state.selectedShapeName);
-    rectangles.sort(
-      (rect1, rect2) => (rect1.y > rect2.y ? 1 : rect2.y > rect1.y ? -1 : 0)
+    rectangles.sort((rect1, rect2) =>
+      rect1.y > rect2.y ? 1 : rect2.y > rect1.y ? -1 : 0
     );
     const rectIndex = rectangles.indexOf(rect);
     rectangles.map((rect, i) => (rect.name = `rect${i + 1}`));
@@ -440,6 +442,10 @@ class Annoation extends Component {
       scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
     });
   };
+
+  saveChanges() {
+    this.props.updateComments();
+  }
 
   render() {
     //console.log(styles);
@@ -662,6 +668,7 @@ class Annoation extends Component {
               <Button
                 variant="contained"
                 className={classNames(classes.button)}
+                onClick={this.saveChanges}
               >
                 Save
               </Button>

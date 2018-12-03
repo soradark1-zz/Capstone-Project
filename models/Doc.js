@@ -31,7 +31,10 @@ const DocSchema = new Schema({
     type: Number,
     required: true
   },
-  comments: [],
+  comments: {
+    type: Object,
+    required: true
+  },
   grades: [
     {
       grader: String,

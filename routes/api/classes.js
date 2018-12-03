@@ -371,7 +371,7 @@ router.post(
           course_code: req.body.code,
           date_submited: current_time.toString(),
           max_grade: parseInt(assignment.max_grade, 10),
-          comments: [],
+          comments: { pages: [{ rectangles: [] }], finalComment: "", grade: 0 },
           grades: []
         });
 

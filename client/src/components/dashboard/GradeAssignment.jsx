@@ -51,18 +51,19 @@ const styles = theme => ({
 class GradeAssignment extends Component {
   constructor(props) {
     super(props);
-    var myfile = require("../../uploads/cf939620829af3354913b03528335875");
     this.state = {
       numPages: null,
       pageNumber: 1,
       pageWidth: 600,
       pageHeight: 750,
       isLoaded: false,
-      annoations: data,
-      pdfFile: sample
+      annoations: { pages: [{ rectangles: [] }], finalComment: "", grade: 0 },
+      pdfFile: sample,
+      pdfId: ""
     };
 
     this.updateAnnoations = this.updateAnnoations.bind(this);
+    this.updateComments = this.updateComments.bind(this);
   }
   getDocument() {
     if (this.props.user.isLoaded) {
@@ -79,9 +80,17 @@ class GradeAssignment extends Component {
       axios
         .post("/api/classes/get_document", documentData)
         .then(res => {
-          console.log("Got Doc", res.data.contents.filename);
+          console.log("Got Doc", res.data);
+          let annoations = this.state.annoations;
+          if (res.data.comments.length !== 0) {
+            console.log("IM HERE", res.data.comments.length === 0);
+            annoations = res.data.comments;
+          }
+
           this.setState({
-            pdfFile: require(`../../uploads/${res.data.contents.filename}`)
+            pdfFile: require(`../../uploads/${res.data.contents.filename}`),
+            pdfId: res.data._id
+            //annoations
           });
         })
         .catch(err => {
@@ -111,6 +120,25 @@ class GradeAssignment extends Component {
     });
 
     console.log("Grade State", this.state);
+  }
+
+  updateComments(updatedPage, index, grade) {
+    this.updateAnnoations(updatedPage, index);
+
+    const commentData = {
+      doc_id: this.state.pdfId,
+      comments: this.state.annoations,
+      grade
+    };
+
+    axios
+      .post("/api/classes/update_comments", commentData)
+      .then(res => {
+        console.log("Comments UPDATED!");
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   onDocumentLoad = ({ numPages }) => {
@@ -220,6 +248,7 @@ class GradeAssignment extends Component {
           finalComment={this.state.annoations.finalComment}
           grade={this.state.annoations.grade}
           updateAnnoations={this.updateAnnoations}
+          updateComments={this.updateComments}
           pageNumber={pageNumber}
           isLoaded={isLoaded}
         />
