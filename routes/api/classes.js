@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/keys');
 const passport = require('passport');
-const fileUpload = require('express-fileupload');
+//const fileUpload = require('express-fileupload');
 
 // Load Input Validation
 const validateEnrollInput = require('../../validation/enroll');
@@ -301,24 +301,24 @@ router.post('/submit_assignment',
         }
 
         Class.findOne({ code: req.body.code }).then(course => {
-            if (course){
+            if (course) {
 
                 var assignment = null;
                 var current_time = (new Date()).getTime();
 
                 for (var i = 0; i < course.assignments.length; i++) {
-                    if (course.assignments[i].assignment_name === req.body.assignment_name){
+                    if (course.assignments[i].assignment_name === req.body.assignment_name) {
                         assignment = course.assignments[i];
                         break;
                     }
                 }
 
-                if (assignment === null){
+                if (assignment === null) {
                     errors.assignment_name = 'Could not find assignment ' + req.body.assignment_name + ' for the course given';
                     return res.status(400).json(errors);
                 }
 
-                if (Date.parse(assignment.date_due) < current_time){
+                if (Date.parse(assignment.date_due) < current_time) {
                     errors.late_submission = "Can not submit after the due date";
                     return res.status(400).json(errors);
                 }
@@ -339,18 +339,18 @@ router.post('/submit_assignment',
 
                 // this is slopy but i dont know the reference vs deep copy rules of js
                 for (var i = 0; i < course.assignments.length; i++) {
-                    if (course.assignments[i].assignment_name === req.body.assignment_name){
-                        course.assignments[i].submitted_docs.push({doc_id: newDoc._id});
+                    if (course.assignments[i].assignment_name === req.body.assignment_name) {
+                        course.assignments[i].submitted_docs.push({ doc_id: newDoc._id });
                     }
                 }
-               
+
                 req.user.profile.uploaded_document_ids.push({
                     doc_id: newDoc._id,
                     doc_name: newDoc.name,
                     class_name: course.name,
                     class_code: course.code
                 });
-                
+
                 req.user.save();
                 newDoc.save();
                 course.save();
@@ -372,7 +372,7 @@ router.post('/submit_assignment',
         });
 
         res.status(200);
-});
+    });
 
 // @route   POST api/classes/get_document
 // @desc    Get the document given the doc id
@@ -388,7 +388,7 @@ router.post('/get_document',
         }
 
         Doc.findOne({ _id: req.body.doc_id }).then(doc => {
-            if (doc){
+            if (doc) {
 
                 res.json(doc);
             }
@@ -399,7 +399,7 @@ router.post('/get_document',
         });
 
         res.status(200);
-});
+    });
 
 // @route   POST api/classes/update_comments
 // @desc    Update the comments and grade of the document
@@ -414,10 +414,10 @@ router.post('/update_comments',
             return res.status(400).json(errors);
         }
 
-        
+
 
         Doc.findOne({ _id: req.body.doc_id }).then(doc => {
-            if (doc){
+            if (doc) {
 
                 if (parseInt(req.body.grade, 10) > doc.max_grade) {
                     errors.grade = 'Grade exceeds maximum';
@@ -428,15 +428,15 @@ router.post('/update_comments',
                 var grader_exists = false;
 
                 for (var i = 0; i < doc.grades.length; i++) {
-                    if (doc.grades[i].grader === req.user.id){
+                    if (doc.grades[i].grader === req.user.id) {
                         doc.grades[i].grade = parseInt(req.body.grade, 10);
                         grader_exists = true;
                         break;
                     }
                 }
 
-                if (!grader_exists){
-                    doc.grades.push({grader: req.user.id, grade: parseInt(req.body.grade, 10)});
+                if (!grader_exists) {
+                    doc.grades.push({ grader: req.user.id, grade: parseInt(req.body.grade, 10) });
 
                     req.user.profile.commented_document_ids.push({
                         doc_id: doc._id,
@@ -444,7 +444,7 @@ router.post('/update_comments',
                         assign_name: doc.assignment_name,
                         submitted: true
                     });
-                    
+
                     req.user.save();
                 }
 
@@ -458,6 +458,6 @@ router.post('/update_comments',
         });
 
         res.status(200);
-});
+    });
 
 module.exports = router;

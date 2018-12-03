@@ -132,13 +132,15 @@ class StudentAssignment extends React.Component {
   }
 
   fileSubmit() {
+    console.log(typeof this.state.uploadFile);
     const documentData = {
       assignment_name: this.state.assignment_name,
       code: this.state.classCode,
       doc_name: "Some DOC",
       doc_contents: this.state.uploadFile
     };
-    console.log(documentData);
+
+    console.log("CLIFTON COMMENT", documentData);
     axios
       .post("/api/classes/submit_assignment", documentData)
       .then(() => {
