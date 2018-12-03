@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { Document, Page } from "react-pdf";
 import Annoation from "../common/Annoation";
-
+import { connect } from "react-redux";
+import compose from "recompose/compose";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import axios from "axios";
 
 import data from "../common/data.json";
 
@@ -49,35 +51,59 @@ const styles = theme => ({
 class GradeAssignment extends Component {
   constructor(props) {
     super(props);
+    var myfile = require("../../uploads/cf939620829af3354913b03528335875");
     this.state = {
       numPages: null,
       pageNumber: 1,
       pageWidth: 600,
       pageHeight: 750,
       isLoaded: false,
-      annoations: data
+      annoations: data,
+      pdfFile: sample
     };
 
     this.updateAnnoations = this.updateAnnoations.bind(this);
   }
+  getDocument() {
+    if (this.props.user.isLoaded) {
+      const {
+        match: { params }
+      } = this.props;
+
+      console.log("PROPS", params);
+
+      const documentData = {
+        doc_id: params.docId
+      };
+
+      axios
+        .post("/api/classes/get_document", documentData)
+        .then(res => {
+          console.log("Got Doc", res.data.contents.filename);
+          this.setState({
+            pdfFile: require(`../../uploads/${res.data.contents.filename}`)
+          });
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.match.params !== this.props.match.params) {
+      this.getDocument();
+    }
+  }
+
+  componentDidMount() {
+    this.getDocument();
+  }
+
+  componentWillUnmount() {}
 
   updateAnnoations(updatedPage, index) {
     let { annoations } = this.state;
-    /*updatedPage = {
-      rectangles: [
-        {
-          x: 10,
-          y: 350,
-          width: 100,
-          height: 100,
-          fill: "rgba(0, 0, 255, 0.35)",
-          name: "rect1",
-          stroke: "rgba(0, 0, 255, 1)",
-          strokeEnabled: false,
-          comment: "Is this a comment? yes!"
-        }
-      ]
-    };*/
     annoations.pages[index - 1] = updatedPage;
 
     this.setState({
@@ -156,7 +182,7 @@ class GradeAssignment extends Component {
           </Button>
         </div>
         <Document
-          file={sample}
+          file={this.state.pdfFile}
           onLoadSuccess={this.onDocumentLoadSuccess}
           loading={
             <CircularProgress
@@ -202,4 +228,14 @@ class GradeAssignment extends Component {
   }
 }
 
-export default withStyles(styles, { withTheme: true })(GradeAssignment);
+//export default withStyles(styles, { withTheme: true })(GradeAssignment);
+
+const mapStateToProps = state => ({
+  user: state.auth.user,
+  class: state.class
+});
+
+export default compose(
+  withStyles(styles, { withTheme: true }),
+  connect(mapStateToProps)
+)(GradeAssignment);

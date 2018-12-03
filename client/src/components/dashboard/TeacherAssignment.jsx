@@ -43,7 +43,8 @@ class TeacherAssignment extends React.Component {
       date_assigned: "",
       date_due: "",
       description: "",
-      max_grade: ""
+      max_grade: "",
+      submitted_docs: []
     };
 
     this.getClass = this.getClass.bind(this);
@@ -87,7 +88,7 @@ class TeacherAssignment extends React.Component {
 
     this.setState({ ...assignment });
 
-    console.log(assignment);
+    console.log("Assignment", assignment);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -119,6 +120,18 @@ class TeacherAssignment extends React.Component {
     this.props.getClass(newClassData);
   }
 
+  studnetName(studnetId) {
+    console.log("CLASS", this.props.class);
+    const studnet = this.props.class.enrolled_students.find(student => {
+      return student.id === studnetId;
+    });
+
+    if (studnet) {
+      return studnet.name;
+    }
+    return "";
+  }
+
   render() {
     const { classes } = this.props;
     const {
@@ -128,7 +141,8 @@ class TeacherAssignment extends React.Component {
       date_assigned,
       date_due,
       description,
-      max_grade
+      max_grade,
+      submitted_docs
     } = this.state;
     //console.log(this.state);
 
@@ -141,6 +155,26 @@ class TeacherAssignment extends React.Component {
             <div>Date Assigned: {`${moment(date_assigned).format("LLL")}`}</div>
             <div>Date Due: {`${moment(date_due).format("LLL")}`}</div>
             <div>Max Grade: {max_grade}</div>
+            <br />
+            <div>
+              Studnet's Submissions:{" "}
+              {submitted_docs.length > 0 &&
+                submitted_docs.map((doc, i) => {
+                  return (
+                    <div>
+                      <div>
+                        <Link
+                          style={{ color: "white" }}
+                          to={this.props.match.url + `/${doc.doc_id}`}
+                          key={i}
+                        >
+                          <div>{this.studnetName(doc.owner)}</div>
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
           </div>
         ) : (
           <CircularProgress
@@ -157,7 +191,6 @@ class TeacherAssignment extends React.Component {
 //export default withStyles(styles)(SimpleTable);
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
   user: state.auth.user,
   class: state.class
 });

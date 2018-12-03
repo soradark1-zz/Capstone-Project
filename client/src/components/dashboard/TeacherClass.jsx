@@ -136,22 +136,25 @@ class TeacherClass extends React.Component {
         {this.props.class.isLoaded ? (
           <div>
             <h1>{className}</h1>
-            <div>Class Code: {classCode}</div>
+            <div>Class Code: {classCode}</div> <br />
             <div>Enrolled Students:</div>
             {this.props.class.enrolled_students &&
               this.props.class.enrolled_students.map((studnet, i) => (
                 <div key={i}>{studnet.name}</div>
               ))}
-
+            <br />
             <div>Assignments:</div>
             {this.props.class.assignments &&
               this.props.class.assignments.map((assignment, i) => (
-                <Link
-                  to={this.props.match.url + `/assignment/${assignment._id}`}
-                  key={i}
-                >
-                  {assignment.assignment_name}
-                </Link>
+                <div>
+                  <Link
+                    to={this.props.match.url + `/assignment/${assignment._id}`}
+                    key={i}
+                  >
+                    {assignment.assignment_name}
+                  </Link>
+                  <br />
+                </div>
               ))}
             <Button
               className={classNames(classes.button)}

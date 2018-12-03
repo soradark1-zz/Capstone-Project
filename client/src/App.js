@@ -97,6 +97,11 @@ class App extends Component {
                 />
                 <PrivateRoute
                   exact
+                  path="/teacher/:classCode/assignment/:assignmentId/:docId"
+                  component={GradeAssignment}
+                />
+                <PrivateRoute
+                  exact
                   path="/create-assignment"
                   component={CreateAssignment}
                 />
