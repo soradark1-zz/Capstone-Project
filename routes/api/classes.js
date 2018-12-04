@@ -218,7 +218,7 @@ router.post(
           });
         }
 
-        Class.deleteOne({ code: course.code }, function(err) {
+        Class.deleteOne({ code: course.code }, function (err) {
           if (err) return handleError(err);
         });
 
@@ -451,13 +451,14 @@ router.post(
   "/update_comments",
   passport.authenticate("jwt", { session: false }),
   (req, res) => {
+    console.log("hello");
     const { errors, isValid } = validateUpdateCommentsInput(req.body);
+    console.log("there");
 
     // Check Validation
     if (!isValid) {
       return res.status(400).json(errors);
     }
-
     Doc.findOne({ _id: req.body.doc_id }).then(doc => {
       if (doc) {
         if (parseInt(req.body.grade, 10) > doc.max_grade) {

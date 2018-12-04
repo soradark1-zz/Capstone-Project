@@ -59,7 +59,8 @@ class GradeAssignment extends Component {
       isLoaded: false,
       annoations: { pages: [{ rectangles: [] }], finalComment: "", grade: 0 },
       pdfFile: sample,
-      pdfId: ""
+      pdfId: "",
+      commentsLoaded: false
     };
 
     this.updateAnnoations = this.updateAnnoations.bind(this);
@@ -83,14 +84,19 @@ class GradeAssignment extends Component {
           console.log("Got Doc", res.data);
           let annoations = this.state.annoations;
           if (res.data.comments.length !== 0) {
-            console.log("IM HERE", res.data.comments.length === 0);
+            console.log("Comments", res.data.comments);
             annoations = res.data.comments;
           }
+          console.log(
+            "FILENAME",
+            `../../uploads/${res.data.contents.filename}`
+          );
 
           this.setState({
             pdfFile: require(`../../uploads/${res.data.contents.filename}`),
-            pdfId: res.data._id
-            //annoations
+            pdfId: res.data._id,
+            annoations,
+            commentsLoaded: true
           });
         })
         .catch(err => {
@@ -122,13 +128,16 @@ class GradeAssignment extends Component {
     console.log("Grade State", this.state);
   }
 
-  updateComments(updatedPage, index, grade) {
-    this.updateAnnoations(updatedPage, index);
+  updateComments(updatedPage, index, grade, finalComment) {
+    let { annoations } = this.state;
+    annoations.grade = grade;
+    annoations.finalComment = finalComment;
+    annoations.pages[index - 1] = updatedPage;
 
     const commentData = {
       doc_id: this.state.pdfId,
-      comments: this.state.annoations,
-      grade
+      comments: annoations,
+      grade: grade + ""
     };
 
     axios
@@ -240,18 +249,19 @@ class GradeAssignment extends Component {
     return (
       <div className={classNames(classes.pdfAndAnnoation)}>
         <div className={classNames(classes.pdfDisplay)}>{react_pdf}</div>
-
-        <Annoation
-          stageWidth={pageWidth}
-          stageHeight={pageHeight}
-          annoations={this.state.annoations.pages[pageNumber - 1]}
-          finalComment={this.state.annoations.finalComment}
-          grade={this.state.annoations.grade}
-          updateAnnoations={this.updateAnnoations}
-          updateComments={this.updateComments}
-          pageNumber={pageNumber}
-          isLoaded={isLoaded}
-        />
+        {this.state.commentsLoaded && (
+          <Annoation
+            stageWidth={pageWidth}
+            stageHeight={pageHeight}
+            annoations={this.state.annoations.pages[pageNumber - 1]}
+            finalComment={this.state.annoations.finalComment}
+            grade={this.state.annoations.grade}
+            updateAnnoations={this.updateAnnoations}
+            updateComments={this.updateComments}
+            pageNumber={pageNumber}
+            isLoaded={isLoaded}
+          />
+        )}
       </div>
     );
   }
