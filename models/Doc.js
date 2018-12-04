@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // Create Schema
@@ -8,7 +8,7 @@ const DocSchema = new Schema({
     required: true
   },
   contents: {
-    type: String,
+    type: Object,
     required: true
   },
   owner: {
@@ -31,11 +31,16 @@ const DocSchema = new Schema({
     type: Number,
     required: true
   },
-  comments: [],
-  grades: [{
-    grader: String,
-    grade: Number
-  }]
+  comments: {
+    type: Object,
+    required: true
+  },
+  grades: [
+    {
+      grader: String,
+      grade: Number
+    }
+  ]
 });
 
-module.exports = Doc = mongoose.model('documents', DocSchema);
+module.exports = Doc = mongoose.model("documents", DocSchema);

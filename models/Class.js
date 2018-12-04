@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // Create Schema
@@ -30,16 +30,15 @@ const ClassSchema = new Schema({
     date_assigned: String,
     date_due: String,
     submitted_docs: [{
-      doc_id: String
+      doc_id: String,
+      owner: String
     }],
     peer_grading_assignment: [{
       owner: String,
       doc_id: String,
-      graders: [{
-        user_id: String
-      }]
+      grader: String
     }]
   }]
 });
 
-module.exports = Class = mongoose.model('classes', ClassSchema);
+module.exports = Class = mongoose.model("classes", ClassSchema);

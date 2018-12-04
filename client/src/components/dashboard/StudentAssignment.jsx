@@ -46,7 +46,10 @@ class StudentAssignment extends React.Component {
       date_due: "",
       description: "",
       max_grade: "",
-      uploadFile: null
+      hasSubmitted: false,
+      uploadFile: null,
+      docId: "",
+      peer_grading_assignment: []
     };
 
     this.getClass = this.getClass.bind(this);
@@ -90,7 +93,18 @@ class StudentAssignment extends React.Component {
       return params.assignmentId === assignment._id;
     });
 
-    this.setState({ ...assignment });
+    const doc = assignment.submitted_docs.find(doc => {
+      return doc.owner === this.props.user.id;
+    });
+
+    let hasSubmitted = false;
+    let docId = "";
+    if (doc) {
+      hasSubmitted = true;
+      docId = doc.doc_id;
+    }
+
+    this.setState({ ...assignment, hasSubmitted, docId });
 
     console.log(assignment);
   }
@@ -140,15 +154,55 @@ class StudentAssignment extends React.Component {
       doc_contents: this.state.uploadFile
     };
 
+    const data = new FormData();
+    data.append("file", this.state.uploadFile);
+    data.append("doc_name", "Some DOC");
+    data.append("code", this.state.classCode);
+    data.append("assignment_name", this.state.assignment_name);
+
     console.log("CLIFTON COMMENT", documentData);
     axios
-      .post("/api/classes/submit_assignment", documentData)
+      .post("/api/classes/submit_assignment", data)
       .then(() => {
         console.log("Doc submited");
       })
       .catch(err => {
         console.log(err);
       });
+  }
+
+  hasSubmitted() {
+    const {
+      match: { params }
+    } = this.props;
+
+    const assignemnt = this.props.class.assignments.find(assignment => {
+      return assignment.id === params.assignmentId;
+    });
+
+    if (assignemnt) {
+      const ownerId = assignemnt.submitted_docs.find(doc => {
+        return doc.owner === this.props.user.id;
+      });
+
+      if (ownerId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  peerGradingDoc() {
+    const doc = this.state.peer_grading_assignment.find(doc => {
+      return doc.grader === this.props.user.id;
+    });
+
+    console.log("Grading doc", doc);
+    if (doc) {
+      return doc.doc_id;
+    }
+
+    return "";
   }
 
   render() {
@@ -160,10 +214,11 @@ class StudentAssignment extends React.Component {
       date_assigned,
       date_due,
       description,
-      max_grade
+      max_grade,
+      peer_grading_assignment
     } = this.state;
-    //console.log(this.state);
-
+    console.log("State", this.state);
+    console.log(this.peerGradingDoc());
     return (
       <div>
         {this.props.class.isLoaded ? (
@@ -173,16 +228,44 @@ class StudentAssignment extends React.Component {
             <div>Date Assigned: {`${moment(date_assigned).format("LLL")}`}</div>
             <div>Date Due: {`${moment(date_due).format("LLL")}`}</div>
             <div>Max Grade: {max_grade}</div>
-            <Input type="file" onChange={this.fileHandler} />
-            <br />
-            <Button
-              className={classNames(classes.button)}
-              variant="contained"
-              size="large"
-              onClick={this.fileSubmit}
-            >
-              Submit
-            </Button>
+
+            {this.state.hasSubmitted ? (
+              <Link
+                style={{ color: "white" }}
+                to={this.props.match.url + `/${this.state.docId}`}
+              >
+                <div>My Submission</div>
+              </Link>
+            ) : (
+              <div>
+                <Input type="file" onChange={this.fileHandler} />
+                <br />
+                <Button
+                  className={classNames(classes.button)}
+                  variant="contained"
+                  size="large"
+                  onClick={this.fileSubmit}
+                >
+                  Submit
+                </Button>
+              </div>
+            )}
+
+            {peer_grading_assignment.length > 0 && (
+              <div>
+                <br />
+                <div>Peer Grading Assignment:</div>
+                <Link
+                  style={{ color: "white" }}
+                  to={
+                    this.props.match.url.replace("student", "teacher") +
+                    `/${this.peerGradingDoc()}`
+                  }
+                >
+                  <div>Peer's Submission</div>
+                </Link>{" "}
+              </div>
+            )}
           </div>
         ) : (
           <CircularProgress

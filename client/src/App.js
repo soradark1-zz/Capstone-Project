@@ -88,6 +88,11 @@ class App extends Component {
                 />
                 <PrivateRoute
                   exact
+                  path="/student/:classCode/assignment/:assignmentId/:docId"
+                  component={GradeAssignment}
+                />
+                <PrivateRoute
+                  exact
                   path="/teacher/:classCode"
                   component={TeacherClass}
                 />
@@ -95,6 +100,11 @@ class App extends Component {
                   exact
                   path="/teacher/:classCode/assignment/:assignmentId"
                   component={TeacherAssignment}
+                />
+                <PrivateRoute
+                  exact
+                  path="/teacher/:classCode/assignment/:assignmentId/:docId"
+                  component={GradeAssignment}
                 />
                 <PrivateRoute
                   exact

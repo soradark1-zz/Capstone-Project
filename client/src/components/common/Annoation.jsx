@@ -125,7 +125,7 @@ class Rectangle extends React.Component {
         // save state on dragend or transformend
         onDragEnd={this.handleChange}
         onTransformEnd={this.handleChange}
-        draggable
+        draggable={this.props.isTeacher}
         stroke={this.props.stroke}
         strokeWidth={2}
         strokeEnabled={this.props.strokeEnabled}
@@ -181,12 +181,19 @@ class TransformerComponent extends React.Component {
 }
 
 class Annoation extends Component {
+  constructor(props) {
+    super(props);
+    this.saveChanges = this.saveChanges.bind(this);
+  }
+
   state = {
     rectangles: this.props.annoations.rectangles,
     selectedShapeName: "",
     scale: Math.min(window.innerWidth / this.props.stageWidth, 1),
     colorSelected: 0,
-    dialogOpen: false
+    dialogOpen: false,
+    finalComment: this.props.finalComment,
+    grade: this.props.grade
   };
 
   componentWillMount() {
@@ -393,7 +400,7 @@ class Annoation extends Component {
     //console.log("DIALOG", rect);
 
     let rectIndex = parseInt(rect.name.slice(4)) - 1;
-    console.log(rectIndex);
+    //console.log(rectIndex);
     return (
       <TextField
         id={`comment${rectIndex + 1}`}
@@ -440,6 +447,15 @@ class Annoation extends Component {
       scale: Math.min(window.innerWidth / this.props.stageWidth, 1)
     });
   };
+
+  saveChanges() {
+    this.props.updateComments(
+      { rectangles: this.state.rectangles },
+      this.props.pageNumber,
+      this.state.grade,
+      this.state.finalComment
+    );
+  }
 
   render() {
     //console.log(styles);
@@ -511,7 +527,7 @@ class Annoation extends Component {
         </FormControl>
         <Button
           variant="contained"
-          disabled={rectangles.length >= 20}
+          disabled={rectangles.length >= 20 || !this.props.isTeacher}
           onClick={this.addNewRect}
           className={classNames(classes.button)}
         >
@@ -520,7 +536,7 @@ class Annoation extends Component {
 
         <Button
           variant="contained"
-          disabled={selectedShapeName === ""}
+          disabled={selectedShapeName === "" || !this.props.isTeacher}
           onClick={this.removeRect}
           className={classNames(classes.button)}
         >
@@ -529,8 +545,8 @@ class Annoation extends Component {
       </div>
     );
 
-    console.log("STATE", this.props);
-
+    console.log("STATE", this.state.rectangles[0]);
+    //console.log("Teacher", this.props.isTeacher);
     window.addEventListener("resize", this.sizeOfStage);
     return (
       <div
@@ -556,17 +572,20 @@ class Annoation extends Component {
                 <Rectangle
                   key={i}
                   {...rect}
+                  isTeacher={this.props.isTeacher}
                   onTransform={newProps => {
                     this.handleRectChange(i, newProps);
                   }}
                 />
               ))}
-              <TransformerComponent
-                selectedShapeName={selectedShapeName}
-                ref={node => {
-                  this.transformer = node;
-                }}
-              />
+              {this.props.isTeacher && (
+                <TransformerComponent
+                  selectedShapeName={selectedShapeName}
+                  ref={node => {
+                    this.transformer = node;
+                  }}
+                />
+              )}
             </Layer>
           </Stage>
 
@@ -606,6 +625,7 @@ class Annoation extends Component {
                       </ExpansionPanelSummary>
                       <ExpansionPanelDetails>
                         <TextField
+                          disabled={!this.props.isTeacher}
                           id={`comment${i + 1}`}
                           margin="none"
                           variant="standard"
@@ -642,6 +662,7 @@ class Annoation extends Component {
 
           <div className={classNames(classes.final)}>
             <TextField
+              disabled={!this.props.isTeacher}
               variant="outlined"
               label="Final Comments"
               multiline
@@ -652,26 +673,31 @@ class Annoation extends Component {
               onChange={this.handleFinalComment}
             />
             <TextField
+              disabled={!this.props.isTeacher}
               variant="outlined"
               label="Grade"
               value={this.state.grade}
               margin="normal"
               onChange={this.handleGrade}
             />
-            <div>
-              <Button
-                variant="contained"
-                className={classNames(classes.button)}
-              >
-                Save
-              </Button>
-              <Button
-                variant="contained"
-                className={classNames(classes.button)}
-              >
-                Submit
-              </Button>
-            </div>
+            {this.props.isTeacher && (
+              <div>
+                <Button
+                  variant="contained"
+                  className={classNames(classes.button)}
+                  onClick={this.saveChanges}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="contained"
+                  className={classNames(classes.button)}
+                  onClick={this.saveChanges}
+                >
+                  Submit
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

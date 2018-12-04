@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import { deleteClass, getClass } from "../../actions/classesActions";
+import axios from "axios";
 
 import moment from "moment";
 
@@ -43,10 +44,13 @@ class TeacherAssignment extends React.Component {
       date_assigned: "",
       date_due: "",
       description: "",
-      max_grade: ""
+      max_grade: "",
+      submitted_docs: [],
+      peer_grading_assignment: []
     };
 
     this.getClass = this.getClass.bind(this);
+    this.assignPeerGraders = this.assignPeerGraders.bind(this);
   }
 
   setClass() {
@@ -87,7 +91,7 @@ class TeacherAssignment extends React.Component {
 
     this.setState({ ...assignment });
 
-    console.log(assignment);
+    console.log("Assignment", assignment);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -119,6 +123,41 @@ class TeacherAssignment extends React.Component {
     this.props.getClass(newClassData);
   }
 
+  studnetName(studnetId) {
+    //console.log("CLASS", this.props.class);
+    const studnet = this.props.class.enrolled_students.find(student => {
+      return student.id === studnetId;
+    });
+
+    if (studnet) {
+      return studnet.name;
+    }
+    return "";
+  }
+
+  peerName(docId) {
+    const doc = this.state.submitted_docs.find(doc => {
+      return doc.doc_id === docId;
+    });
+
+    return this.studnetName(doc.owner);
+  }
+
+  assignPeerGraders() {
+    const assignmentData = {
+      assignment_name: this.state.assignment_name,
+      code: this.state.classCode
+    };
+    axios
+      .post("/api/classes/assign_graders", assignmentData)
+      .then(res => {
+        console.log("Peer Graders Assigned!");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   render() {
     const { classes } = this.props;
     const {
@@ -128,9 +167,11 @@ class TeacherAssignment extends React.Component {
       date_assigned,
       date_due,
       description,
-      max_grade
+      max_grade,
+      submitted_docs,
+      peer_grading_assignment
     } = this.state;
-    //console.log(this.state);
+    console.log(this.state);
 
     return (
       <div>
@@ -141,6 +182,52 @@ class TeacherAssignment extends React.Component {
             <div>Date Assigned: {`${moment(date_assigned).format("LLL")}`}</div>
             <div>Date Due: {`${moment(date_due).format("LLL")}`}</div>
             <div>Max Grade: {max_grade}</div>
+            <br />
+            <div>
+              Student's Submissions:{" "}
+              {submitted_docs.length > 0 &&
+                submitted_docs.map((doc, i) => {
+                  return (
+                    <div>
+                      <div>
+                        <Link
+                          style={{ color: "white" }}
+                          to={this.props.match.url + `/${doc.doc_id}`}
+                          key={i}
+                        >
+                          <div>{this.studnetName(doc.owner)}</div>
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+
+            <br />
+
+            {peer_grading_assignment.length > 0 ? (
+              <div>
+                Peer Grading Assignments:
+                {peer_grading_assignment.map((doc, i) => {
+                  return (
+                    <div>
+                      {this.studnetName(doc.grader) +
+                        " --> " +
+                        this.peerName(doc.doc_id)}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <Button
+                className={classNames(classes.button)}
+                variant="contained"
+                size="large"
+                onClick={this.assignPeerGraders}
+              >
+                Assign Peer Graders
+              </Button>
+            )}
           </div>
         ) : (
           <CircularProgress
@@ -157,7 +244,6 @@ class TeacherAssignment extends React.Component {
 //export default withStyles(styles)(SimpleTable);
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
   user: state.auth.user,
   class: state.class
 });
