@@ -60,7 +60,8 @@ class GradeAssignment extends Component {
       annoations: { pages: [{ rectangles: [] }], finalComment: "", grade: 0 },
       pdfFile: sample,
       pdfId: "",
-      commentsLoaded: false
+      commentsLoaded: false,
+      isTeacher: false
     };
 
     this.updateAnnoations = this.updateAnnoations.bind(this);
@@ -71,8 +72,6 @@ class GradeAssignment extends Component {
       const {
         match: { params }
       } = this.props;
-
-      console.log("PROPS", params);
 
       const documentData = {
         doc_id: params.docId
@@ -87,16 +86,17 @@ class GradeAssignment extends Component {
             console.log("Comments", res.data.comments);
             annoations = res.data.comments;
           }
-          console.log(
+          /*console.log(
             "FILENAME",
             `../../uploads/${res.data.contents.filename}`
-          );
+          );*/
 
           this.setState({
             pdfFile: require(`../../uploads/${res.data.contents.filename}`),
             pdfId: res.data._id,
             annoations,
-            commentsLoaded: true
+            commentsLoaded: true,
+            isTeacher: this.props.match.path.includes("teacher")
           });
         })
         .catch(err => {
@@ -194,6 +194,7 @@ class GradeAssignment extends Component {
       isLoaded
     } = this.state;
     const { classes } = this.props;
+
     const react_pdf = (
       <div>
         <div className={classNames(isLoaded ? classes.pdfMenu : "no-display")}>
@@ -260,6 +261,7 @@ class GradeAssignment extends Component {
             updateComments={this.updateComments}
             pageNumber={pageNumber}
             isLoaded={isLoaded}
+            isTeacher={this.state.isTeacher}
           />
         )}
       </div>

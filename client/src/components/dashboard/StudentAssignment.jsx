@@ -46,7 +46,9 @@ class StudentAssignment extends React.Component {
       date_due: "",
       description: "",
       max_grade: "",
-      uploadFile: null
+      hasSubmitted: false,
+      uploadFile: null,
+      docId: ""
     };
 
     this.getClass = this.getClass.bind(this);
@@ -90,7 +92,18 @@ class StudentAssignment extends React.Component {
       return params.assignmentId === assignment._id;
     });
 
-    this.setState({ ...assignment });
+    const doc = assignment.submitted_docs.find(doc => {
+      return doc.owner === this.props.user.id;
+    });
+
+    let hasSubmitted = false;
+    let docId = "";
+    if (doc) {
+      hasSubmitted = true;
+      docId = doc.doc_id;
+    }
+
+    this.setState({ ...assignment, hasSubmitted, docId });
 
     console.log(assignment);
   }
@@ -157,6 +170,27 @@ class StudentAssignment extends React.Component {
       });
   }
 
+  hasSubmitted() {
+    const {
+      match: { params }
+    } = this.props;
+
+    const assignemnt = this.props.class.assignments.find(assignment => {
+      return assignment.id === params.assignmentId;
+    });
+
+    if (assignemnt) {
+      const ownerId = assignemnt.submitted_docs.find(doc => {
+        return doc.owner === this.props.user.id;
+      });
+
+      if (ownerId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   render() {
     const { classes } = this.props;
     const {
@@ -168,7 +202,7 @@ class StudentAssignment extends React.Component {
       description,
       max_grade
     } = this.state;
-    //console.log(this.state);
+    console.log("PROPS", this.state);
 
     return (
       <div>
@@ -179,16 +213,28 @@ class StudentAssignment extends React.Component {
             <div>Date Assigned: {`${moment(date_assigned).format("LLL")}`}</div>
             <div>Date Due: {`${moment(date_due).format("LLL")}`}</div>
             <div>Max Grade: {max_grade}</div>
-            <Input type="file" onChange={this.fileHandler} />
-            <br />
-            <Button
-              className={classNames(classes.button)}
-              variant="contained"
-              size="large"
-              onClick={this.fileSubmit}
-            >
-              Submit
-            </Button>
+
+            {this.state.hasSubmitted ? (
+              <Link
+                style={{ color: "white" }}
+                to={this.props.match.url + `/${this.state.docId}`}
+              >
+                <div>Submission</div>
+              </Link>
+            ) : (
+              <div>
+                <Input type="file" onChange={this.fileHandler} />
+                <br />
+                <Button
+                  className={classNames(classes.button)}
+                  variant="contained"
+                  size="large"
+                  onClick={this.fileSubmit}
+                >
+                  Submit
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
           <CircularProgress
