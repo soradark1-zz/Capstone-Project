@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 import { connect } from "react-redux";
 import compose from "recompose/compose";
@@ -13,7 +12,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-import Divider from '@material-ui/core/Divider';
 
 import CircularProgress from "@material-ui/core/CircularProgress";
 
@@ -26,8 +24,7 @@ const styles = theme => ({
     textTransform: "inherit",
     margin: "0.6rem",
     fontSize: "1.2rem",
-    backgroundColor: theme.palette.secondary.main,
-	marginTop: 30
+    backgroundColor: theme.palette.secondary.main
   },
   loading: {
     marginTop: "45vh",
@@ -37,8 +34,7 @@ const styles = theme => ({
   },
   table: {
     minWidth: 700,
-    whiteSpace: "pre-line",
-	marginTop: 30
+    whiteSpace: "pre-line"
   }
 });
 
@@ -60,7 +56,7 @@ const rows = [
   createData("Homework 1", 159, 6.0, 24, 4.0)
 ];
 
-class TeacherClass extends React.Component {
+class StudentSubmissions extends React.Component {
   constructor(props) {
     super(props);
 
@@ -133,93 +129,18 @@ class TeacherClass extends React.Component {
   render() {
     const { classes } = this.props;
     const { className, classCode } = this.state;
-    console.log(this.props);
+    //console.log(this.props);
     return (
       <div>
         {this.props.class.isLoaded ? (
           <div>
             <h1>{className}</h1>
             <div>Class Code: {classCode}</div>
-			<Paper className={classes.root}>
-          <Table className={classes.table}>
-		  <TableHead>
-			<TableRow>
-				<TableCell>Enrolled Students</TableCell>
-			</TableRow>
-		  </TableHead>
-            <TableBody>
-			  {this.props.class.enrolled_students &&
-              this.props.class.enrolled_students.map((studnet, i) => {
-			return (
-				<TableRow key={i}>
-					<TableCell>
-					<div key={i}>{studnet.name}</div>
-					</TableCell>
-				</TableRow>
-              );
-              })}
-            </TableBody>
-          </Table>
-        </Paper>
-		
-		
-			  
-		<Paper className={classes.root}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Assignments</TableCell>
-                <TableCell>Dates</TableCell>
-                <TableCell>Grade</TableCell>
-				<TableCell>Download</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {this.props.class.assignments && this.props.class.assignments.map((assignment,i) => {
-                return (
-                  <TableRow key={i}>
-                    <TableCell>
-						<Link
-							to={this.props.match.url + `/assignment/${assignment._id}`}
-							key={i}
-						>
-							{assignment.assignment_name}
-						</Link>
-                    </TableCell>
-                    <TableCell>
-						<div
-							key={i}
-						>
-							{assignment.date_due}
-						</div>
-						<div
-							key={i}
-						>
-							{assignment.date_assigned}
-						</div>
-					</TableCell>
-                    <TableCell>
-						<div
-							key={i}
-						>
-							{assignment.grade} / {assignment.max_grade}
-						</div>
-					</TableCell>
-                    <TableCell>
-						<Link
-							to={this.props.match.url + `/assignment/${assignment._id}`}
-							key={i}
-						>
-							File{assignment.uploadFile}
-						</Link>
-					</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Paper>
-		
+            <div>Enrolled Students:</div>
+            {this.props.class.enrolled_students &&
+              this.props.class.enrolled_students.map((studnet, i) => (
+                <div key={i}>{studnet.name}</div>
+              ))}
             <Button
               className={classNames(classes.button)}
               variant="contained"
@@ -255,4 +176,4 @@ export default compose(
     mapStateToProps,
     { deleteClass, getClass }
   )
-)(TeacherClass);
+)(StudentSubmissions);

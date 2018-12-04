@@ -173,13 +173,13 @@ class Sidebar extends Component {
               </ListItemIcon>
               <ListItemText primary="Calendar" />
             </ListItem>
-            <ListItem button component={Link} to="/assignments">
+            <ListItem button>
               <ListItemIcon>
                 <Icon className="fas fa-pencil-alt" />
               </ListItemIcon>
               <ListItemText primary="Assignments" />
             </ListItem>
-            <ListItem button>
+            <ListItem button component={Link} to="/student-submissions">
               <ListItemIcon>
                 <Icon className="fas fa-paper-plane" />
               </ListItemIcon>

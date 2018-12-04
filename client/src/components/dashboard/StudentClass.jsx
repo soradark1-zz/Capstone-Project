@@ -25,7 +25,8 @@ const styles = theme => ({
     textTransform: "inherit",
     margin: "0.6rem",
     fontSize: "1.2rem",
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
+	marginTop: 30
   },
   table: {
     minWidth: 700,
@@ -34,9 +35,9 @@ const styles = theme => ({
 });
 
 let id = 0;
-function createData(name, calories, fat, carbs, protein) {
+function createData(name, dates, submitted, grade, download) {
   id += 1;
-  return { id, name, calories, fat, carbs, protein };
+  return { id, name, dates, submitted, grade, download};
 }
 
 const rows = [
@@ -47,8 +48,7 @@ const rows = [
     "hello \n hello",
     "-/100",
     4.0
-  ),
-  createData("Homework 1", 159, 6.0, 24, 4.0)
+  )
 ];
 
 class StudnetClass extends React.Component {
@@ -57,7 +57,14 @@ class StudnetClass extends React.Component {
 
     this.state = {
       className: "",
-      classCode: ""
+      classCode: "",
+      assignment_name: "",
+      date_assigned: "",
+      date_due: "",
+      description: "",
+	  grade: "",
+      max_grade: "",
+      uploadFile: null
     };
 
     this.dropClass = this.dropClass.bind(this);
@@ -123,37 +130,55 @@ class StudnetClass extends React.Component {
               <TableRow>
                 <TableCell>Assignments</TableCell>
                 <TableCell>Dates</TableCell>
-                <TableCell>Date Due</TableCell>
                 <TableCell>Grade</TableCell>
-                <TableCell>Submited</TableCell>
+				<TableCell>Download</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map(row => {
+              {this.props.class.assignments && this.props.class.assignments.map((assignment,i) => {
                 return (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
+                  <TableRow key={i}>
+                    <TableCell>
+						<Link
+							to={this.props.match.url + `/assignment/${assignment._id}`}
+							key={i}
+						>
+							{assignment.assignment_name}
+						</Link>
                     </TableCell>
-                    <TableCell>{row.calories}</TableCell>
-                    <TableCell>{row.fat}</TableCell>
-                    <TableCell>{row.carbs}</TableCell>
-                    <TableCell>{row.protein}</TableCell>
+                    <TableCell>
+						<div
+							key={i}
+						>
+							{assignment.date_due}
+						</div>
+						<div
+							key={i}
+						>
+							{assignment.date_assigned}
+						</div>
+					</TableCell>
+                    <TableCell>
+						<div
+							key={i}
+						>
+							{assignment.grade} / {assignment.max_grade}
+						</div>
+					</TableCell>
+                    <TableCell>
+						<Link
+							to={this.props.match.url + `/assignment/${assignment._id}`}
+							key={i}
+						>
+							File{assignment.uploadFile}
+						</Link>
+					</TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
         </Paper>
-        {this.props.class.assignments &&
-          this.props.class.assignments.map((assignment, i) => (
-            <Link
-              to={this.props.match.url + `/assignment/${assignment._id}`}
-              key={i}
-            >
-              {assignment.assignment_name}
-            </Link>
-          ))}
         <Button
           className={classNames(classes.button)}
           variant="contained"

@@ -22,6 +22,7 @@ import CreateAssignment from "./components/dashboard/CreateAssignment";
 import CreateClass from "./components/dashboard/CreateClass";
 import EnrollClass from "./components/dashboard/EnrollClass";
 import GradeAssignment from "./components/dashboard/GradeAssignment";
+import StudentSubmissions from "./components/dashboard/StudentSubmissions";
 
 import Testing from "./components/dashboard/Testing";
 
@@ -100,10 +101,15 @@ class App extends Component {
                   path="/create-assignment"
                   component={CreateAssignment}
                 />
-                <PrivateRoute
+				<PrivateRoute
                   exact
                   path="/grade-assignment"
                   component={GradeAssignment}
+                />
+				<PrivateRoute
+                  exact
+                  path="/student-submissions"
+                  component={StudentSubmissions}
                 />
                 <Route component={PageNotFound} />
               </Switch>
