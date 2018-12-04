@@ -501,42 +501,17 @@ router.post('/assign_graders',
                     return res.status(400).json(errors);
                 }
 
-                const peer_graders = Array.from(course.enrolled_students);
+                assignment.peer_grading_assignment.push({
+                        owner: assignment.submitted_docs[0].user_id,
+                        doc_id: assignment.submitted_docs[0].doc_id,
+                        grader: assignment.submitted_docs[assignment.submitted_docs.length - 1].user_id
+                    });
 
-                var currentIndex = peer_graders.length, temporaryValue, randomIndex;
-
-                // While there remain elements to shuffle...
-                while (0 !== currentIndex) {
-
-                    // Pick a remaining element...
-                    randomIndex = Math.floor(Math.random() * currentIndex);
-                    currentIndex -= 1;
-
-                    // And swap it with the current element.
-                    temporaryValue = peer_graders[currentIndex];
-                    peer_graders[currentIndex] = peer_graders[randomIndex];
-                    peer_graders[randomIndex] = temporaryValue;
-                }
-
-                for (var i = 0; i < assignment.submitted_docs.length; i++) {
-                    if (assignment.submitted_docs[i].user_id === peer_graders[i].id){
-                        temporaryValue = peer_graders[i];
-                        if (i === peer_graders.length - 1){
-                            peer_graders[i] = peer_graders[0];
-                            peer_graders[0] = temporaryValue;
-                        }
-                        else{
-                            peer_graders[i] = peer_graders[i + 1];
-                            peer_graders[i + 1] = temporaryValue;
-                        }
-                    }
-                }
-
-                for (var i = 0; i < assignment.submitted_docs.length; i++) {
+                for (var i = 0; i < assignment.submitted_docs.length - 1; i++) {
                     assignment.peer_grading_assignment.push({
-                        owner: assignment.submitted_docs[i].user_id,
-                        doc_id: assignment.submitted_docs[i].doc_id,
-                        grader: peer_graders[i].id
+                        owner: assignment.submitted_docs[i + 1].user_id,
+                        doc_id: assignment.submitted_docs[i + 1].doc_id,
+                        grader: assignment.submitted_docs[i].user_id
                     });
                 }
 
