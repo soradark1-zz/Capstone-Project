@@ -17,15 +17,16 @@ const storage = multer.diskStorage({
 var upload = multer({ dest: "client/src/uploads" });
 
 // Load Input Validation
-const validateEnrollInput = require("../../validation/enroll");
-const validateDropInput = require("../../validation/drop");
-const validateInfoInput = require("../../validation/info");
-const validateCreateClassInput = require("../../validation/create_class");
-const validateClassDeleteInput = require("../../validation/delete_class");
-const validateCreateAssignmentInput = require("../../validation/create_assignment");
-const validateAssignmentSubmissionInput = require("../../validation/submit_assignment");
-const validateGetDocumentInput = require("../../validation/get_document");
-const validateUpdateCommentsInput = require("../../validation/update_comments");
+const validateEnrollInput = require('../../validation/enroll');
+const validateDropInput = require('../../validation/drop');
+const validateInfoInput = require('../../validation/info');
+const validateCreateClassInput = require('../../validation/create_class');
+const validateClassDeleteInput = require('../../validation/delete_class');
+const validateCreateAssignmentInput = require('../../validation/create_assignment');
+const validateAssignmentSubmissionInput = require('../../validation/submit_assignment');
+const validateGetDocumentInput = require('../../validation/get_document');
+const validateUpdateCommentsInput = require('../../validation/update_comments');
+const validateAssignGradersInput = require('../../validation/assign_graders');
 
 // Load Class model
 const Class = require("../../models/Class");
@@ -504,5 +505,96 @@ router.post(
     res.status(200);
   }
 );
+
+// @route   POST api/classes/assign_graders
+// @desc    Update the comments and grade of the document
+// @access  Private
+router.post('/assign_graders',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    const { errors, isValid } = validateAssignGradersInput(req.body);
+
+    // Check Validation
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    Class.findOne({ code: req.body.code }).then(course => {
+      if (course) {
+
+        var assignment = null;
+
+        for (var i = 0; i < course.assignments.length; i++) {
+          if (course.assignments[i].assignment_name === req.body.assignment_name) {
+            assignment = course.assignments[i];
+            break;
+          }
+        }
+
+        if (course.enrolled_students.length === 0) {
+          errors.graders = 'There are no enrolled students to grade documents';
+          return res.status(400).json(errors);
+        }
+
+        if (assignment.submitted_docs.length === 0) {
+          errors.graders = 'There are no documents to be graded';
+          return res.status(400).json(errors);
+        }
+
+        if (course.enrolled_students.length < assignment.submitted_docs.length) {
+          errors.graders = 'Too few peer graders to grade documents';
+          return res.status(400).json(errors);
+        }
+
+        const peer_graders = Array.from(course.enrolled_students);
+
+        var currentIndex = peer_graders.length, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = peer_graders[currentIndex];
+          peer_graders[currentIndex] = peer_graders[randomIndex];
+          peer_graders[randomIndex] = temporaryValue;
+        }
+
+        for (var i = 0; i < assignment.submitted_docs.length; i++) {
+          if (assignment.submitted_docs[i].user_id === peer_graders[i].id) {
+            temporaryValue = peer_graders[i];
+            if (i === peer_graders.length - 1) {
+              peer_graders[i] = peer_graders[0];
+              peer_graders[0] = temporaryValue;
+            }
+            else {
+              peer_graders[i] = peer_graders[i + 1];
+              peer_graders[i + 1] = temporaryValue;
+            }
+          }
+        }
+
+        for (var i = 0; i < assignment.submitted_docs.length; i++) {
+          assignment.peer_grading_assignment.push({
+            owner: assignment.submitted_docs[i].user_id,
+            doc_id: assignment.submitted_docs[i].doc_id,
+            grader: peer_graders[i].id
+          });
+        }
+
+        course.save();
+        res.json(course);
+      }
+      else {
+        errors.code = 'Course code does not exist';
+        return res.status(400).json(errors);
+      }
+    });
+
+    res.status(200);
+  });
 
 module.exports = router;
