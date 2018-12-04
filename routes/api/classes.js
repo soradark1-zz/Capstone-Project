@@ -536,39 +536,27 @@ router.post('/assign_graders',
           return res.status(400).json(errors);
         }
 
+        if (assignment.submitted_docs.length === 0) {
+          errors.graders = 'There are no documents to be graded';
+          return res.status(400).json(errors);
+        }
+
+        if (course.enrolled_students.length < assignment.submitted_docs.length) {
+          errors.graders = 'Too few peer graders to grade documents';
+          return res.status(400).json(errors);
+        }
+
         assignment.peer_grading_assignment.push({
-          owner: assignment.submitted_docs[0].user_id,
+          owner: assignment.submitted_docs[0].owner,
           doc_id: assignment.submitted_docs[0].doc_id,
-          grader: assignment.submitted_docs[assignment.submitted_docs.length - 1].user_id
+          grader: assignment.submitted_docs[assignment.submitted_docs.length - 1].owner
         });
 
         for (var i = 0; i < assignment.submitted_docs.length - 1; i++) {
           assignment.peer_grading_assignment.push({
-            owner: assignment.submitted_docs[i + 1].user_id,
+            owner: assignment.submitted_docs[i + 1].owner,
             doc_id: assignment.submitted_docs[i + 1].doc_id,
-            grader: assignment.submitted_docs[i].user_id
-          });
-        }
-
-        for (var i = 0; i < assignment.submitted_docs.length; i++) {
-          if (assignment.submitted_docs[i].user_id === peer_graders[i].id) {
-            temporaryValue = peer_graders[i];
-            if (i === peer_graders.length - 1) {
-              peer_graders[i] = peer_graders[0];
-              peer_graders[0] = temporaryValue;
-            }
-            else {
-              peer_graders[i] = peer_graders[i + 1];
-              peer_graders[i + 1] = temporaryValue;
-            }
-          }
-        }
-
-        for (var i = 0; i < assignment.submitted_docs.length; i++) {
-          assignment.peer_grading_assignment.push({
-            owner: assignment.submitted_docs[i].user_id,
-            doc_id: assignment.submitted_docs[i].doc_id,
-            grader: peer_graders[i].id
+            grader: assignment.submitted_docs[i].owner
           });
         }
 
