@@ -148,6 +148,7 @@ class TeacherClass extends React.Component {
               this.props.class.assignments.map((assignment, i) => (
                 <div>
                   <Link
+                    style={{ color: "white" }}
                     to={this.props.match.url + `/assignment/${assignment._id}`}
                     key={i}
                   >
@@ -156,6 +157,7 @@ class TeacherClass extends React.Component {
                   <br />
                 </div>
               ))}
+            <br />
             <Button
               className={classNames(classes.button)}
               variant="contained"

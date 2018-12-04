@@ -124,7 +124,7 @@ class Rectangle extends React.Component {
         name={this.props.name}
         // save state on dragend or transformend
         onDragEnd={this.handleChange}
-        //onTransformEnd={this.handleChange}
+        onTransformEnd={this.handleChange}
         draggable={this.props.isTeacher}
         stroke={this.props.stroke}
         strokeWidth={2}
@@ -545,8 +545,8 @@ class Annoation extends Component {
       </div>
     );
 
-    //console.log("STATE", this.props);
-    console.log("Teacher", this.props.isTeacher);
+    console.log("STATE", this.state.rectangles[0]);
+    //console.log("Teacher", this.props.isTeacher);
     window.addEventListener("resize", this.sizeOfStage);
     return (
       <div

@@ -117,42 +117,19 @@ class StudnetClass extends React.Component {
     return (
       <div>
         <h1>{className}</h1>
-        <Paper className={classes.root}>
-          <Table className={classes.table}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Assignments</TableCell>
-                <TableCell>Dates</TableCell>
-                <TableCell>Date Due</TableCell>
-                <TableCell>Grade</TableCell>
-                <TableCell>Submited</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map(row => {
-                return (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
-                    </TableCell>
-                    <TableCell>{row.calories}</TableCell>
-                    <TableCell>{row.fat}</TableCell>
-                    <TableCell>{row.carbs}</TableCell>
-                    <TableCell>{row.protein}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </Paper>
+
+        <div>Assignments:</div>
         {this.props.class.assignments &&
           this.props.class.assignments.map((assignment, i) => (
-            <Link
-              to={this.props.match.url + `/assignment/${assignment._id}`}
-              key={i}
-            >
-              {assignment.assignment_name}
-            </Link>
+            <div>
+              <Link
+                style={{ color: "white" }}
+                to={this.props.match.url + `/assignment/${assignment._id}`}
+                key={i}
+              >
+                {assignment.assignment_name}
+              </Link>
+            </div>
           ))}
         <Button
           className={classNames(classes.button)}

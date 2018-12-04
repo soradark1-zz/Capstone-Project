@@ -48,7 +48,8 @@ class StudentAssignment extends React.Component {
       max_grade: "",
       hasSubmitted: false,
       uploadFile: null,
-      docId: ""
+      docId: "",
+      peer_grading_assignment: []
     };
 
     this.getClass = this.getClass.bind(this);
@@ -191,6 +192,19 @@ class StudentAssignment extends React.Component {
     return false;
   }
 
+  peerGradingDoc() {
+    const doc = this.state.peer_grading_assignment.find(doc => {
+      return doc.grader === this.props.user.id;
+    });
+
+    console.log("Grading doc", doc);
+    if (doc) {
+      return doc.doc_id;
+    }
+
+    return "";
+  }
+
   render() {
     const { classes } = this.props;
     const {
@@ -200,10 +214,11 @@ class StudentAssignment extends React.Component {
       date_assigned,
       date_due,
       description,
-      max_grade
+      max_grade,
+      peer_grading_assignment
     } = this.state;
-    console.log("PROPS", this.state);
-
+    console.log("State", this.state);
+    console.log(this.peerGradingDoc());
     return (
       <div>
         {this.props.class.isLoaded ? (
@@ -219,7 +234,7 @@ class StudentAssignment extends React.Component {
                 style={{ color: "white" }}
                 to={this.props.match.url + `/${this.state.docId}`}
               >
-                <div>Submission</div>
+                <div>My Submission</div>
               </Link>
             ) : (
               <div>
@@ -233,6 +248,22 @@ class StudentAssignment extends React.Component {
                 >
                   Submit
                 </Button>
+              </div>
+            )}
+
+            {peer_grading_assignment.length > 0 && (
+              <div>
+                <br />
+                <div>Peer Grading Assignment:</div>
+                <Link
+                  style={{ color: "white" }}
+                  to={
+                    this.props.match.url.replace("student", "teacher") +
+                    `/${this.peerGradingDoc()}`
+                  }
+                >
+                  <div>Peer's Submission</div>
+                </Link>{" "}
               </div>
             )}
           </div>
